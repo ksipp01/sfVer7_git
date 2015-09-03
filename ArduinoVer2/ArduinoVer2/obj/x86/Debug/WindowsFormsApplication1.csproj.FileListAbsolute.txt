@@ -1,0 +1,5 @@
+C:\Users\kevin\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\kevin\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
+C:\Users\kevin\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\kevin\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.write.1.tlog

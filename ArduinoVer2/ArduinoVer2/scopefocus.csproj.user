@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PublishUrlHistory>C:\Users\Public\sfDeploy\|C:\Users\Public\ScopeFocus_testBuild\|C:\scopefocusV6\|C:\Users\kevin\Desktop\SF_Lite_test\|C:\Users\kevin\Desktop\ScopeFocus_Lite\</PublishUrlHistory>
+    <InstallUrlHistory>http://scopefocus.blob.core.windows.net/scopefocusver6/|https://scopefocus.blob.core.windows.net/scopefocusver6/|http://scopefocus.duckdns.org/deploy/|http://192.168.2.13:9980/deploy/</InstallUrlHistory>
+    <SupportUrlHistory />
+    <UpdateUrlHistory>http://scopefocus.blob.core.windows.net/scopefocusver6/|http://scopefocus.duckdns.org/deploy/</UpdateUrlHistory>
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <ProjectView>ShowAllFiles</ProjectView>
+  </PropertyGroup>
+</Project>

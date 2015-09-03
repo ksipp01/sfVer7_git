@@ -1,0 +1,135 @@
+10/2/2011 6:50:58 AM
+Type	Temp	Pos	N	HFR	minHFR	posmin
+V-curve	100	  500	177	177	500	500
+V-curve	100	  510	175	175	177	500
+V-curve	100	  520	175	175	175	510
+V-curve	100	  530	179	179	175	510
+V-curve	100	  540	178	178	175	510
+V-curve	100	  550	176	176	175	510
+V-curve	100	  560	177	177	175	510
+V-curve	100	  570	176	176	175	510
+V-curve	100	  580	179	179	175	510
+V-curve	100	  590	178	178	175	510
+10/2/2011 6:51:29 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  260	178	178	500	510
+10/2/2011 6:51:30 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  265	174	174	178	260
+10/2/2011 6:51:32 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  270	176	176	174	265
+10/2/2011 6:51:33 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  275	177	177	174	265
+10/2/2011 6:51:35 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  280	178	178	174	265
+10/2/2011 6:51:37 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  285	178	178	174	265
+10/2/2011 6:51:38 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  290	177	177	174	265
+10/2/2011 6:51:40 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  295	177	177	174	265
+10/2/2011 6:51:42 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  300	177	177	174	265
+10/2/2011 6:51:43 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  305	177	177	174	265
+10/2/2011 6:51:45 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  310	177	177	174	265
+10/2/2011 6:51:47 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  315	177	177	174	265
+10/2/2011 6:51:48 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  320	178	178	174	265
+10/2/2011 6:51:50 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  325	177	177	174	265
+10/2/2011 6:51:51 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  330	178	178	174	265
+10/2/2011 6:51:53 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  335	177	177	174	265
+10/2/2011 6:51:55 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  340	177	177	174	265
+10/2/2011 6:51:56 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  345	176	176	174	265
+10/2/2011 6:51:58 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  350	178	178	174	265
+10/2/2011 6:52:00 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  355	178	178	174	265
+10/2/2011 6:52:01 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  360	179	179	174	265
+10/2/2011 6:52:03 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  365	176	176	174	265
+10/2/2011 6:52:05 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  370	178	178	174	265
+10/2/2011 6:52:06 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  375	178	178	174	265
+10/2/2011 6:52:08 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  380	179	179	174	265
+10/2/2011 6:52:10 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  385	176	176	174	265
+10/2/2011 6:52:11 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  390	177	177	174	265
+10/2/2011 6:52:13 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  395	176	176	174	265
+10/2/2011 6:52:15 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  400	176	176	174	265
+10/2/2011 6:52:16 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  405	174	174	174	265
+10/2/2011 6:52:18 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  410	178	178	174	265
+10/2/2011 6:52:20 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  415	178	178	174	265
+10/2/2011 6:52:21 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  420	176	176	174	265
+10/2/2011 6:52:23 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  425	177	177	174	265
+10/2/2011 6:52:25 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  430	177	177	174	265
+10/2/2011 6:52:26 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  435	177	177	174	265
+10/2/2011 6:52:28 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  440	179	179	174	265
+10/2/2011 6:52:30 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  445	177	177	174	265
+10/2/2011 6:52:31 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  450	178	178	174	265
+10/2/2011 6:52:33 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  455	175	175	174	265
+10/2/2011 6:52:35 AM
+Fine-V	Temp	Pos	N	HFR	minHFR	posmin	Tavg
+Fine-V 	100	  460	176	176	174	265

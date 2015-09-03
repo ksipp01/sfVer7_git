@@ -1,0 +1,115 @@
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\MyDatabase2.sdf
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\UsbWrapper.xml
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.pdb
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.xml
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\ErikEJ.SqlCe.dll
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.config
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\MyDatabase2.sdf
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\UsbWrapper.xml
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.pdb
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.xml
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.FindCenter.resources
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\BU6_4_closer\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.application
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.config
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.pdb
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\MyDatabase2.sdf
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.manifest
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.application
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.pdb
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\UsbWrapper.xml
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.pdb
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.xml
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\ResolveAssemblyReference.cache
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.FindCenter.resources
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.read.1.tlog
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.write.1.tlog
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe.manifest
+\\OFFICE-PC\Users\Kevin\Documents\ArduinoBU_Filter\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.config
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\MyDatabase2.sdf
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\UsbWrapper.xml
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.pdb
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.xml
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.FindCenter.resources
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\BU6_7\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.config
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\MyDatabase2.sdf
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\scopefocus_Version 5.exe
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\scopefocus_Version 5.pdb
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\ErikEJ.SqlCe.dll
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\Salient.Data.dll
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\UsbWrapper.xml
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\Usc.pdb
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\bin\Debug\Usc.xml
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.exe.manifest
+C:\Users\kevin\Desktop\ArduinoVer2BU\ArduinoVer2\obj\x86\Debug\scopefocus_Version 5.application
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csprojResolveAssemblyReference.cache
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.GenerateResource.Cache
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\WindowsFormsApplication1.EquipConnect.resources
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6.exe.config
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6.exe.manifest
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6.application
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6.exe
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6.pdb
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6.exe.manifest
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6.application
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6.exe
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6.pdb
+C:\Users\kevin\Desktop\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Pololu.Usc.ScopeFocus.MainWindow.resources
