@@ -76,12 +76,12 @@
     <Reference Include="ASCOM.DriverAccess, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL" />
     <Reference Include="ASCOM.Utilities, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL" />
     <Reference Include="ErikEJ.SqlCe40">
-      <HintPath>..\packages\ErikEJ.SqlCeBulkCopy.2.1.6.9\lib\net40\ErikEJ.SqlCe40.dll</HintPath>
+      <HintPath>..\packages\ErikEJ.SqlCeBulkCopy.2.1.6.10\lib\net40\ErikEJ.SqlCe40.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServerCe.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
     <Reference Include="Salient.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=03b0b5a60fec3719, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ErikEJ.SqlCeBulkCopy.2.1.6.9\lib\net40\Salient.Data.dll</HintPath>
+      <HintPath>..\packages\ErikEJ.SqlCeBulkCopy.2.1.6.10\lib\net40\Salient.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
