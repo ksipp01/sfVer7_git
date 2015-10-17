@@ -22,12 +22,12 @@ namespace Pololu.Usc.ScopeFocus
             get { return _nebSlavehwnd; }
             set { _nebSlavehwnd = value; }
         }
-        //private static string _nebcamera;
-        //public static string Nebcamera
-        //{
-        //    get {return _nebcamera;}
-        //    set { _nebcamera = value;}
-        //}
+        private static string _nebcamera;
+        public static string Nebcamera
+        {
+            get { return _nebcamera; }
+            set { _nebcamera = value; }
+        }
         private static string _path2;
         public static string Path2
         {
