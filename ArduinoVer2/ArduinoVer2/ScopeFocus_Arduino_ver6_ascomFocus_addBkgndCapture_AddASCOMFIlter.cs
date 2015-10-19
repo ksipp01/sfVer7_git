@@ -71,6 +71,10 @@
 // added more delay to send file name to Load Script window
 //disabled goto focus quality check for simulaotr
 
+//10-19-15  
+// double click camera textbox to rescan (only matters for simulator and disable qaulity checks)
+
+
 
 ///  to do:
 /// ver21 see above 
@@ -1633,6 +1637,8 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
             }
+            else
+                Log("Simulator -- quality check disabled");
             // end test for improvement addition
 
 
@@ -1668,8 +1674,7 @@ namespace Pololu.Usc.ScopeFocus
 
             if (GlobalVariables.Nebcamera.ToString() == "Simulator")
             {
-                Log("Simulator -- quality check disabled");
-                return true;
+               return true;
             }
             else
                 return false;
@@ -14894,6 +14899,11 @@ string cmd = "CD ..";
                 //    textBox1.Text = focuser.Position.ToString();
                 //    return;
                 //}
+            }
+
+            private void textBox22_Click(object sender, EventArgs e)
+            {
+                FindNebCamera();
             }
 
 

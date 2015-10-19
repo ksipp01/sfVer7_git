@@ -719,6 +719,7 @@
             this.textBox22.Size = new System.Drawing.Size(121, 20);
             this.textBox22.TabIndex = 174;
             this.toolTip1.SetToolTip(this.textBox22, "Enter camera name as it a appears on neb advnace setup window");
+            this.textBox22.Click += new System.EventHandler(this.textBox22_Click);
             this.textBox22.TextChanged += new System.EventHandler(this.textBox22_TextChanged);
             // 
             // radioButton3
@@ -3252,7 +3253,7 @@
             this.textBox29.Name = "textBox29";
             this.textBox29.Size = new System.Drawing.Size(34, 20);
             this.textBox29.TabIndex = 10;
-            this.textBox29.Text = "75";
+            this.textBox29.Text = "90";
             // 
             // label28
             // 
