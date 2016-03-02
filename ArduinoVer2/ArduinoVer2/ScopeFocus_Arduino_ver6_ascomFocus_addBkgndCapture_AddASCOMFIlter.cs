@@ -74,10 +74,16 @@
 //10-19-15  
 // double click camera textbox to rescan (only matters for simulator and disable qaulity checks)
 
+//3-2-16
+//added out of bound focus move management got gotofocus and allow 3 retry then abort and send msg
+//added while statement to prevent 'in sequence' re-focus from advancing prior to completeing focuser move
+//added eneble numericupdown after pushing stop
+
 
 
 ///  to do:
 /// ver21 see above 
+/// **** ??  able to abort focus move if needed
 /// **** error handeling for plate solve. 
 /// 
 /// ****fix so when using metric the focus star in target frame (checkBox 10) doesn't matter.  get target position not set error if unchecked
@@ -980,6 +986,29 @@ namespace Pololu.Usc.ScopeFocus
                             //    EnteredSlopeUP = Convert.ToDouble(textBox10.Text);
                             //      textBox14.Text = avg.ToString();
                             BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
+
+                            //3-2-16
+                            if ((int)BestPos < 0 || (int)BestPos > travel)
+                            {
+                                redo++;
+                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+
+                                posMin = count; //reset to prev focus point
+                                BestPos = count;
+                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                if (redo < 4)
+                                    gotoFocus();
+                                else
+                                {
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                    BestPos = count;
+                                    redo = 0;
+                                }
+
+                                return;
+                            }
                             //check to make sure there wasn't gross miscalculation 9-9-15
                             if (((double)BestPos > (count + (int)numericUpDown39.Value * 2)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 10)))
                             {
@@ -987,14 +1016,14 @@ namespace Pololu.Usc.ScopeFocus
                                 Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
                                 
                                 posMin = count; //reset to prev focus point
-                                
+                                BestPos = count;
                                 fileSystemWatcher3.EnableRaisingEvents = false;
                                 if (redo < 4)
                                     gotoFocus(); 
                                 else
                                 {
-                                    Log("The Focus Calcualtion Failed x 4 -- Aborted");
-                                    FileLog2("The Focus Calcualtion Failed x 4 -- Aborted");
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
                                     Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
                                     BestPos = count;
                                     redo = 0;
@@ -1003,9 +1032,16 @@ namespace Pololu.Usc.ScopeFocus
                                 return;
                             }
 
-                            fileSystemWatcher3.EnableRaisingEvents = false;
-                            focuser.Move((int)BestPos);
-                            
+
+                           
+                            else
+                            {
+                                if (redo > 0)
+                                    redo = 0;
+                                focuser.Move((int)BestPos);
+                                fileSystemWatcher3.EnableRaisingEvents = false;
+                            }
+                           
                             ////9-9-15
                             //// check to make sure HFR improved....it should always improve a little or sample point was too lcose to PID
                             //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
@@ -1038,6 +1074,21 @@ namespace Pololu.Usc.ScopeFocus
                             Log("Goto Focus Position: " + ((int)BestPos).ToString());
                             textBox4.Text = ((int)BestPos).ToString();
 
+                            toolStripStatusLabel1.Text = "Focus Moving";
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                            //3-2-16 
+                            while (focuser.IsMoving)
+                            {
+                                count = focuser.Position;
+                                textBox1.Text = count.ToString();
+                                delay(1);
+                                positionbar();
+                                //  Log(focuser.IsMoving.ToString());
+                            }
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                            toolStripStatusLabel1.Text = "Ready";
+
+
                         }
                         if (radioButton3.Checked == true)//use downslope
                         {
@@ -1049,6 +1100,30 @@ namespace Pololu.Usc.ScopeFocus
                             //    EnteredSlopeDWN = Convert.ToDouble(textBox3.Text);
                             // textBox14.Text = avg.ToString();
                             BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
+                            //3-2-16
+                            if ((int)BestPos < 0 || (int)BestPos > travel)
+                            {
+                                redo++;
+                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+
+                                posMin = count; //reset to prev focus point
+                                BestPos = count;
+                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                if (redo < 4)
+                                    gotoFocus();
+                                else
+                                {
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                    BestPos = count;
+                                    redo = 0;
+                                }
+
+                                return;
+                            }
+
+
                             //check calculation 9-9-15
                             if (((double)BestPos > (count + (int)numericUpDown39.Value * 10)) || ((double)BestPos < (count - (int)numericUpDown39.Value *2)))
                             {
@@ -1056,14 +1131,14 @@ namespace Pololu.Usc.ScopeFocus
                                 Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
                                 
                                 posMin = count;
-                               
+                                BestPos = count;
                                 fileSystemWatcher3.EnableRaisingEvents = false;
                                 if (redo < 4)
                                     gotoFocus();
                                 else
                                 {
-                                    Log("The Focus Calcualtion Failed x 4 -- Aborted");
-                                    FileLog2("The Focus Calcualtion Failed x 4 -- Aborted");
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
                                     Send("GotoFocus Calculation Error - GotoFocus Aborted");
                                     BestPos = count;
                                     redo = 0;
@@ -1071,10 +1146,27 @@ namespace Pololu.Usc.ScopeFocus
                                                                return;
                             }
 
-                            fileSystemWatcher3.EnableRaisingEvents = false;
-                            focuser.Move((int)BestPos);
-                            
-
+                           
+                            else
+                            {
+                                if (redo > 0)
+                                    redo = 0;
+                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                focuser.Move((int)BestPos);
+                            }
+                            //3-2-16 
+                            toolStripStatusLabel1.Text = "Focus Moving";
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                            while (focuser.IsMoving)
+                            {
+                                count = focuser.Position;
+                                textBox1.Text = count.ToString();
+                                delay(1);
+                                positionbar();
+                                //  Log(focuser.IsMoving.ToString());
+                            }
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                            toolStripStatusLabel1.Text = "Ready";
                             // check to make sure HFR improved....
                             //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
                             //current = GetFileHFR(filePaths, roundto);
@@ -1107,6 +1199,21 @@ namespace Pololu.Usc.ScopeFocus
                             Log("Goto Focus Position: " + ((int)BestPos).ToString());
                             textBox4.Text = ((int)BestPos).ToString();
                             HFRtestON = true;
+
+                            //3-2-16 
+                            toolStripStatusLabel1.Text = "Focus Moving";
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                            while (focuser.IsMoving)
+                            {
+                                count = focuser.Position;
+                                textBox1.Text = count.ToString();
+                                delay(1);
+                                positionbar();
+                                //  Log(focuser.IsMoving.ToString());
+                            }
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                            toolStripStatusLabel1.Text = "Ready";
+
                         }
                         //*****7-25-14 try moving this from below**********
 
@@ -1747,6 +1854,8 @@ namespace Pololu.Usc.ScopeFocus
                 //{
              //   if (numericUpDown6.Value == focuser.Position)//don't move if already there.  *****this inhibits moves from fwd/rev buttons  *******
             //        return;
+
+                //focus moving here for toolstrip rest see 1877
                     toolStripStatusLabel1.Text = "Focus Moving";
                     toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
                     this.Refresh();
@@ -3015,8 +3124,8 @@ namespace Pololu.Usc.ScopeFocus
                         focuser.Halt();
                     Thread.Sleep(1000);//was 3000
                     gotopos(posMin + (int)numericUpDown39.Value);
-                 //   focuser.Move(posMin + (int)numericUpDown39.Value);//goto measure position
-                    Thread.Sleep(100);
+                     //   focuser.Move(posMin + (int)numericUpDown39.Value);//goto measure position
+                        Thread.Sleep(100);
                     count = focuser.Position;
                     textBox1.Text = focuser.Position.ToString();
                     if (!ContinuousHoldOn)
@@ -3042,6 +3151,7 @@ namespace Pololu.Usc.ScopeFocus
                     gotopos(posMin - (int)numericUpDown39.Value);
                     // focuser.Move(posMin - (int)numericUpDown39.Value);
                     Thread.Sleep(100);
+                  
                     count = focuser.Position;
                     textBox1.Text = focuser.Position.ToString();
                     if (!ContinuousHoldOn)
@@ -4949,6 +5059,8 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 //      toolStripStatusLabel1.Text = "Filter Moving";
                 this.Refresh();
+                UpdateData();
+                EquipRefresh();
         //*****************  end addt*************************
             }
             catch
@@ -4986,7 +5098,7 @@ namespace Pololu.Usc.ScopeFocus
                  */ 
                
             }
-            if ((subCountCurrent == TotalSubs()) & (subCountCurrent != 0))//signifies ens of sequence
+            if ((subCountCurrent == TotalSubs()) & (subCountCurrent != 0))//signifies end of sequence
             {
                 //adioButton7.Checked = false;
                 fileSystemWatcher4.EnableRaisingEvents = false;
@@ -7107,6 +7219,7 @@ namespace Pololu.Usc.ScopeFocus
 
      //   public bool SequenceRunning = false;
         //Go button, goes to starting filter pos, (assumes started at pos 1) and begins script
+        //sequencegohere
         private void SequenceGo()
         {
             try
@@ -9441,7 +9554,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 int panel3Vis = IsWindowVisible(panelhwnd3);//WORKS  visable =1
                 // Log("panel3vis " + panel3Vis.ToString() + " # " + panelhwnd.ToString());
-                Log("pos = " + starpos.ToString() + "  X = " + xxx.X.ToString() + "  Y = " + xxx.Y.ToString());
+                Log("Focus star click pos = " + starpos.ToString() + "  X = " + xxx.X.ToString() + "  Y = " + xxx.Y.ToString());
 
 
 
@@ -11588,6 +11701,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             if (result == DialogResult.Cancel)
                 return;
+            EnableAllUpDwn(); //3-2-16
         }
         //set max travel according to selected scope.....allows for 6 diff scopes
         private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)

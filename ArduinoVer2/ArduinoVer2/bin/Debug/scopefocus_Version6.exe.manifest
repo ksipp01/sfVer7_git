@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="301056">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="302080">
       <assemblyIdentity name="scopefocus_Version6" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>3RIAXe3ILOR9oL0vgGfkKEjs25g=</dsig:DigestValue>
+        <dsig:DigestValue>xSEmvkFqfUreKnQcFNPKoRhygsI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

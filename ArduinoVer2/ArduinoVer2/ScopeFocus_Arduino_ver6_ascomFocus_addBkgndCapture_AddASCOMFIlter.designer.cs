@@ -862,9 +862,9 @@
             this.checkBox26.AutoSize = true;
             this.checkBox26.Location = new System.Drawing.Point(43, 152);
             this.checkBox26.Name = "checkBox26";
-            this.checkBox26.Size = new System.Drawing.Size(78, 17);
+            this.checkBox26.Size = new System.Drawing.Size(107, 17);
             this.checkBox26.TabIndex = 39;
-            this.checkBox26.Text = "Neb Image";
+            this.checkBox26.Text = "Nebulosity Image";
             this.toolTip1.SetToolTip(this.checkBox26, "Get from Caputre if checked, selelct file if unchecked");
             this.checkBox26.UseVisualStyleBackColor = true;
             // 
@@ -2644,8 +2644,6 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox2.Location = new System.Drawing.Point(12, 63);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(32, 17);
@@ -2657,8 +2655,6 @@
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox3.Location = new System.Drawing.Point(13, 88);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(32, 17);
@@ -2670,8 +2666,6 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox4.Location = new System.Drawing.Point(12, 113);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(32, 17);

@@ -123,10 +123,6 @@ C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\ErikEJ.SqlCe40
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\System.Data.SqlServerCe.dll
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\ErikEJ.SqlCe40.xml
-C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\UsbWrapper.xml
-C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.pdb
-C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\bin\Debug\Usc.xml
-C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csprojResolveAssemblyReference.cache
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
