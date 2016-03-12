@@ -127,6 +127,7 @@ using System.Diagnostics;
 using ASCOM.DriverAccess;
 using System.Text.RegularExpressions;
 using System.Deployment.Application;
+using System.Runtime.CompilerServices;
 
 
 
@@ -350,13 +351,19 @@ namespace Pololu.Usc.ScopeFocus
            get { return sequenceRunning; }
            set { sequenceRunning = value; }
        }
-   
+        private static bool astrometryRunning;
+        public static bool AstrometryRunning
+        {
+            get { return astrometryRunning; }
+            set { astrometryRunning = value; }
+        }
+        private static bool solveRequested = false;
 
-     //  int EnteredPID;
-    //   double EnteredSlopeUP;
-    //   double EnteredSlopeDWN;
-        
-       private static bool FilterFocusOn = false;
+        //  int EnteredPID;
+        //   double EnteredSlopeUP;
+        //   double EnteredSlopeDWN;
+
+        private static bool FilterFocusOn = false;
        private static float FocusTime;
        private static bool startup = true;//used to ensure tab change only changes populates focuspos on startup
        private static int CaptureBin;
@@ -497,96 +504,98 @@ namespace Pololu.Usc.ScopeFocus
         {
 
         }
-       /*
-        void PortOpen()
-        {
-            try
-            {
-                if (port != null)
-                {
-                    return;
-                    // port.Close();*****rem'd 5-24 for slave
-                    //  port.Dispose();
-                }
 
-                port = new SerialPort(comboBox1.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
+       
+        /*
+         void PortOpen()
+         {
+             try
+             {
+                 if (port != null)
+                 {
+                     return;
+                     // port.Close();*****rem'd 5-24 for slave
+                     //  port.Dispose();
+                 }
 
-                port.Open();
-                watchforOpenPort();
+                 port = new SerialPort(comboBox1.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
 
-                if (portopen == 1)
-                {
-                    Log("Connected to Arduino on " + comboBox1.SelectedItem.ToString());
-                   GlobalVariables.Portselected = comboBox1.SelectedItem.ToString();
-                    button8.BackColor = System.Drawing.Color.Lime;
-                    this.button8.Text = "Connected";
-                }
-                comboBox6.Items.Remove(GlobalVariables.Portselected);
-                // *****try add computer connect mode arduino 4-24
-                port.DiscardOutBuffer();
-                port.DiscardInBuffer();
-                Thread.Sleep(10);
-                port.Write("C");
-                Thread.Sleep(50);
-                port.DiscardOutBuffer();
-                port.DiscardInBuffer();
-            }
-            catch (Exception ex)
-            {
-                Log("PortOpen Error" + ex.ToString());
-                Send("PortOpen Error" + ex.ToString());
-                FileLog("PortOpen Error" + ex.ToString());
+                 port.Open();
+                 watchforOpenPort();
 
-            }
-        }
+                 if (portopen == 1)
+                 {
+                     Log("Connected to Arduino on " + comboBox1.SelectedItem.ToString());
+                    GlobalVariables.Portselected = comboBox1.SelectedItem.ToString();
+                     button8.BackColor = System.Drawing.Color.Lime;
+                     this.button8.Text = "Connected";
+                 }
+                 comboBox6.Items.Remove(GlobalVariables.Portselected);
+                 // *****try add computer connect mode arduino 4-24
+                 port.DiscardOutBuffer();
+                 port.DiscardInBuffer();
+                 Thread.Sleep(10);
+                 port.Write("C");
+                 Thread.Sleep(50);
+                 port.DiscardOutBuffer();
+                 port.DiscardInBuffer();
+             }
+             catch (Exception ex)
+             {
+                 Log("PortOpen Error" + ex.ToString());
+                 Send("PortOpen Error" + ex.ToString());
+                 FileLog("PortOpen Error" + ex.ToString());
+
+             }
+         }
 
 
-        void Port2Open()
-        {
-            try
-            {
-                if (port2 != null)
-                {
-                    port2.Close();
-                    port2.Dispose();
-                }
+         void Port2Open()
+         {
+             try
+             {
+                 if (port2 != null)
+                 {
+                     port2.Close();
+                     port2.Dispose();
+                 }
 
-                port2 = new SerialPort(comboBox6.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
-                port2.Open();
-               GlobalVariables.Portselected2 = comboBox6.SelectedItem.ToString();
-            }
-            catch (Exception ex)
-            {
-                Log("Port2Open Error" + ex.ToString());
-                Send("Port2Open Error" + ex.ToString());
-                FileLog("Port2Open Error" + ex.ToString());
+                 port2 = new SerialPort(comboBox6.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
+                 port2.Open();
+                GlobalVariables.Portselected2 = comboBox6.SelectedItem.ToString();
+             }
+             catch (Exception ex)
+             {
+                 Log("Port2Open Error" + ex.ToString());
+                 Send("Port2Open Error" + ex.ToString());
+                 FileLog("Port2Open Error" + ex.ToString());
 
-            }
-        }
+             }
+         }
 
-        void watchforOpenPort()
-        {
-            try
-            {
-                if (port == null)
-                {
-                    portopen = 0;
-                    DialogResult result2 = MessageBox.Show("Arduino Not Connected", "Arduino scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    portopen = 1;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("WatchOpenPort Error" + ex.ToString());
-                Send("WatchOpenPort Error" + ex.ToString());
-                FileLog("WatchOpenPort Error" + ex.ToString());
+         void watchforOpenPort()
+         {
+             try
+             {
+                 if (port == null)
+                 {
+                     portopen = 0;
+                     DialogResult result2 = MessageBox.Show("Arduino Not Connected", "Arduino scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                 }
+                 else
+                 {
+                     portopen = 1;
+                 }
+             }
+             catch (Exception ex)
+             {
+                 Log("WatchOpenPort Error" + ex.ToString());
+                 Send("WatchOpenPort Error" + ex.ToString());
+                 FileLog("WatchOpenPort Error" + ex.ToString());
 
-            }
-        }
-        */
+             }
+         }
+         */
         //****** 8-15-13 Go through and redo all checkbox 14 and 20 w. the method below
         public bool ServerEnabled()
         {
@@ -611,11 +620,43 @@ namespace Pololu.Usc.ScopeFocus
         //    Log(e.Message);
         //}
 
-        
+
+      //  private string _logFromClass;
+      //  public  string LogFromClass
+      //  {
+      //      get { return _logFromClass; }
+      //      set { _logFromClass = value;
+      //          OnLogFromClassChanged();
+      //          }
+      //      }
+      //  public event System.EventHandler LogFromClassChanged;
+      //  protected virtual void OnLogFromClassChanged()
+      //  {
+      //      if (LogFromClassChanged != null) LogFromClassChanged(this, EventArgs.Empty);
+      //      Log(LogFromClass);
+      //  }
+      //  private void AppendText(string text)  ///causes cross thread opeation error
+      //  {
+      //      if (this.InvokeRequired)
+      //      {
+      //          this.Invoke(new Action<string>(AppendText), new object[] { text });
+      //          return;
+      //      }
+      //      this.LogTextBox.Text += text;
+      //  }
+
+      //  public delegate void LogCallback(string text);
+      ////  private System.Windows.Forms.TextBox ltb;
+
 
         public void Log(string text)
         {
-
+            //if (LogTextBox.InvokeRequired)
+            //{
+            //    LogCallback method = new LogCallback(Log);
+            //    LogTextBox.Invoke(method, new object[] { text });
+            //    return;
+            //}
             if (LogTextBox.Text != "")
                 LogTextBox.Text += Environment.NewLine;
             LogTextBox.Text += DateTime.Now.ToLongTimeString() + "  " + text;
@@ -3468,7 +3509,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-
+                
                 //5 lines below for path2 settings
                 GlobalVariables.Path2 = WindowsFormsApplication1.Properties.Settings.Default.path.ToString();
                 textBox11.Text = GlobalVariables.Path2.ToString();
@@ -8514,58 +8555,60 @@ namespace Pololu.Usc.ScopeFocus
             }
 
         }
+  
+        //private void CheckForSlewDone()
+        //{
+        //    try
+        //    {
+        //        // ***************** this is doing nothing *************
 
-        private void CheckForSlewDone()
-        {
-            try
-            {
-                if (backgroundWorker1.IsBusy != true)
-                {
-                    // Start the asynchronous operation.
-                    backgroundWorker1.RunWorkerAsync();
-                }
+        //        if (backgroundWorker1.IsBusy != true)
+        //        {
+        //            // Start the asynchronous operation.
+        //            backgroundWorker1.RunWorkerAsync();
+        //        }
 
 
-                /*
-                if (port2.IsOpen == false)
-                    port2.Open();
-                while (MountMoving == true)
-                {
-                    port2.DiscardInBuffer();
-                    port2.Write("L");
-                    Thread.Sleep(20);
-                    port2.DiscardOutBuffer();
+        //        /*
+        //        if (port2.IsOpen == false)
+        //            port2.Open();
+        //        while (MountMoving == true)
+        //        {
+        //            port2.DiscardInBuffer();
+        //            port2.Write("L");
+        //            Thread.Sleep(20);
+        //            port2.DiscardOutBuffer();
                 
-                  //  textBox13.Clear();
-                    Thread.Sleep(20);
+        //          //  textBox13.Clear();
+        //            Thread.Sleep(20);
 
-                    //  
-                    GotoDoneCommand = port2.ReadExisting();
-                    Thread.Sleep(10);
-                  //  port2.DiscardOutBuffer();
-                    port2.DiscardInBuffer();
-                   // textBox13.Text = GotoDoneCommand.ToString();
-                    Thread.Sleep(20);
-                    if (GotoDoneCommand == "0#")
-                    {
-                      //  textBox13.Text = "Goto Done";
-                        MountMoving = false;
-                        port2.DiscardInBuffer();
-                        port2.DiscardOutBuffer();
-                       // break;
-                        return;
-                    }
-                }
-               */
-            }
-            catch (Exception ex)
-            {
-                Log("CheckForSlewDone Error" + ex.ToString());
-                Send("CheckForSlewDone Error" + ex.ToString());
-                FileLog("CheckForSlewDone Error" + ex.ToString());
+        //            //  
+        //            GotoDoneCommand = port2.ReadExisting();
+        //            Thread.Sleep(10);
+        //          //  port2.DiscardOutBuffer();
+        //            port2.DiscardInBuffer();
+        //           // textBox13.Text = GotoDoneCommand.ToString();
+        //            Thread.Sleep(20);
+        //            if (GotoDoneCommand == "0#")
+        //            {
+        //              //  textBox13.Text = "Goto Done";
+        //                MountMoving = false;
+        //                port2.DiscardInBuffer();
+        //                port2.DiscardOutBuffer();
+        //               // break;
+        //                return;
+        //            }
+        //        }
+        //       */
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log("CheckForSlewDone Error" + ex.ToString());
+        //        Send("CheckForSlewDone Error" + ex.ToString());
+        //        FileLog("CheckForSlewDone Error" + ex.ToString());
 
-            }
-        }
+        //    }
+        //}
         //goto focus location button
         private void button33_Click(object sender, EventArgs e)
         {
@@ -11150,76 +11193,15 @@ namespace Pololu.Usc.ScopeFocus
             }
         }
         */
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+      //  AstrometryNet ast = new AstrometryNet();
+        public async void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                //string GotoDoneCommand;
-                //BackgroundWorker worker = sender as BackgroundWorker;
-                
-                //    if (port2.IsOpen == false)
-                //        port2.Open();
-                //    while (MountMoving == true)
-                //    {
-                //        if (worker.CancellationPending == true)
-                //        {
-                //            e.Cancel = true;
-                //            port2.Close();
-                //            break;
-                //            //  return;
-                //        }
-                //        port2.DiscardInBuffer();
-                //        port2.Write("L");
-                //        Thread.Sleep(20);
-                //        port2.DiscardOutBuffer();
 
-                //        //  textBox13.Clear();
-                //        Thread.Sleep(20);
+                //AstrometryNet ast = new AstrometryNet();
+                //await ast.OnlineSolve(GlobalVariables.SolveImage);
 
-                //        //  
-                //        GotoDoneCommand = port2.ReadExisting();
-                //        //  Thread.Sleep(10);
-                //        //  port2.DiscardOutBuffer();
-                //        port2.DiscardInBuffer();
-                //        // textBox13.Text = GotoDoneCommand.ToString();
-                //        Thread.Sleep(20);
-
-                //        if (GotoDoneCommand == "0#")
-                //        {
-                //            //  textBox13.Text = "Goto Done";
-
-                //            MountMoving = false;
-                //            port2.DiscardInBuffer();
-                //            port2.DiscardOutBuffer();
-                //            port2.Close();
-
-                //            if (TargetGotoOn == true)
-                //            {
-                //                //      button35.Text = "At Target Pos";
-                //                //      button35.BackColor = System.Drawing.Color.Lime;
-                //                toolStripStatusLabel1.Text = "At Target Position";
-                //                //   this.Refresh();
-                //                TargetGotoOn = false;
-                //            }
-                //            if (FocusGotoOn == true)
-                //            {
-                //                //   button33.Text = "At Focus Pos";
-                //                //   button33.BackColor = System.Drawing.Color.Lime;
-                //                toolStripStatusLabel1.Text = "At Focus Position";
-                //                // this.Refresh();
-
-                //                FocusGotoOn = false;
-                //                // Thread.Sleep(1000);
-                //                //port2.Close();
-
-                //            }
-                //            break;
-                //            // return;
-                //        }
-
-                //    }
-            
-                return;
             }
             catch (Exception ex)
             {
@@ -11333,9 +11315,9 @@ namespace Pololu.Usc.ScopeFocus
         public void FileLog2(string textlog)  //for non-error file log
         {
             //  string strLogText = "Std Dev" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString();
-            string path = textBox11.Text.ToString();
+          //  string path = textBox11.Text.ToString();
 
-            string fullpath = path + @"\scopefocusLog_" + DateTime.Now.ToString("yyy-M-dd") + ".txt";
+            string fullpath = GlobalVariables.Path2 + @"\scopefocusLog_" + DateTime.Now.ToString("yyy-M-dd") + ".txt";
             StreamWriter log;
             if (!File.Exists(fullpath))
             {
@@ -11357,9 +11339,9 @@ namespace Pololu.Usc.ScopeFocus
         public void FileLog(string textlog)
         {
             //  string strLogText = "Std Dev" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString();
-            string path = textBox11.Text.ToString();
+          //  string path = textBox11.Text.ToString();
             
-            string fullpath = path + @"\scopefocusLog_" + DateTime.Now.ToString("yyy-M-dd") + ".txt";
+            string fullpath = GlobalVariables.Path2 + @"\scopefocusLog_" + DateTime.Now.ToString("yyy-M-dd") + ".txt";
             StreamWriter log;
             if (!File.Exists(fullpath))
             {
@@ -13211,14 +13193,24 @@ namespace Pololu.Usc.ScopeFocus
             //**** Above throws exception on closing if disconnected first. 
             Chooser();
         }
-        double RA;
-        double DEC;
-        
-       
+       private static double _rA;
+        public static double RA
+        {
+            get { return _rA; }
+            set { _rA = value; }
+        }
+       private static double _dEC;
+        public static double DEC
+        {
+            get { return _dEC; }
+            set { _dEC = value; }
+        }
 
-        
 
-        
+
+
+
+
 
         private void button53_Click(object sender, EventArgs e)
         {
@@ -13564,175 +13556,127 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-                //scope = new ASCOM.DriverAccess.Telescope(devId);
-                if (usingASCOM == false)
+                if (GlobalVariables.LocalPlateSolve)
                 {
-                    MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
-                    return;
-                }
-                CurrentRA = scope.RightAscension;
-                CurrentDEC = scope.Declination;
-                var destDir = @"c:\cygwin\home\astro";
-                // var pattern = "*.csv";
-                // var file = solveImage;
-                //   var sourceDir = @"c:\cygwin\home\astro";
-                var destfile = "solve.fit";
-                if (solveImage != Path.Combine(destDir, Path.GetFileName(solveImage)))
-                {
-                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    //scope = new ASCOM.DriverAccess.Telescope(devId);
+                    if (usingASCOM == false)
                     {
-                        if (files.Name != "tablist.exe")
-                            files.Delete();//empty the directory
+                        MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
+                        return;
                     }
-                    // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                    File.Copy(solveImage, Path.Combine(destDir, destfile));//copy to cygwin
+                    CurrentRA = scope.RightAscension;
+                    CurrentDEC = scope.Declination;
+                    var destDir = @"c:\cygwin\home\astro";
+                    // var pattern = "*.csv";
+                    // var file = solveImage;
+                    //   var sourceDir = @"c:\cygwin\home\astro";
+                    var destfile = "solve.fit";
+                    if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
+                    {
+                        foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                        {
+                            if (files.Name != "tablist.exe")
+                                files.Delete();//empty the directory
+                        }
+                        // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                        File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin
+                    }
+                    ExecuteCommand();
+
+                    StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
+                                                                                   //  reader = FileInfo.OpenText("filename.txt");
+                    string line;
+                    // while ((line = reader.ReadToEnd()) != null) {
+                    line = reader.ReadToEnd();
+                    string[] items = line.Split('\n');
+                    string FieldLine = null;
+                    foreach (string item in items)
+                    {
+                        //try parsing a different line in .txt file
+
+                        if (item.EndsWith("pix.\r"))
+                        {
+
+                            //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
+
+                            FieldLine = item;
+                            Log(FieldLine);
+                            //     int FirstComma = item.IndexOf(","); 
+                            int SecondComma = IndexOfSecond(item, ",");
+                            int Start = item.IndexOf("(");
+                            int End = item.IndexOf(")");
+                            //   int EqualsIndex = FieldLine.IndexOf(@"=");
+                            string ParsedRA = "";
+                            string ParsedDEC = "";
+                            int RAend = SecondComma - Start;
+                            int DECend = End - SecondComma;
+                            ParsedRA = FieldLine.Substring(Start + 1, RAend);
+                            ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
+
+                            ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
+                            ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
+
+                            Log("Parsed DEC = " + ParsedDEC);
+                            DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
+                            RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
+                            Log("Parsed RA = " + RA.ToString());
+                        }
+                    }
+                }
+                //else
+                //{
+                //    DEC = AstrometryNet.DecCenter;
+                //    RA = AstrometryNet.RaCenter / 15;
+                //}
+
+                //**** added if statement 7-3-13 *******
+                if ((usingASCOM == true) & (checkBox25.Checked == false) & (checkBox24.Checked == false))//only slew if not calibrating and Not just syncing (CB24)
+                {
+                    // scope = new ASCOM.DriverAccess.Telescope(devId);
+                    scope.SlewToCoordinates(RA, DEC);
+                    Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                    FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
                 }
 
 
-
-                ExecuteCommand();
-
-                StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
-                //  reader = FileInfo.OpenText("filename.txt");
-                string line;
-                // while ((line = reader.ReadToEnd()) != null) {
-                line = reader.ReadToEnd();
-                string[] items = line.Split('\n');
-                string FieldLine = null;
-                foreach (string item in items)
+                if (checkBox25.Checked == true)//repeat until tolerance met
                 {
-                    //try parsing a different line in .txt file
-
-                    if (item.EndsWith("pix.\r"))
+                    //  Thread.Sleep(5000);
+                    Log("calibrating");
+                    //scope.SlewToCoordinates(RA, DEC);
+                    CurrentRA = scope.RightAscension;
+                    CurrentDEC = scope.Declination;
+                    // first attempts at comparing parse solve coords w/ scope coords.
+                    //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
+                    if (usingASCOM == true)
                     {
-
-                        //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
-
-                        FieldLine = item;
-                        Log(FieldLine);
-                        //     int FirstComma = item.IndexOf(","); 
-                        int SecondComma = IndexOfSecond(item, ",");
-                        int Start = item.IndexOf("(");
-                        int End = item.IndexOf(")");
-                        //   int EqualsIndex = FieldLine.IndexOf(@"=");
-                        string ParsedRA = "";
-                        string ParsedDEC = "";
-                        int RAend = SecondComma - Start;
-                        int DECend = End - SecondComma;
-                        ParsedRA = FieldLine.Substring(Start + 1, RAend);
-                        ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
-
-                        ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
-                        ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
-                        /*
-                                        if (item.EndsWith("deg.\r"))
-                                        {
-                                            //e.g. Field center: (RA,Dec) = (205, 49.99) deg.
-                                            FieldLine = item;
-                                            Log(FieldLine);
-                                            int EqualsIndex = FieldLine.IndexOf(@"=");
-                                            string ParsedRA = "";
-                                            string ParsedDEC = "";
-
-                                            //  var regex = new Regex(@"^-*[0-9,\.]+$");
-                                            ParsedRA = FieldLine.Substring(EqualsIndex + 3, 7);
-                                            ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
-                                            //  ParsedRA = Regex.Replace(ParsedRA, @"^-*[0-9,\.]+$", "");
-
-                                            ParsedDEC = FieldLine.Substring(EqualsIndex + 10, 7);
-                                            ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
-                    
-                        */
-
-
-
-                        /*
-                        if (FieldLine.Substring(EqualsIndex + 3, 1) == @"-")
-                        {
-                        ParsedRA = FieldLine.Substring(EqualsIndex + 3, 6);
-                            EqualsIndex++;
-                        }
-                        else
-                        ParsedRA = FieldLine.Substring(EqualsIndex + 3, 5);
-                        if (ParsedRA.Substring(4, 1) == @",")
-                        ParsedRA = ParsedRA.Remove(4, 1);
-                        if (FieldLine.Substring(EqualsIndex + 10, 5) == @"-")
-                        ParsedDEC = FieldLine.Substring(EqualsIndex + 10, 6);
-                        else
-                       ParsedDEC = FieldLine.Substring(EqualsIndex + 10, 5);
-                       if (ParsedDEC.Substring(4, 1) == @")")
-                       ParsedDEC = ParsedDEC.Remove(5);
-                         */
-                        Log("Parsed DEC = " + ParsedDEC);
-                        DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
-                        RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
-                        Log("Parsed RA = " + RA.ToString());
-                        //**** added if statement 7-3-13 *******
-                        if ((usingASCOM == true) & (checkBox25.Checked == false) & (checkBox24.Checked == false))//only slew if not calibrating and Not just syncing (CB24)
-                        {
-                            // scope = new ASCOM.DriverAccess.Telescope(devId);
-                            scope.SlewToCoordinates(RA, DEC);
-                            Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                            FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                        }
-
-
-                        if (checkBox25.Checked == true)//repeat until tolerance met
-                        {
-                            //  Thread.Sleep(5000);
-                            Log("calibrating");
-                            //scope.SlewToCoordinates(RA, DEC);
-                            CurrentRA = scope.RightAscension;
-                            CurrentDEC = scope.Declination;
-                            // first attempts at comparing parse solve coords w/ scope coords.
-                            //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
-                            if (usingASCOM == true)
-                            {
-                                //  scope = new ASCOM.DriverAccess.Telescope(devId);
-                                scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
-                                //should be closer after the sync
-                            }
-                            else
-                                MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
-
-                            if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
-                            {
-                                scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
-                                Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
-                                //     button55.PerformClick();//prob dont need since fsw7 still on
-                                SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
-                                PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
-                            }
-                            else
-                            {
-                                scope.SyncToCoordinates(RA, DEC);
-                                Log("sync tolerance met");
-                                fileSystemWatcher7.EnableRaisingEvents = false;
-                                Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                            }
-                        }
-                        if (checkBox24.Checked == true)//this will just sync to the sloved location
-                        {
-                            scope.SyncToCoordinates(RA, DEC);
-                            Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                        }
-
-
-                        //need something to select camer versus file solve, maybe empty text box
-                        //sovle an image from camera
-                        //Slew to sloved RA dec
-                        // ccompare current scope RA/DEC to solved RA/DEC
-                        //check calibration tolernace
-                        //repeat
-
-
-                        //  scope.SyncToCoordinates(RA, DEC);
-
-
-
+                        //  scope = new ASCOM.DriverAccess.Telescope(devId);
+                        scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
+                                                                       //should be closer after the sync
                     }
+                    else
+                        MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
 
-
+                    if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
+                    {
+                        scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                        Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
+                        //     button55.PerformClick();//prob dont need since fsw7 still on
+                        SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
+                        PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
+                    }
+                    else
+                    {
+                        scope.SyncToCoordinates(RA, DEC);
+                        Log("sync tolerance met");
+                        fileSystemWatcher7.EnableRaisingEvents = false;
+                        Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                    }
+                }
+                if (checkBox24.Checked == true)//this will just sync to the sloved location
+                {
+                    scope.SyncToCoordinates(RA, DEC);
+                    Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
                 }
             }
             catch (Exception e)
@@ -13744,15 +13688,39 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private void button55_Click(object sender, EventArgs e)
+        private  async void button55_Click(object sender, EventArgs e)
         {
+            //if (GlobalVariables.LocalPlateSolve)
+            //{
+            //    Astrometry ast = new Astrometry();
+            //    ast.OnlineSolve(solveImage);
+            //}
+
+            //    if (lo
             if (checkBox26.Checked == true)
             {
                 fileSystemWatcher7.EnableRaisingEvents = true;
                 fileSystemWatcher7.Path = GlobalVariables.Path2;
             }
-            if (checkBox26.Checked == false)
-            Solve(); 
+            else
+                if (GlobalVariables.LocalPlateSolve)
+                Solve();
+            else
+            {
+                //if (backgroundWorker1.IsBusy != true)
+                //{
+                //    // Start the asynchronous operation.
+                //    backgroundWorker1.RunWorkerAsync();
+                //}
+                AstrometryNet ast = new AstrometryNet();
+                await ast.OnlineSolve(GlobalVariables.SolveImage);
+                solveRequested = true;
+                AstrometryRunning = true;
+                //while (astrometryRunning)
+                //    Thread.Sleep(100);
+                //Solve();
+            }
+ 
 
                     
         }
@@ -13949,6 +13917,20 @@ string cmd = "CD ..";
                         TF = H.ToString() + ":" + M.ToString() + ":" + S.ToString();
                     textBox56.Text = (TF);
                     textBox48.Text = FlipNeeded.ToString();
+                if (solveRequested)
+                {
+                    if (!AstrometryRunning)
+                    {
+                        Log("Plate Solve Complete");
+                        Solve();
+                        AstrometryRunning = false;
+                        solveRequested = false;
+                    }
+                        
+                }
+
+
+
                 }
                 catch (Exception ex)
                 {
@@ -14011,27 +13993,30 @@ string cmd = "CD ..";
                        
             }
 
-            public static string solveImage = "";
+          //  public static string solveImage = "";
             private void textBox58_Click(object sender, EventArgs e)//select image from file browser
             {
                 DialogResult result = openFileDialog2.ShowDialog();
-                solveImage = openFileDialog2.FileName.ToString();
-                textBox58.Text = solveImage;
+               GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
+                textBox58.Text = GlobalVariables.SolveImage;
               //  var sourceDir = @"c:\sourcedir";
+              if (GlobalVariables.LocalPlateSolve)
+            { 
                 var destDir = @"c:\cygwin\home\astro";
                // var pattern = "*.csv";
                // var file = solveImage;
              //   var sourceDir = @"c:\cygwin\home\astro";
                 var destfile = "solve.fit";
-                if (solveImage != Path.Combine(destDir, Path.GetFileName(solveImage)))
+                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
                 {
                     foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
                     {
                         if (files.Name != "tablist.exe")
-                        files.Delete();//empty the directory
+                            files.Delete();//empty the directory
                     }
-                   // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                    File.Copy(solveImage, Path.Combine(destDir, destfile));
+                    // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                    File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));
+                }
                 }
             }
             
@@ -14047,24 +14032,28 @@ string cmd = "CD ..";
                     .Select(g => g.OrderByDescending(f => f.LastWriteTime).First());
             }
             //automatically select last obtained capture from Neb
-            private void fileSystemWatcher7_Created(object sender, FileSystemEventArgs e)
+            private async void fileSystemWatcher7_Created(object sender, FileSystemEventArgs e)
             {
                 FileInfo file = new FileInfo(e.FullPath);//returns name of file that triggered FSW7
                 Log(file.Name.ToString());
-                solveImage = file.ToString();
-                /*
-                foreach (FileInfo fi in GetLatestFiles(path2, "*"))
-                {
-                    string FN;
-                    Log(fi.ToString());
-                    FN = fi.ToString();
-                    textBox58.Text = FN;
-                  //  solveImage = Path.Combine(path2, Path.GetFileName(solveImage))
-                    solveImage = path2 + @"\" + FN;
-                }
-                 */
-                Thread.Sleep(1000);//? remove
+               GlobalVariables.SolveImage = file.ToString();
+               Thread.Sleep(1000);//? remove
+            if (GlobalVariables.LocalPlateSolve)
                 Solve();
+            else
+            {
+                //if (backgroundWorker1.IsBusy != true)
+                //{
+                //    backgroundWorker1.RunWorkerAsync();
+                //}
+                AstrometryNet ast = new AstrometryNet();
+                await ast.OnlineSolve(GlobalVariables.SolveImage);
+                solveRequested = true;
+                //while (astrometryRunning)
+                //    Thread.Sleep(100);
+                //Solve();
+
+            }
             }
             double RefStarDec;   //postion of star used to sync for polar aligment in degrees
             double RefStarRA;    // RA of PA sync star in hours
@@ -15019,15 +15008,22 @@ string cmd = "CD ..";
             {
                 FindNebCamera();
             }
+       
+        private void radioButton5_astrometry_CheckedChanged(object sender, EventArgs e)
+        {
 
+         //this will alsywa change w/ the other change so nothing needed.  
+        }
 
-           
-           
-           
+        private void radioButton_local_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_local.Checked == true)
+                GlobalVariables.LocalPlateSolve = true;
+            else
+                GlobalVariables.LocalPlateSolve = false;
+        }
 
-          
-           
-
+       
     }
 
     //**********this seems to cause error at end of sequence when ? socket close()????

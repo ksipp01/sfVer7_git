@@ -70,6 +70,18 @@ namespace Pololu.Usc.ScopeFocus
             get { return _equipPrefix; }
             set { _equipPrefix = value; }
         }
+        private static string _solveImage;
+        public static string SolveImage
+        {
+            get { return _solveImage; }
+            set { _solveImage = value; }
+        }
+        private static bool _localPlateSolve;
+        public static bool LocalPlateSolve
+        {
+            get { return _localPlateSolve; }
+            set { _localPlateSolve = value; }
+        }
         //public static int Serverhwnd
         //{
         //    get { return _serverhwnd; }
