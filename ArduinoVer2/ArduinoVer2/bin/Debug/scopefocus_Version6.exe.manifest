@@ -95,6 +95,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CSharpFITS_v1.1.dll" size="249856">
+      <assemblyIdentity name="CSharpFITS_v1.1" version="1.1.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>/etRbjme3tUjBCSWxJi0FErcrY9H6SFSM97iadrXF7I=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ErikEJ.SqlCe40.dll" size="31232">
       <assemblyIdentity name="ErikEJ.SqlCe40" version="2.1.6.11" publicKeyToken="03B0B5A60FEC3719" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -143,14 +155,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="337272">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="327032">
       <assemblyIdentity name="scopefocus_Version6" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>sW0f7NUvudWMaqrkpAN9+GqJ0TWrmfbFBBC9w3clJvk=</dsig:DigestValue>
+        <dsig:DigestValue>FBEKVkmLt1C2oQQHsdDX8EsiBN4WiwoeDPavzXae/C8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

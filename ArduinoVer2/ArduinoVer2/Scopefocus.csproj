@@ -80,6 +80,9 @@
     <Reference Include="ASCOM.DeviceInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL" />
     <Reference Include="ASCOM.DriverAccess, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL" />
     <Reference Include="ASCOM.Utilities, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL" />
+    <Reference Include="CSharpFITS_v1.1">
+      <HintPath>..\..\..\..\ksipp_000\Downloads\CSharpFITS_v1.1_dll\CSharpFITS_v1.1_dll\CSharpFITS_v1.1.dll</HintPath>
+    </Reference>
     <Reference Include="ErikEJ.SqlCe40">
       <HintPath>..\packages\ErikEJ.SqlCeBulkCopy.2.1.6.11\lib\net40\ErikEJ.SqlCe40.dll</HintPath>
     </Reference>
@@ -150,9 +153,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Astrometry.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="AstrometryNet.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -186,9 +186,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_MyDatabase_2DataSet.xsd</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Astrometry.resx">
-      <DependentUpon>Astrometry.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="AstrometryNet.resx">
       <DependentUpon>AstrometryNet.cs</DependentUpon>
     </EmbeddedResource>

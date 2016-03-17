@@ -82,6 +82,12 @@ namespace Pololu.Usc.ScopeFocus
             get { return _localPlateSolve; }
             set { _localPlateSolve = value; }
         }
+        private static Int32 _corrFileLines;
+        public static Int32 CorrFileLines
+        {
+            get { return _corrFileLines; }
+            set { _corrFileLines = value; }
+        }
         //public static int Serverhwnd
         //{
         //    get { return _serverhwnd; }

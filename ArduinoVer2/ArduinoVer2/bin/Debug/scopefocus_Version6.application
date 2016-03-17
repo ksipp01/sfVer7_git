@@ -14,14 +14,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="scopefocus_Version6.exe.manifest" size="13788">
+    <dependentAssembly dependencyType="install" codebase="scopefocus_Version6.exe.manifest" size="14437">
       <assemblyIdentity name="scopefocus_Version6.exe" version="6.1.1.60" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Jsvvkett2Cjtn3Sttip/N0/scuoAtLF9JZQC3NYwvAI=</dsig:DigestValue>
+        <dsig:DigestValue>0U4D7mUjL8B2MRV7rLKXltmcvOjhu8FTlVun6Zi627M=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

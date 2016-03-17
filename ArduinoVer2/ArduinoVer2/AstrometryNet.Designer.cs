@@ -40,7 +40,7 @@
             this.LogTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LogTextBox.Size = new System.Drawing.Size(592, 105);
             this.LogTextBox.TabIndex = 18;
-            this.LogTextBox.Text = "PLate Solve Log";
+            this.LogTextBox.Text = "Plate Solve Log";
             // 
             // AstrometryNet
             // 

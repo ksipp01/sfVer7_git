@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using nom.tam.fits; 
 using System.Threading;
 
 using System.IO;
@@ -130,7 +130,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void SetTimer()
         {
-            timer.Interval = 15000;
+            timer.Interval = 10000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
             timer.AutoReset = true;
         }
@@ -144,7 +144,6 @@ namespace Pololu.Usc.ScopeFocus
                 if ((status == "pending") & (jobid == ""))
                 {
                     timer.Start();
-              //      Log("checking for job id - " + attemptNumber.ToString());
                     getJobId(subid);
 
                 }
@@ -179,7 +178,12 @@ namespace Pololu.Usc.ScopeFocus
                 result = MessageBox.Show("Status Check Failed - Retry?", "scopefocus",
                                 MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
                 if (result == DialogResult.Retry)
-                    await GetSession(apikey).ConfigureAwait(false);
+                {
+                    timer.Start();
+                    attempts = 0;
+                    getJobId(subid);
+                }
+                    //await GetSession(apikey).ConfigureAwait(false);
              //   GetSession(apikey);
                 else
                     return;
@@ -274,7 +278,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             Log("Uploading Image");
             FileLog2("Uploading Image" + DateTime.Now);
-            string URI = "http://nova.astrometry.net/api/upload";
+       //     string URI = "http://nova.astrometry.net/api/upload";
             JsonObject obj = new JsonObject();
             JsonObject jsonObject = getUploadJson(session);
             String input = jsonObject.ToString();  // was &json-request...
@@ -365,11 +369,21 @@ namespace Pololu.Usc.ScopeFocus
 
                         if ((raCenter != 0) || (decCenter != 0))
                         {
-                           Log("Calibration data success:  RAcenter: " + raCenter + "    DECcenter: " + decCenter);
-                           FileLog2("Calibration data:  RA: " + raCenter + "    DEC: " + decCenter + "    " + DateTime.Now);
-                            GetFile(jobid, "axy.fits", "/axy.fits/");
-                            GetFile(jobid, "rdls.fits", "/rdls.fits/");
-                            GetFile(jobid, "wcs.fits", "/wcs.fits/");
+                           Log("Calibration data success:  RAcenter: " + raCenter/15 + "    DECcenter: " + decCenter);
+                           FileLog2("Calibration data:  RA: " + raCenter/15 + "    DEC: " + decCenter + "    " + DateTime.Now);
+                          //  if (File.Exists(GlobalVariables.Path2 + "\\axy.fits"))
+                            //    File.Delete(GlobalVariables.Path2 + "\\axy.fits");
+                          //  if (File.Exists(GlobalVariables.Path2 + "\\rdls.fits"))
+                          //      File.Delete(GlobalVariables.Path2 + "\\rdls.fits");
+                            if (File.Exists(GlobalVariables.Path2 + "\\corr.fits"))
+                                File.Delete(GlobalVariables.Path2 + "\\corr.fits");
+                          //  if (File.Exists(GlobalVariables.Path2 + "\\wcs.fits"))
+                            //    File.Delete(GlobalVariables.Path2 + "\\wcs.fits");
+
+                          //  GetFile(jobid, "axy.fits", "/axy_file/");
+                         //   GetFile(jobid, "rdls.fits", "/rdls_file/");
+                          //  GetFile(jobid, "wcs.fits", "/wcs_file/");
+                            GetFile(jobid, "corr.fits", "/corr_file/");
 
                         }
                         else
@@ -388,6 +402,7 @@ namespace Pololu.Usc.ScopeFocus
 
                     }
                 }
+
             }
             catch (Exception e)
             {
@@ -494,8 +509,7 @@ namespace Pololu.Usc.ScopeFocus
                             jobid = jsonresults.job_calibrations[0][count - 1];
                         else
                         {
-                            Log("Failed to get jobid");
-                            FileLog2("Failed to get jobid   " + DateTime.Now);
+                            Log("Waiting for JobID");
                             return;
                         }
 
@@ -569,6 +583,8 @@ namespace Pololu.Usc.ScopeFocus
                // Log("Downloading " + file);
                 string newurl = URI + suburl + jid;
                 Uri resultUrl = new Uri(newurl, false);
+                Log("Downloading " + newurl);
+                FileLog2("Downloaded : " + newurl);
 
                 //  DownloadAsync(resultUrl, "c:\\atest3\\wcs.fits"); 
                 await DownloadAsync(resultUrl, GlobalVariables.Path2 + @"\" + file);  //source url and destination path(fullname) 
@@ -589,6 +605,8 @@ namespace Pololu.Usc.ScopeFocus
                FileLog("Error Downloading: " + e.ToString());
             }
             Log("Files Download to: " + GlobalVariables.Path2);
+            Thread.Sleep(1000);
+            MakeDataFile();
             MainWindow.AstrometryRunning = false;
         }
 
@@ -601,9 +619,67 @@ namespace Pololu.Usc.ScopeFocus
             await GetSession(apikey).ConfigureAwait(false);
         }
 
+        public void MakeDataFile()
+        {
+            string pathToCorr = "";
+            if (GlobalVariables.LocalPlateSolve)
+                pathToCorr = @"c:\cygwin\home\astro\solve.corr";
+            else
+                pathToCorr = GlobalVariables.Path2 + "\\corr.fits";
+                
+           // Fits f = new Fits(GlobalVariables.Path2 + "\\corr.fits"); // original
+           Fits f = new Fits(pathToCorr);
+            BinaryTableHDU h = (BinaryTableHDU)f.GetHDU(1);
 
+            //   Object[] row23 = h.GetRow(23);
+            Object col_x = h.GetColumn(0);
+            Object col_y = h.GetColumn(1);
+            Object col_ra = h.GetColumn(2);
+            Object col_dec = h.GetColumn(3);
+            float[] x = new float[h.NRows];
+            float[] y = new float[h.NRows];
+            float[] ra = new float[h.NRows];
+            float[] dec = new float[h.NRows];
+            GlobalVariables.CorrFileLines = h.NRows;
+            int i = 0;
+            foreach (float item in (dynamic)col_x)
+            {
+                x[i] = (dynamic)(item);
+                i++;
+            }
+            i = 0;
+            foreach (float item2 in (dynamic)col_y)
+            {
+                y[i] = (dynamic)(item2);
+                i++;
+            }
+            i = 0;
+            foreach (float item in (dynamic)col_ra)
+            {
+                ra[i] = (dynamic)(item)/15;
+                i++;
+            }
+            i = 0;
+            foreach (float item2 in (dynamic)col_dec)
+            {
+                dec[i] = (dynamic)(item2);
+                i++;
+            }
+           
+            using (StreamWriter sr = new StreamWriter(GlobalVariables.Path2 + "\\corr2text.txt"))
+            {
+                // sr.WriteLine("   x   " + "         y   ");
+                for (i = 0; i < x.Length; i++)
+                {
+                    sr.WriteLine(x[i] + "    \t" + y[i] + "    \t" + ra[i] + "    \t" + dec[i]);
 
-
+                }
+                
+                sr.Dispose();
+            }
+            Log("Corr2text file complete in " + GlobalVariables.Path2);
+           
+        }
 
     }
 }
