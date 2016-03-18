@@ -155,14 +155,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="327032">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="scopefocus_Version6.exe" size="330616">
       <assemblyIdentity name="scopefocus_Version6" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>+8gWGrJViahGV/Wvq+9JvgclxmxIojjJRvNk3wrCd/w=</dsig:DigestValue>
+        <dsig:DigestValue>3Eb8ucayao+LsdrAO4r35zziM/vr441NM2GFFW4+MsE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -247,13 +247,13 @@
       <dsig:DigestValue>CIPa9jwse/p3w66B92R9oW33YBHTAN5/ngzzamKu7Es=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="scopefocus_Version6.exe.config" size="5617">
+  <file name="scopefocus_Version6.exe.config" size="5788">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>a/CdXFtGuPQOyupQnBq2JuVdnty49DTB6OLJH3v2tzg=</dsig:DigestValue>
+      <dsig:DigestValue>//EMe34CNL4YxVIDyhlmejD5zS8Nh7Si18v3UhU6a1o=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

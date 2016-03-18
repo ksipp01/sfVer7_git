@@ -498,6 +498,7 @@ namespace Pololu.Usc.ScopeFocus
         int sigma;
         double Low;
         double High;
+        int DwnSz;
         void setarraysize()
         {
             arraysize1 = (int)numericUpDown5.Value;//coarse v N
@@ -3479,6 +3480,7 @@ namespace Pololu.Usc.ScopeFocus
                 //   travel = WindowsFormsApplication1.Properties.Settings.Default.travel;
                 textBox2.Text = travel.ToString();
                 textBox60.Text = WindowsFormsApplication1.Properties.Settings.Default.sigma.ToString();
+                textBox49.Text = WindowsFormsApplication1.Properties.Settings.Default.DwnSz.ToString();
                 textBox61.Text = WindowsFormsApplication1.Properties.Settings.Default.Low.ToString();
                 textBox62.Text = WindowsFormsApplication1.Properties.Settings.Default.High.ToString();
                 //   camera = WindowsFormsApplication1.Properties.Settings.Default.camera;
@@ -4079,6 +4081,7 @@ namespace Pololu.Usc.ScopeFocus
             WindowsFormsApplication1.Properties.Settings.Default.server = this.server;
             WindowsFormsApplication1.Properties.Settings.Default.to = this.to;
             WindowsFormsApplication1.Properties.Settings.Default.sigma = Convert.ToInt32(textBox60.Text);
+            WindowsFormsApplication1.Properties.Settings.Default.DwnSz = Convert.ToInt32(textBox49.Text);
             WindowsFormsApplication1.Properties.Settings.Default.Low = Convert.ToDouble(textBox61.Text);
             WindowsFormsApplication1.Properties.Settings.Default.High = Convert.ToDouble(textBox62.Text);
             WindowsFormsApplication1.Properties.Settings.Default.AO = radioButton4.Checked;
@@ -13610,6 +13613,9 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+
+                toolStripStatusLabel1.Text = "Plate Solving";
+                toolStripStatusLabel1.BackColor = Color.Lime;
                 if (GlobalVariables.LocalPlateSolve)
                 {
                     //scope = new ASCOM.DriverAccess.Telescope(devId);
@@ -13636,6 +13642,8 @@ namespace Pololu.Usc.ScopeFocus
                         File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin
                     }
                     ExecuteCommand();
+
+
 
                     StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
                                                                                    //  reader = FileInfo.OpenText("filename.txt");
@@ -13674,9 +13682,75 @@ namespace Pololu.Usc.ScopeFocus
                             DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
                             RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
                             Log("Parsed RA = " + RA.ToString());
+
                         }
                     }
                 }
+                            string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString();
+                            DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew", "Snyc", "Ignore");
+                           if ((result == DialogResult.Yes) & (checkBox25.Checked == false))
+                            {
+                                // scope = new ASCOM.DriverAccess.Telescope(devId);
+                                toolStripStatusLabel1.Text = "Slewing to Target";
+                                toolStripStatusLabel1.BackColor = Color.Red;
+                                this.Refresh();
+                                scope.SlewToCoordinates(RA, DEC);
+                                toolStripStatusLabel1.Text = "Ready";
+                                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                                Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                                FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                                if (checkBox25.Checked == true)//repeat until tolerance met
+                                {
+                                    //  Thread.Sleep(5000);
+                                    Log("calibrating");
+                                    //scope.SlewToCoordinates(RA, DEC);
+                                    CurrentRA = scope.RightAscension;
+                                    CurrentDEC = scope.Declination;
+                                    // first attempts at comparing parse solve coords w/ scope coords.
+                                    //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
+                                    if (usingASCOM == true)
+                                    {
+                                        //  scope = new ASCOM.DriverAccess.Telescope(devId);
+                                        scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
+                                                                                       //should be closer after the sync
+                                    }
+                                    else
+                                        MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
+
+                                    if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
+                                    {
+                                        scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                                        Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
+                                        //     button55.PerformClick();//prob dont need since fsw7 still on
+                                        SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
+                                        PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
+                                    }
+                                    else
+                                    {
+                                        scope.SyncToCoordinates(RA, DEC);
+                                        Log("sync tolerance met");
+                                        fileSystemWatcher7.EnableRaisingEvents = false;
+                                        Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                                    }
+                                }
+
+
+
+
+                            }
+                           if (result == DialogResult.No)
+                            {
+                                scope.SyncToCoordinates(RA, DEC);
+                                Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                            }
+                            if (result == DialogResult.Ignore)
+                                return;
+
+
+
+                button55.BackColor = Color.WhiteSmoke;
+                toolStripStatusLabel1.Text = "Ready";
+                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;                
                 //else
                 //{
                 //    DEC = AstrometryNet.DecCenter;
@@ -13684,54 +13758,57 @@ namespace Pololu.Usc.ScopeFocus
                 //}
 
                 //**** added if statement 7-3-13 *******
-                if ((usingASCOM == true) & (checkBox25.Checked == false) & (checkBox24.Checked == false))//only slew if not calibrating and Not just syncing (CB24)
-                {
-                    // scope = new ASCOM.DriverAccess.Telescope(devId);
-                    scope.SlewToCoordinates(RA, DEC);
-                    Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                    FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                }
+                //if ((usingASCOM == true) & (checkBox25.Checked == false) & (checkBox24.Checked == false))//only slew if not calibrating and Not just syncing (CB24)
+                //{
+                //    // scope = new ASCOM.DriverAccess.Telescope(devId);
+                //    toolStripStatusLabel1.Text = "Slewing to Target";
+                //    this.Refresh();
+                //    scope.SlewToCoordinates(RA, DEC);
+
+                //    Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                //    FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                //}
 
 
-                if (checkBox25.Checked == true)//repeat until tolerance met
-                {
-                    //  Thread.Sleep(5000);
-                    Log("calibrating");
-                    //scope.SlewToCoordinates(RA, DEC);
-                    CurrentRA = scope.RightAscension;
-                    CurrentDEC = scope.Declination;
-                    // first attempts at comparing parse solve coords w/ scope coords.
-                    //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
-                    if (usingASCOM == true)
-                    {
-                        //  scope = new ASCOM.DriverAccess.Telescope(devId);
-                        scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
-                                                                       //should be closer after the sync
-                    }
-                    else
-                        MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
+                //if (checkBox25.Checked == true)//repeat until tolerance met
+                //{
+                //    //  Thread.Sleep(5000);
+                //    Log("calibrating");
+                //    //scope.SlewToCoordinates(RA, DEC);
+                //    CurrentRA = scope.RightAscension;
+                //    CurrentDEC = scope.Declination;
+                //    // first attempts at comparing parse solve coords w/ scope coords.
+                //    //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
+                //    if (usingASCOM == true)
+                //    {
+                //        //  scope = new ASCOM.DriverAccess.Telescope(devId);
+                //        scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
+                //                                                       //should be closer after the sync
+                //    }
+                //    else
+                //        MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
 
-                    if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
-                    {
-                        scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
-                        Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
-                        //     button55.PerformClick();//prob dont need since fsw7 still on
-                        SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
-                        PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
-                    }
-                    else
-                    {
-                        scope.SyncToCoordinates(RA, DEC);
-                        Log("sync tolerance met");
-                        fileSystemWatcher7.EnableRaisingEvents = false;
-                        Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                    }
-                }
-                if (checkBox24.Checked == true)//this will just sync to the sloved location
-                {
-                    scope.SyncToCoordinates(RA, DEC);
-                    Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                }
+                //    if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
+                //    {
+                //        scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                //        Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
+                //        //     button55.PerformClick();//prob dont need since fsw7 still on
+                //        SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
+                //        PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
+                //    }
+                //    else
+                //    {
+                //        scope.SyncToCoordinates(RA, DEC);
+                //        Log("sync tolerance met");
+                //        fileSystemWatcher7.EnableRaisingEvents = false;
+                //        Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                //    }
+                //}
+                //if (checkBox24.Checked == true)//this will just sync to the sloved location
+                //{
+                //    scope.SyncToCoordinates(RA, DEC);
+                //    Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                //}
             }
             catch (Exception e)
             {
@@ -13751,7 +13828,7 @@ namespace Pololu.Usc.ScopeFocus
             //}
 
             //    if (lo
-            
+            button55.BackColor = Color.Lime;
             if (checkBox26.Checked == true)
             {
                 fileSystemWatcher7.EnableRaisingEvents = true;
@@ -13760,7 +13837,7 @@ namespace Pololu.Usc.ScopeFocus
                 FileLog2("Plate Solve Start - Nebulosity Caputre");
             }
             if (GlobalVariables.LocalPlateSolve)
-               Solve();
+                 Solve();
             else
             {
                 //if (backgroundWorker1.IsBusy != true)
@@ -13837,6 +13914,8 @@ namespace Pololu.Usc.ScopeFocus
                 
         }
         public static string text;
+        private int cygwinId;
+        Process proc = new Process();
         public void ExecuteCommand()//starts cygwin term, saves log.txt that captures terminal screen, executes solve command
         {
             try
@@ -13844,7 +13923,8 @@ namespace Pololu.Usc.ScopeFocus
                 sigma = Convert.ToInt32(textBox60.Text.ToString());
                 Low = Convert.ToDouble(textBox61.Text.ToString());
                 High = Convert.ToDouble(textBox62.Text.ToString());
-                Process proc = new Process();
+                DwnSz = Convert.ToInt16(textBox49.Text.ToString());
+                
                 //   string stOut = "";
                 if (textBox60.Text == "" || textBox61.Text == "" || textBox62.Text == "")
                     MessageBox.Show("Plate solve parameters cannot be blank", "scopefocus");
@@ -13859,6 +13939,7 @@ namespace Pololu.Usc.ScopeFocus
                 proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -";
 
                 proc.Start();
+                cygwinId = proc.Id;
 
                 StreamWriter sw = proc.StandardInput;
                 StreamReader reader = proc.StandardOutput;
@@ -13878,7 +13959,7 @@ string cmd = "CD ..";
  sw.WriteLine(cmd3)
 */
 
-                string command = "solve-field --sigma " + sigma.ToString() + " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
+                string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
               //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
                 SendKeys.Send("cd" + " " + "/home/astro");
                 Thread.Sleep(200);
@@ -13980,11 +14061,12 @@ string cmd = "CD ..";
                 {
                     if (!AstrometryRunning)
                     {
-                        Log("Plate Solve Complete");
+                       // Log("Plate Solve Complete");
                         ast.Close();
-                        Solve();
+                        
                         AstrometryRunning = false;
                         solveRequested = false;
+                        Solve();
                     }
                         
                 }
@@ -14189,15 +14271,25 @@ string cmd = "CD ..";
 //bool cygwinAbort = false;
             private void button60_Click(object sender, EventArgs e)//this doesn't work
             {
-              //  cygwinAbort = true;
-               // SendKeys.Send("^(C)");
-              //  int procID = Convert.ToInt16(002E100E);****need to get the process number
-                // (much like finding a handle....then close it.  
-            //    Process proc = Process.GetProcessById(procID);
-            //    proc.CloseMainWindow();
-            //    proc.WaitForExit();
-
+            this.Show();
+            foreach (System.Diagnostics.Process myProc in System.Diagnostics.Process.GetProcesses())
+            {
+                if (myProc.ProcessName == "mintty")
+                {
+                    myProc.Kill();
+                }
             }
+
+
+            // cygwinAbort = true;
+            //SendKeys.Send("^(C)");
+            ////int procID = Convert.ToInt16(002E100E); ****need to get the process number
+            ////  (much like finding a handle....then close it.
+            //// Process proc = Process.GetProcessById(procID);
+            //proc.CloseMainWindow();
+            //proc.WaitForExit();
+
+        }
 
         //start try to monitor metricHFR
         //need to set baseline,then compare and if deviation of > textbox63 % refocus 
@@ -15092,7 +15184,9 @@ string cmd = "CD ..";
                 GlobalVariables.LocalPlateSolve = false;
         }
 
-      
+        
+
+       
     }
 
     //**********this seems to cause error at end of sequence when ? socket close()????
