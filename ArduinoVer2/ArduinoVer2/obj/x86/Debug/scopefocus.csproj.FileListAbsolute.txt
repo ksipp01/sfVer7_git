@@ -162,3 +162,8 @@ C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.application
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.exe
 C:\Users\Public\SVNrepositorywc\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.pdb
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6_beta.exe.config
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.IObjectSafetyTLB.dll
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Interop.Scripting.dll
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.ResolveComReference.cache
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.App.config

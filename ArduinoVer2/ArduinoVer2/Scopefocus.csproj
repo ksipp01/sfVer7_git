@@ -228,6 +228,7 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="ArduinoVer2_TemporaryKey.pfx" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -289,6 +290,7 @@
     </Content>
     <Content Include="System.Net.Http.dll" />
     <Content Include="System.Net.Http.WebRequest.dll" />
+    <Content Include="TextFile_BETA.txt" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IObjectSafetyTLB">
