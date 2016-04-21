@@ -275,6 +275,7 @@
     <Content Include="MyDatabase2.sdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Text_MASTER.txt" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IObjectSafetyTLB">
