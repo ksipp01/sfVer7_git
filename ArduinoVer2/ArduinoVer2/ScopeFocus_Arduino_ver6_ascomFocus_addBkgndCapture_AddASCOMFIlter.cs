@@ -14004,7 +14004,25 @@ namespace Pololu.Usc.ScopeFocus
                     // var pattern = "*.csv";
                     // var file = solveImage;
                     //   var sourceDir = @"c:\cygwin\home\astro";
-                    var destfile = "solve.fit";
+
+
+
+                    // begin\r rem 4-26-16
+
+                    //string extension;
+                    //var destfile = "";
+                    //if (Path.GetExtension(GlobalVariables.SolveImage) == "fit")
+                    //    destfile = "solve.fit";
+                    //else
+                    //    destfile = "solve.jpg";
+
+                    // end rem 
+
+
+                    // begin addition
+                    var destfile = Path.GetFileName(GlobalVariables.SolveImage);
+
+
                     if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
                     {
                         foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
@@ -14013,7 +14031,9 @@ namespace Pololu.Usc.ScopeFocus
                                 files.Delete();//empty the directory
                         }
                         // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                        File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin
+                         File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin  this one works!
+
+                        
                     }
                     ExecuteCommand();
 
@@ -14651,8 +14671,11 @@ string cmd = "CD ..";
  sw.WriteLine(cmd3)
 */
 
-                string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
-              //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
+                //     string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";  // Original working command line
+                string command = "solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
+
+
+                //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
                 SendKeys.Send("cd" + " " + "/home/astro");
                 Thread.Sleep(200);
                 SendKeys.Send("~");
