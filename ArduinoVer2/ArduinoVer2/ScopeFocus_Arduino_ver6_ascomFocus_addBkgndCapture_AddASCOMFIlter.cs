@@ -8119,8 +8119,8 @@ namespace Pololu.Usc.ScopeFocus
                         PartialSolve();
                         FocusDEC = DEC;
                         FocusRA = RA;
-                        Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                        FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        //Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        //FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
                         button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
                         button32.BackColor = System.Drawing.Color.Lime;
                     }
@@ -8136,8 +8136,8 @@ namespace Pololu.Usc.ScopeFocus
                         fileSystemWatcher7.EnableRaisingEvents = true;
                        
                     }
-                    //Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                    //FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                    Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                    FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
                     //button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
                     //button32.BackColor = System.Drawing.Color.Yellow;
                 }
@@ -8255,8 +8255,8 @@ namespace Pololu.Usc.ScopeFocus
                         PartialSolve();
                         TargetDEC = DEC;
                         TargetRA = RA;
-                        Log("Solved Target Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                        FileLog2("Solved Target Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        //Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                        //FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
                         button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
                         button34.BackColor = System.Drawing.Color.Lime;
                     }
@@ -14076,9 +14076,10 @@ namespace Pololu.Usc.ScopeFocus
                             DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
                             RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
                             Log("Parsed RA = " + RA.ToString());
-
+                            
                         }
                     }
+                    reader.Close();
                 }
 
                 if (SettingFocusSolve)
@@ -14873,10 +14874,12 @@ string cmd = "CD ..";
               if (GlobalVariables.LocalPlateSolve)
             { 
                 var destDir = @"c:\cygwin\home\astro";
-               // var pattern = "*.csv";
-               // var file = solveImage;
-             //   var sourceDir = @"c:\cygwin\home\astro";
-                var destfile = "solve.fit";
+                // var pattern = "*.csv";
+                // var file = solveImage;
+                //   var sourceDir = @"c:\cygwin\home\astro";
+                //    var destfile = "solve.fit"; // changed 5-1-16
+                var destfile = Path.GetFileName(GlobalVariables.SolveImage);
+
                 if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
                 {
                     foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
