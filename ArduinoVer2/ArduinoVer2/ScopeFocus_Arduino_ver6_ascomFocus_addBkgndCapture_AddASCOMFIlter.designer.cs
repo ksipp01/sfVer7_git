@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series21 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series22 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series23 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series24 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.fileSystemWatcher2 = new System.IO.FileSystemWatcher();
@@ -388,6 +388,7 @@
             this.label78 = new System.Windows.Forms.Label();
             this.label77 = new System.Windows.Forms.Label();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.button50 = new System.Windows.Forms.Button();
             this.label96 = new System.Windows.Forms.Label();
             this.label95 = new System.Windows.Forms.Label();
             this.textBox65 = new System.Windows.Forms.TextBox();
@@ -964,58 +965,58 @@
             // 
             // chart1
             // 
-            chartArea2.AxisX.Title = "Position";
-            chartArea2.AxisY.Crossing = -1.7976931348623157E+308D;
-            chartArea2.AxisY.IsStartedFromZero = false;
-            chartArea2.AxisY.Title = "HFR";
-            chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chart1.Legends.Add(legend2);
+            chartArea6.AxisX.Title = "Position";
+            chartArea6.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea6.AxisY.IsStartedFromZero = false;
+            chartArea6.AxisY.Title = "HFR";
+            chartArea6.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea6);
+            legend6.Name = "Legend1";
+            this.chart1.Legends.Add(legend6);
             this.chart1.Location = new System.Drawing.Point(26, 350);
             this.chart1.Name = "chart1";
             this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series5.Legend = "Legend1";
-            series5.MarkerBorderWidth = 2;
-            series5.Name = "Rough V";
-            series5.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series5.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series6.Legend = "Legend1";
-            series6.MarkerBorderColor = System.Drawing.Color.Blue;
-            series6.MarkerColor = System.Drawing.Color.White;
-            series6.MarkerSize = 8;
-            series6.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series6.Name = "Fine V- Data Used";
-            series6.YValuesPerPoint = 2;
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series7.Legend = "Legend1";
-            series7.MarkerBorderColor = System.Drawing.Color.Red;
-            series7.MarkerColor = System.Drawing.Color.White;
-            series7.MarkerSize = 8;
-            series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series7.Name = "Fine V";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series8.Legend = "Legend1";
-            series8.MarkerBorderColor = System.Drawing.Color.Purple;
-            series8.MarkerColor = System.Drawing.Color.Purple;
-            series8.MarkerSize = 8;
-            series8.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
-            series8.Name = "Temp Cal";
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
-            this.chart1.Series.Add(series7);
-            this.chart1.Series.Add(series8);
+            series21.ChartArea = "ChartArea1";
+            series21.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series21.Legend = "Legend1";
+            series21.MarkerBorderWidth = 2;
+            series21.Name = "Rough V";
+            series21.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series21.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series22.ChartArea = "ChartArea1";
+            series22.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series22.Legend = "Legend1";
+            series22.MarkerBorderColor = System.Drawing.Color.Blue;
+            series22.MarkerColor = System.Drawing.Color.White;
+            series22.MarkerSize = 8;
+            series22.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series22.Name = "Fine V- Data Used";
+            series22.YValuesPerPoint = 2;
+            series23.ChartArea = "ChartArea1";
+            series23.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series23.Legend = "Legend1";
+            series23.MarkerBorderColor = System.Drawing.Color.Red;
+            series23.MarkerColor = System.Drawing.Color.White;
+            series23.MarkerSize = 8;
+            series23.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series23.Name = "Fine V";
+            series24.ChartArea = "ChartArea1";
+            series24.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series24.Legend = "Legend1";
+            series24.MarkerBorderColor = System.Drawing.Color.Purple;
+            series24.MarkerColor = System.Drawing.Color.Purple;
+            series24.MarkerSize = 8;
+            series24.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series24.Name = "Temp Cal";
+            this.chart1.Series.Add(series21);
+            this.chart1.Series.Add(series22);
+            this.chart1.Series.Add(series23);
+            this.chart1.Series.Add(series24);
             this.chart1.Size = new System.Drawing.Size(688, 157);
             this.chart1.TabIndex = 51;
             this.chart1.Text = "chart1";
-            title2.Name = "Title 1";
-            this.chart1.Titles.Add(title2);
+            title6.Name = "Title 1";
+            this.chart1.Titles.Add(title6);
             // 
             // menuStrip1
             // 
@@ -1111,9 +1112,13 @@
             this.dataGridView1.DataSource = this.dataSet1;
             this.dataGridView1.Location = new System.Drawing.Point(12, 515);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(613, 176);
             this.dataGridView1.TabIndex = 89;
+            this.dataGridView1.TabStop = false;
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick_1);
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete_1);
             this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             // 
             // Column5
@@ -1126,9 +1131,9 @@
             // Column1
             // 
             this.Column1.DataPropertyName = "Date";
-            dataGridViewCellStyle2.Format = "G";
-            dataGridViewCellStyle2.NullValue = null;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Format = "G";
+            dataGridViewCellStyle6.NullValue = null;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle6;
             this.Column1.HeaderText = "Date";
             this.Column1.Name = "Column1";
             this.Column1.Width = 150;
@@ -3323,8 +3328,6 @@
             // checkBox8
             // 
             this.checkBox8.AutoSize = true;
-            this.checkBox8.Checked = true;
-            this.checkBox8.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox8.Location = new System.Drawing.Point(27, 77);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(155, 17);
@@ -4321,6 +4324,7 @@
             // 
             // groupBox19
             // 
+            this.groupBox19.Controls.Add(this.button50);
             this.groupBox19.Controls.Add(this.label96);
             this.groupBox19.Controls.Add(this.label95);
             this.groupBox19.Controls.Add(this.textBox65);
@@ -4351,6 +4355,16 @@
             this.groupBox19.TabIndex = 50;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Plate Solve Settings";
+            // 
+            // button50
+            // 
+            this.button50.Location = new System.Drawing.Point(14, 93);
+            this.button50.Name = "button50";
+            this.button50.Size = new System.Drawing.Size(75, 23);
+            this.button50.TabIndex = 60;
+            this.button50.Text = "button50";
+            this.button50.UseVisualStyleBackColor = true;
+            this.button50.Click += new System.EventHandler(this.button50_Click);
             // 
             // label96
             // 
@@ -5246,6 +5260,7 @@
         private System.Windows.Forms.Label label96;
         private System.Windows.Forms.Label label95;
         private System.Windows.Forms.TextBox textBox65;
+        private System.Windows.Forms.Button button50;
     }
 }
 

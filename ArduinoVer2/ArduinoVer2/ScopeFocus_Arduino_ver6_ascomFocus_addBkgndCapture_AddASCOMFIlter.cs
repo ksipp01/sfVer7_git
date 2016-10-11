@@ -80,8 +80,13 @@
 //added eneble numericupdown after pushing stop
 
 //3-12-16 added online astrometry.net plate solve
-//3-13-16 added simple method to view .fits tables using tablise,  to use add a button and runtablistViewer(filename.xxx) then view output text2.txxt in cygwin/home/astro
+//3-13-16 added simple method to view .fits tables using tablist,  to use add a button and runtablistViewer(filename.xxx) then view output text2.txxt in cygwin/home/astro
 
+// 10-10-16 begin rework of full fram metric.  allow selection of v-curve data for specific traget FOV.  
+// do one for eash session/target.  Versus every gotofocus (like SGP).  
+//changes dataGridView1 selection ode to "full row select" from "cell select"
+
+// 10-11-16 many changes for new FF metric works w/ CDCSimulator
 
 
 ///  to do:
@@ -680,6 +685,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                
                 using (SqlCeConnection con = new SqlCeConnection(conString))
                 {
                     con.Open();
@@ -698,6 +704,7 @@ namespace Pololu.Usc.ScopeFocus
                     con.Close();
                 }
                 ((DataTable)this.dataGridView1.DataSource).DefaultView.RowFilter = "Equip =" + "'" + toolStripStatusLabel3.Text.ToString() + "'";
+             //   dataGridView1.CurrentCell = null;
                 //   ((DataTable)this.dataGridView1.DataSource).DefaultView.RowFilter = "Equip =" + "'" + textBox13.Text.ToString() + "'";
             }
             catch (Exception ex)
@@ -712,118 +719,177 @@ namespace Pololu.Usc.ScopeFocus
 
         //analyze SQL data  
 
+        // 10-11-16  try to preserve selected row after refresh
+        int selectedID, rowIndex, scrollIndex;
+        bool IsSelectedRow;
+        //see end of code
+      
+
+      
+
 
         void GetAvg()
         {
             try
             {
-                using (SqlCeConnection con = new SqlCeConnection(conString))
+
+
+                // ******* 10-10-16   add code to get numbers from a singles selected row for full fram metric.  
+                // if checkbox22.checked == true...  add to each below 
+                // if (a row is selected) then skip the averaging....
+
+               
+
+                if (checkBox22.Checked == true)
                 {
-                    con.Open();
-                    using (SqlCeCommand com = new SqlCeCommand("SELECT AVG(PID) FROM table1 WHERE Equip = @equip", con))
+                    int selectedrowcount;
+                    string selectedcell;
+                    selectedrowcount = dataGridView1.SelectedCells.Count;
+                    if (selectedrowcount == 0)
                     {
-                        com.Parameters.AddWithValue("@equip", _equip);
-                        SqlCeDataReader reader = com.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            if (!reader.IsDBNull(0))
-                            {
-                                int numb5 = reader.GetInt32(0);
-                                _enteredPID = numb5;
-                                textBox12.Text = _enteredPID.ToString();  // added 1-23-15
-                            }
-                            else
-                            {
-                                textBox12.Clear();
-                                _enteredPID = 0;
-                            }
-                        }
-                        reader.Close();
+                        MessageBox.Show("No Row Selected");
+                        return;
                     }
-                    using (SqlCeCommand com1 = new SqlCeCommand("SELECT AVG(SlopeDWN) FROM table1 WHERE Equip = @equip", con))
+                    else
                     {
-                        com1.Parameters.AddWithValue("@equip", _equip);
-                        SqlCeDataReader reader1 = com1.ExecuteReader();
-                        while (reader1.Read())
-                        {
-                            if (!reader1.IsDBNull(0))
-                            {
-                                double numb5 = reader1.GetDouble(0);
-                                double numb5Rnd = Math.Round(numb5, 5);
-                                textBox3.Text = numb5Rnd.ToString();
-                                _enteredSlopeDWN = numb5Rnd;
-                            }
-                            else
-                            {
-                                textBox3.Clear();
-                                textBox14.Clear();
-                                _enteredSlopeDWN = 0;
-                            }
+                        selectedcell = dataGridView1.SelectedCells[0].Value.ToString();
 
-                        }
-                        reader1.Close();
+                        _enteredPID = Convert.ToInt32(dataGridView1.SelectedCells[2].Value);
+                        _enteredSlopeDWN = Convert.ToDouble(dataGridView1.SelectedCells[3].Value);
+                        _enteredSlopeUP = Convert.ToDouble(dataGridView1.SelectedCells[4].Value);
+                        Log("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
+                     //   MessageBox.Show("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
                     }
+               
+                }
 
-                    using (SqlCeCommand com2 = new SqlCeCommand("SELECT AVG(SlopeUP) FROM table1 WHERE Equip = @equip", con))
+
+
+
+
+                else
+                {
+
+                    using (SqlCeConnection con = new SqlCeConnection(conString))
                     {
-                        com2.Parameters.AddWithValue("@equip", _equip);
-                        SqlCeDataReader reader2 = com2.ExecuteReader();
-                        while (reader2.Read())
+                        con.Open();
+
+
+
+
+
+                        using (SqlCeCommand com = new SqlCeCommand("SELECT AVG(PID) FROM table1 WHERE Equip = @equip", con))
                         {
-                            if (!reader2.IsDBNull(0))
+                            com.Parameters.AddWithValue("@equip", _equip);
+                            SqlCeDataReader reader = com.ExecuteReader();
+                            while (reader.Read())
                             {
-                                double numb5 = reader2.GetDouble(0);
-                                double numb5Rnd = Math.Round(numb5, 5);
-                                textBox10.Text = numb5Rnd.ToString();
-                                _enteredSlopeUP = numb5Rnd;
+                                if (!reader.IsDBNull(0))
+                                {
+                                    int numb5 = reader.GetInt32(0);
+                                    _enteredPID = numb5;
+                                    textBox12.Text = _enteredPID.ToString();  // added 1-23-15
+                                }
+                                else
+                                {
+                                    textBox12.Clear();
+                                    _enteredPID = 0;
+                                }
                             }
-                            else
-                            {
-                                textBox10.Clear();
-                                textBox16.Clear();
-                                _enteredSlopeUP = 0;
-                            }
+                            reader.Close();
                         }
-                        reader2.Close();
-                    }
-                    using (SqlCeCommand com3 = new SqlCeCommand("SELECT AVG(BestHFR) FROM table1 WHERE Equip = @equip", con))
-                    {
-                        com3.Parameters.AddWithValue("@equip", _equip);
-                        SqlCeDataReader reader3 = com3.ExecuteReader();
-                        while (reader3.Read())
+
+                        using (SqlCeCommand com1 = new SqlCeCommand("SELECT AVG(SlopeDWN) FROM table1 WHERE Equip = @equip", con))
                         {
-                            if (!reader3.IsDBNull(0))
+                            com1.Parameters.AddWithValue("@equip", _equip);
+                            SqlCeDataReader reader1 = com1.ExecuteReader();
+                            while (reader1.Read())
                             {
-                                int numb6 = reader3.GetInt32(0);
-                                textBox15.Text = numb6.ToString();
-                            }
-                            else
-                            {
-                                textBox15.Clear();
+                                if (!reader1.IsDBNull(0))
+                                {
+                                    double numb5 = reader1.GetDouble(0);
+                                    double numb5Rnd = Math.Round(numb5, 5);
+                                    textBox3.Text = numb5Rnd.ToString();
+                                    _enteredSlopeDWN = numb5Rnd;
+                                }
+                                else
+                                {
+                                    textBox3.Clear();
+                                    textBox14.Clear();
+                                    _enteredSlopeDWN = 0;
+                                }
 
                             }
+                            reader1.Close();
                         }
-                        reader3.Close();
-                    }
-                    /*
-                    //   rem'd ****moved to mainWindow load so it puts focus position value in at startup
-                    using (SqlCeCommand com4 = new SqlCeCommand("SELECT AVG(FocusPos) FROM table1 WHERE Equip = @equip", con))
-                    {
-                        com4.Parameters.AddWithValue("@equip", equip);
-                        SqlCeDataReader reader4 = com4.ExecuteReader();
-                        while (reader4.Read())
-                        {
-                            if (!reader4.IsDBNull(0))
-                            {
-                                int numb7 = reader4.GetInt32(0);
-                              //     textBox4.Text = numb7.ToString();******88888rem'd 4-10
-                            }
-                        }
-                        reader4.Close();
-                    }
 
-*/
-                    con.Close();
+                        using (SqlCeCommand com2 = new SqlCeCommand("SELECT AVG(SlopeUP) FROM table1 WHERE Equip = @equip", con))
+                        {
+                            com2.Parameters.AddWithValue("@equip", _equip);
+                            SqlCeDataReader reader2 = com2.ExecuteReader();
+                            while (reader2.Read())
+                            {
+                                if (!reader2.IsDBNull(0))
+                                {
+                                    double numb5 = reader2.GetDouble(0);
+                                    double numb5Rnd = Math.Round(numb5, 5);
+                                    textBox10.Text = numb5Rnd.ToString();
+                                    _enteredSlopeUP = numb5Rnd;
+                                }
+                                else
+                                {
+                                    textBox10.Clear();
+                                    textBox16.Clear();
+                                    _enteredSlopeUP = 0;
+                                }
+                            }
+                            reader2.Close();
+                        }
+                        using (SqlCeCommand com3 = new SqlCeCommand("SELECT AVG(BestHFR) FROM table1 WHERE Equip = @equip", con))
+                        {
+                            com3.Parameters.AddWithValue("@equip", _equip);
+                            SqlCeDataReader reader3 = com3.ExecuteReader();
+                            while (reader3.Read())
+                            {
+                                if (!reader3.IsDBNull(0))
+                                {
+                                    int numb6 = reader3.GetInt32(0);
+                                    textBox15.Text = numb6.ToString();
+                                }
+                                else
+                                {
+                                    textBox15.Clear();
+
+                                }
+                            }
+                            reader3.Close();
+                        }
+
+
+
+
+
+
+                        /*
+                        //   rem'd ****moved to mainWindow load so it puts focus position value in at startup
+                        using (SqlCeCommand com4 = new SqlCeCommand("SELECT AVG(FocusPos) FROM table1 WHERE Equip = @equip", con))
+                        {
+                            com4.Parameters.AddWithValue("@equip", equip);
+                            SqlCeDataReader reader4 = com4.ExecuteReader();
+                            while (reader4.Read())
+                            {
+                                if (!reader4.IsDBNull(0))
+                                {
+                                    int numb7 = reader4.GetInt32(0);
+                                  //     textBox4.Text = numb7.ToString();******88888rem'd 4-10
+                                }
+                            }
+                            reader4.Close();
+                        }
+
+    */
+                        con.Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1133,9 +1199,10 @@ namespace Pololu.Usc.ScopeFocus
                             //3-2-16 
                             while (focuser.IsMoving)
                             {
+                                delay(1); // 10-11-16 moved from space below on all similar x 3
                                 count = focuser.Position;
                                 textBox1.Text = count.ToString();
-                                delay(1);
+                                
                                 positionbar();
                                 //  Log(focuser.IsMoving.ToString());
                             }
@@ -1217,9 +1284,10 @@ namespace Pololu.Usc.ScopeFocus
                             toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
                             while (focuser.IsMoving)
                             {
+                                delay(1);
                                 count = focuser.Position;
                                 textBox1.Text = count.ToString();
-                                delay(1);
+                                
                                 positionbar();
                                 //  Log(focuser.IsMoving.ToString());
                             }
@@ -1263,9 +1331,10 @@ namespace Pololu.Usc.ScopeFocus
                             toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
                             while (focuser.IsMoving)
                             {
+                                delay(1);
                                 count = focuser.Position;
                                 textBox1.Text = count.ToString();
-                                delay(1);
+                                
                                 positionbar();
                                 //  Log(focuser.IsMoving.ToString());
                             }
@@ -1813,9 +1882,10 @@ namespace Pololu.Usc.ScopeFocus
             // also not sure why gotopos is NOT used above  but based on 4/14 change must have caused problems...could try reverting that back to gotopos if needed
             while (focuser.IsMoving)
             {
+                delay(1);
                 count = focuser.Position;
                 textBox1.Text = count.ToString();
-                delay(1);
+                
                 positionbar();
                 //  Log(focuser.IsMoving.ToString());
             }
@@ -1926,14 +1996,15 @@ namespace Pololu.Usc.ScopeFocus
                 //*****  4-22-14 if IsMoving causes problems add a checkbox to allow disable. 
                 while (focuser.IsMoving)
                 {
+                    delay(1);
                     count = focuser.Position;
                     textBox1.Text = count.ToString();
-                    delay(1);
+                    
                     positionbar();   //**** remd 11-20-14
                                      //  Log(focuser.IsMoving.ToString());
                 }
                 // end add
-
+                delay(1);
                 count = focuser.Position;
                 textBox1.Text = count.ToString();
                 //   textBox1.Text = focuser.Position.ToString();
@@ -2649,20 +2720,50 @@ namespace Pololu.Usc.ScopeFocus
                             serverStream.Close();
                             Thread.Sleep(3000);
                              */
+
+                            //10-11-16  
+                            serverStream = clientSocket.GetStream();
+                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                            serverStream.Write(outStream, 0, outStream.Length);
+                            serverStream.Flush();
+
+                            Thread.Sleep(3000);
+                            serverStream.Close();
                             SetForegroundWindow(Handles.NebhWnd);
                             Thread.Sleep(1000);
                             PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                             Thread.Sleep(1000);
                             NebListenOn = false;
-                            //  File.Delete(metricpath[0]);
-                            /*
                             // clientSocket.GetStream().Close();//added 5-17-12
                             //  clientSocket.Client.Disconnect(true);//added 5-17-12
                             clientSocket.Close();
-                            */
+                            //  Thread.Sleep(500);
+                            //   SendKeys.SendWait("~");
+                            //   SendKeys.Flush();
+
                             if (metricpath != null)
                                 File.Delete(metricpath[0]);
-                            currentmetricN = 0;
+                            //  currentmetricN = 0;
+                            //return;
+                            fileSystemWatcher5.EnableRaisingEvents = false;
+                            // end 10-11-16 addt
+
+
+
+                            //SetForegroundWindow(Handles.NebhWnd);
+                            //Thread.Sleep(1000);
+                            //PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //Thread.Sleep(1000);
+                            //NebListenOn = false;
+                            ////  File.Delete(metricpath[0]);
+                            ///*
+                            //// clientSocket.GetStream().Close();//added 5-17-12
+                            ////  clientSocket.Client.Disconnect(true);//added 5-17-12
+                            //clientSocket.Close();
+                            //*/
+                            //if (metricpath != null)
+                            //    File.Delete(metricpath[0]);
+                            //currentmetricN = 0;
                         }
                         GlobalVariables.FineRepeatDone = 0;
                         GlobalVariables.FineRepeatOn = false;
@@ -3160,7 +3261,7 @@ namespace Pololu.Usc.ScopeFocus
                     return;
                 }
                 // Data d = new Data();
-                GetAvg();
+                GetAvg();    
                 FillData();
                 //try adding std dev and display in textbox16
                 // Std Dev UP
@@ -3865,14 +3966,15 @@ namespace Pololu.Usc.ScopeFocus
         {
             //   Data d = new Data();
             GetAvg();
+            if (checkBox22.Checked == false)
             FillData();
             setarraysize();
-            // remd 1-23-15
-            if (_enteredSlopeDWN == 0 || _enteredSlopeUP == 0 || _enteredPID == 0)
-            {
-                MessageBox.Show("Focus data is blank -- check equipment selelction or save v-curve data then retry.  GotoFocus Aborted", "scopefocus");
-                return;
-            }
+            // remd 10-11-16
+            //if (_enteredSlopeDWN == 0 || _enteredSlopeUP == 0 || _enteredPID == 0)
+            //{
+            //    MessageBox.Show("Focus data is blank -- check equipment selelction or save v-curve data then retry.  GotoFocus Aborted", "scopefocus");
+            //    return;
+            //}
             gotoFocus();
         }
 
@@ -4168,6 +4270,11 @@ namespace Pololu.Usc.ScopeFocus
         }
         private void EquipRefresh()
         {
+            if (checkBox22.Checked == false)
+            {
+                IsSelectedRow = false;
+                dataGridView1.ClearSelection();
+            }
             // GlobalVariables.EquipPrefix = comboBox7.Text + "_" + comboBox8.Text;
             GlobalVariables.EquipPrefix = comboBox7.Text;
             /*
@@ -4220,9 +4327,9 @@ namespace Pololu.Usc.ScopeFocus
             }
              */
             //*********** 3-3-14 ***********  removed to allow metric to use single star v-curves  ************************
-
-            //    if (checkBox22.Checked == true)
-            //        _equip = _equip + "_Metric";
+            //  %%%%%%%%% unrem'd 10-10-16 to redo full frame metric, allow for selecting v-curve data   %%%%%%%%%      
+                if (checkBox22.Checked == true)
+                   _equip = _equip + "_Metric";
             //**************************************************************************************************************
             //   textBox13.Text = equip.ToString();
             toolStripStatusLabel3.Text = _equip.ToString();
@@ -4963,8 +5070,9 @@ namespace Pololu.Usc.ScopeFocus
                 }
                  */
                 //***************** 3-3-14 removed to allow metric to use single star v-curves *****************
-                //   if (checkBox22.Checked == true)
-                //         _equip = _equip + "_Metric";
+                // %%%%% unremd 10-10-16 to redo full fam metric and allow selection of v-curve data
+                   if (checkBox22.Checked == true)
+                        _equip = _equip + "_Metric";
                 //********************************************************************************************
                 if (_equip != null)
                 {
@@ -7836,11 +7944,41 @@ namespace Pololu.Usc.ScopeFocus
                 }
 
             }
-            if (vProgress != vN + 1)
+            if (currentmetricN != vN -1)
             {
                 currentmetricN++;
                 MetricCapture();
             }
+            //if (currentmetricN == vN -1)
+            //    currentmetricN = 0;
+            //if (vProgress == vN)
+            //{
+            //    serverStream = clientSocket.GetStream();
+            //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+            //    serverStream.Write(outStream, 0, outStream.Length);
+            //    serverStream.Flush();
+
+            //    Thread.Sleep(3000);
+            //    serverStream.Close();
+            //    SetForegroundWindow(Handles.NebhWnd);
+            //    Thread.Sleep(1000);
+            //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+            //    Thread.Sleep(1000);
+            //    NebListenOn = false;
+            //    // clientSocket.GetStream().Close();//added 5-17-12
+            //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+            //    clientSocket.Close();
+            //    //  Thread.Sleep(500);
+            //    //   SendKeys.SendWait("~");
+            //    //   SendKeys.Flush();
+
+            //    if (metricpath != null)
+            //        File.Delete(metricpath[0]);
+            //    currentmetricN = 0;
+            //    return;
+            //}
+
+
         }
         /*
             catch(Exception ex)
@@ -7857,6 +7995,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             if (checkBox22.Checked == false)
                 checkBox22.Checked = true;
+            currentmetricN = 0;
             /*
             if (roughvdone == false)//make sure rough v curve done to establish rough focus point
             {
@@ -7894,6 +8033,17 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 //  NetworkStream serverStream = clientSocket.GetStream();
+
+
+
+                // added 10-11-16
+                if (clientSocket.Connected == false)
+                {
+                    NebListenStart(Handles.NebhWnd, SocketPort);
+                    // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+                }
+
+
                 serverStream = clientSocket.GetStream();
                 byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
                 serverStream.Write(outStream, 0, outStream.Length);
@@ -13819,7 +13969,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 double centerDec = DEC; //arbitrary dec postion for now
                 double centerRA = RA;  //arbitrary. 
-                if (DEC == 0 || RA == 0)
+                if (DEC == 0 || RA == 0)  
                 {
                     MessageBox.Show("must slew to plate solve location first");
                     return;
@@ -13959,11 +14109,14 @@ namespace Pololu.Usc.ScopeFocus
                 Log("Center here RA = " + centerHereRA.ToString());
                 // result = sexagesimal(v);  //use this to convert to hh:mm:ss
                 //  var ia1=result.hours;
-                //  var ia2=result.minutes;
+                //  var ia2=result.minute
+
+
                 //  var a3=result.seconds;
                 // Find declination of target
                 double d6 = Math.Atan((sd + yy * cd) / g);
                 centerHereDec = d6 / dr;
+
                 Log("Center here Dec = " + centerHereDec.ToString());
                 FileLog2("Calculated Offset:  Dec = " + centerHereDec.ToString() + "     RA = " + centerHereRA.ToString());
                 // result = sexagesimal(v);
@@ -14646,10 +14799,10 @@ namespace Pololu.Usc.ScopeFocus
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.RedirectStandardError = true;
                 proc.StartInfo.CreateNoWindow = true;
-                proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";
+                proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //orig working
                 // @"c:/cygwin/bin/mintty.exe";
-
-                proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -";
+              //  proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe --log /text.txt -i /Cygwin-Terminal.ico -";
+                proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
 
                 proc.Start();
                 cygwinId = proc.Id;
@@ -16032,6 +16185,44 @@ string cmd = "CD ..";
             GlobalVariables.TargetImage = openFileDialog2.FileName.ToString();
             // GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
             textBox51.Text = GlobalVariables.TargetImage;
+        }
+
+        private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+            selectedID = (int)dataGridView1.SelectedRows[0].Cells[0].Value;
+            scrollIndex = dataGridView1.FirstDisplayedScrollingRowIndex;
+            IsSelectedRow = true;
+        }
+
+        private void dataGridView1_DataBindingComplete_1(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            if (IsSelectedRow)
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (row.Cells[0].Value.ToString().Equals(selectedID.ToString()))
+                    {
+                        rowIndex = row.Index;
+                        break;
+                    }
+                }
+                dataGridView1.ClearSelection();
+                dataGridView1.Rows[rowIndex].Selected = true;
+            }
+           
+        }
+
+        private void button50_Click(object sender, EventArgs e)
+        {
+            // tablistViewer("C48_5secForAT_platesolve_001.corr");
+          //  cramersRule();
+        }
+
+        private void button51_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 

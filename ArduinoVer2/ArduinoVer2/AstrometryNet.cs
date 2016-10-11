@@ -754,7 +754,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             string pathToCorr = "";
             if (GlobalVariables.LocalPlateSolve)
-                pathToCorr = @"c:\cygwin\home\astro\solve.corr";
+            pathToCorr = @"c:\cygwin\home\astro\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr";
+            //pathToCorr = @"c:\cygwin\home\astro\solve.corr";
             else
                 pathToCorr = GlobalVariables.Path2 + "\\corr.fits";
                 
