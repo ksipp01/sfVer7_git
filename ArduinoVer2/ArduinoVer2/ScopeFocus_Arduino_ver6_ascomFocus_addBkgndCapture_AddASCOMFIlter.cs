@@ -704,8 +704,9 @@ namespace Pololu.Usc.ScopeFocus
                     con.Close();
                 }
                 ((DataTable)this.dataGridView1.DataSource).DefaultView.RowFilter = "Equip =" + "'" + toolStripStatusLabel3.Text.ToString() + "'";
-             //   dataGridView1.CurrentCell = null;
+                //   dataGridView1.CurrentCell = null;
                 //   ((DataTable)this.dataGridView1.DataSource).DefaultView.RowFilter = "Equip =" + "'" + textBox13.Text.ToString() + "'";
+               
             }
             catch (Exception ex)
             {
@@ -732,7 +733,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-
+               
 
                 // ******* 10-10-16   add code to get numbers from a singles selected row for full fram metric.  
                 // if checkbox22.checked == true...  add to each below 
@@ -745,10 +746,19 @@ namespace Pololu.Usc.ScopeFocus
                     int selectedrowcount;
                     string selectedcell;
                     selectedrowcount = dataGridView1.SelectedCells.Count;
-                    if (selectedrowcount == 0)
+                    if (selectedrowcount == 0) 
                     {
-                        MessageBox.Show("No Row Selected");
-                        return;
+                        dataGridView1.ClearSelection();
+                        int nRowIndex = dataGridView1.Rows.Count - 2;
+                        if (nRowIndex > 0)
+                            dataGridView1.Rows[nRowIndex].Selected = true;
+                        else
+                        { 
+                            Log("No Metric V-curve Data");
+                            return;
+                            }
+                        //MessageBox.Show("No Row Selected");
+                        //return;
                     }
                     else
                     {
@@ -974,6 +984,7 @@ namespace Pololu.Usc.ScopeFocus
         private int calcRedo = 0;
         private bool HFRtestON = false;
         private bool focusSampleComplete = false;
+        private bool autoMetricVcurve = false;
         private void fileSystemWatcher3_Changed(object sender, FileSystemEventArgs e)
         {
             // int nn;
@@ -1669,6 +1680,26 @@ namespace Pololu.Usc.ScopeFocus
                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                                 Thread.Sleep(2000);
                                 checkBox22.Checked = true;
+                                // 10-14-16 select most recent V-curve
+                                Update();
+                                GetAvg();
+                                dataGridView1.ClearSelection();
+                                int nRowIndex = dataGridView1.Rows.Count - 2;
+                                if (nRowIndex > 0)
+                                    dataGridView1.Rows[nRowIndex].Selected = true;
+                                else
+                                {
+                                    Log("Unable to attempt Full Frame Metric focus due to no V-curve data, attempting auto V-curve");
+                                   // BestPos = count;
+                                    redo = 0;
+                                    //  posMin = Convert.ToInt32(BestPos);
+                                    autoMetricVcurve = true;
+                                    HFRtestON = false;
+                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    button25.PerformClick();
+                                    return;
+                                }
+                                //
                                 fileSystemWatcher3.EnableRaisingEvents = false;
                                 if (clientSocket.Client.Connected == true)
                                     clientSocket.Client.Disconnect(true);
@@ -3365,8 +3396,8 @@ namespace Pololu.Usc.ScopeFocus
                     return;
                 }
                 // Data d = new Data();
-                GetAvg();    
-                FillData();
+             //   GetAvg();    
+             //   FillData();
                 //try adding std dev and display in textbox16
                 // Std Dev UP
                 if (dataGridView1.RowCount > 2)
@@ -3722,6 +3753,7 @@ namespace Pololu.Usc.ScopeFocus
                 setarraysize();
 
                 //  Data d = new Data();
+              //  EquipRefresh();
                 FillData();
 
                 toolStripStatusLabel1.Text = "Startup Complete";
@@ -3737,7 +3769,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 GlobalVariables.LocalPlateSolve = radioButton_local.Checked;
 
-              
+                EquipRefresh();
             }
             catch (Exception ex)
             {
@@ -4465,7 +4497,7 @@ namespace Pololu.Usc.ScopeFocus
             }
              */
             // button13.PerformClick();
-            UpdateData();
+            UpdateData();  // remd 10-14-16
 
             //below give a focus position starting point based on v-curve data.
 
@@ -4835,7 +4867,8 @@ namespace Pololu.Usc.ScopeFocus
             {
                 int selectedrowcount;
                 string selectedcell;
-                selectedrowcount = dataGridView1.SelectedCells.Count;
+             //   selectedrowcount = dataGridView1.SelectedCells.Count;
+                selectedrowcount = dataGridView1.SelectedRows.Count;
                 if (selectedrowcount == 1)
                 {
                     selectedcell = dataGridView1.SelectedCells[0].Value.ToString();
@@ -4851,6 +4884,10 @@ namespace Pololu.Usc.ScopeFocus
                         con.Close();
                     }
                     // Data d = new Data();
+                    dataGridView1.ClearSelection();
+                    int nRowIndex = dataGridView1.Rows.Count - 2;
+                    if (nRowIndex > 0)
+                        dataGridView1.Rows[nRowIndex].Selected = true;
                     FillData();
                 }
                 else//setup array for all selected cell values
@@ -4870,9 +4907,14 @@ namespace Pololu.Usc.ScopeFocus
                             con.Close();
                         }
                         // Data d = new Data();
+                        dataGridView1.ClearSelection();
+                        int nRowIndex = dataGridView1.Rows.Count - 2;
+                        if (nRowIndex > 0)
+                            dataGridView1.Rows[nRowIndex].Selected = true;
                         FillData();
                     }
                 }
+                IsSelectedRow = false;
             }
             catch (Exception ex)
             {
@@ -8045,6 +8087,10 @@ namespace Pololu.Usc.ScopeFocus
                     if (metricpath != null)
                         File.Delete(metricpath[0]);
                     currentmetricN = 0;
+                    if ((autoMetricVcurve == true) & (FilterFocusOn == false))
+                        button11.PerformClick();
+                    if ((autoMetricVcurve == true) & (FilterFocusOn == true))
+                        gotoFocus();
                     return;
                 }
 
@@ -16303,40 +16349,48 @@ string cmd = "CD ..";
 
         private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0)
-                return;
-            selectedID = (int)dataGridView1.SelectedRows[0].Cells[0].Value;
-            scrollIndex = dataGridView1.FirstDisplayedScrollingRowIndex;
-            IsSelectedRow = true;
-            GetAvg();
-            //if (checkBox22.Checked)
-            //{
-            //    textBox12.Text = _enteredPID.ToString();
-            //    textBox3.Text = _enteredSlopeDWN.ToString();
-            //    textBox10.Text = _enteredSlopeUP.ToString();
-            //    textBox16.Clear();
-            //    textBox14.Clear();
-            //    textBox15.Clear();
-            //}
+            if (checkBox22.Checked == true) // only need when using ff metric  
+            {
+                if (e.RowIndex < 0)
+                    return;
+                selectedID = (int)dataGridView1.SelectedRows[0].Cells[0].Value;
+                scrollIndex = dataGridView1.FirstDisplayedScrollingRowIndex;
+                IsSelectedRow = true;
+                GetAvg();
+                //if (checkBox22.Checked)
+                //{
+                //    textBox12.Text = _enteredPID.ToString();
+                //    textBox3.Text = _enteredSlopeDWN.ToString();
+                //    textBox10.Text = _enteredSlopeUP.ToString();
+                //    textBox16.Clear();
+                //    textBox14.Clear();
+                //    textBox15.Clear();
+                //}
+            }
         }
 
         private void dataGridView1_DataBindingComplete_1(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            if (IsSelectedRow)
+            if (checkBox22.Checked == true) // only need for using FF metric focus. 
             {
-                foreach (DataGridViewRow row in dataGridView1.Rows)
+                if (IsSelectedRow)
                 {
-                    if (row.Cells[0].Value.ToString().Equals(selectedID.ToString()))
+
+                    foreach (DataGridViewRow row in dataGridView1.Rows)
                     {
-                        rowIndex = row.Index;
-                        break;
+                        if (row.Cells[0].Value.ToString().Equals(selectedID.ToString()))
+                        {
+                            rowIndex = row.Index;
+                            break;
+                        }
                     }
+                    dataGridView1.ClearSelection();
+                    dataGridView1.Rows[rowIndex].Selected = true;
                 }
-                dataGridView1.ClearSelection();
-                dataGridView1.Rows[rowIndex].Selected = true;
             }
-           
         }
+
+        
 
         private void button50_Click(object sender, EventArgs e)
         {
