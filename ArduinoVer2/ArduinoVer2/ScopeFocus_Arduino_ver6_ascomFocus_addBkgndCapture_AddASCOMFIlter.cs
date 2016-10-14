@@ -755,10 +755,17 @@ namespace Pololu.Usc.ScopeFocus
                         selectedcell = dataGridView1.SelectedCells[0].Value.ToString();
 
                         _enteredPID = Convert.ToInt32(dataGridView1.SelectedCells[2].Value);
+                        textBox12.Text = _enteredPID.ToString();
                         _enteredSlopeDWN = Convert.ToDouble(dataGridView1.SelectedCells[3].Value);
+                        textBox3.Text = _enteredSlopeDWN.ToString();
                         _enteredSlopeUP = Convert.ToDouble(dataGridView1.SelectedCells[4].Value);
-                        Log("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
-                     //   MessageBox.Show("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
+                        textBox10.Text = _enteredSlopeUP.ToString();
+                        textBox16.Clear();
+                        textBox14.Clear();
+                        textBox15.Clear();
+
+                        //   Log("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
+                        //   MessageBox.Show("PID=" + EnteredPID.ToString() + "    Dwn=" + _enteredSlopeDWN.ToString() + "    Up=" + _enteredSlopeUP.ToString());
                     }
                
                 }
@@ -964,10 +971,13 @@ namespace Pololu.Usc.ScopeFocus
         // bool focusing = false;
         private double BestPos;
         private int redo = 0;
+        private int calcRedo = 0;
         private bool HFRtestON = false;
+        private bool focusSampleComplete = false;
         private void fileSystemWatcher3_Changed(object sender, FileSystemEventArgs e)
         {
             // int nn;
+          
             textBox41.Refresh();//dual scope status textbox
             textBox41.Clear();
 
@@ -991,154 +1001,132 @@ namespace Pololu.Usc.ScopeFocus
                     nn = (int)numericUpDown21.Value;
                 else
                     nn = (int)numericUpDown5.Value; //coarse-v N
-                if (vProgress < nn)
+                if (HFRtestON == false)
                 {
-                    int[] list = new int[nn];
-                    if (checkBox22.Checked == true)//use metric
+                    if (vProgress < nn)
                     {
-                        metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
-                        current = GetMetric(metricpath, roundto);
-                    }
-                    else
-                    {
-                        fileSystemWatcher3.Filter = "*.bmp";
-                        string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
-                        //remd to use path2 settins    string[] filePaths = Directory.GetFiles(folderBrowserDialog1.SelectedPath, "*.bmp");         
-                        current = GetFileHFR(filePaths, roundto);
-                        //Need to add check box to select if backup below is wanted
-                        //     ****** fix  11-13-13   ******
-                        if (current > 600)//was 500, not working w/ nb filters  ******changed to 900 to override was 600*****
+                        int[] list = new int[nn];
+                        if (checkBox22.Checked == true)//use metric
                         {
-                            //***** 6-28  still seems to goto focus position twice after abort and before first metric.
-                            FineFocusAbort = true;
-                            Array.Clear(list, 0, arraysize1);
-                            Log("Focus star lost, using full frame metric");
-                            SetForegroundWindow(Handles.NebhWnd);
-                            Thread.Sleep(1000);
-                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                            Thread.Sleep(2000);
-                            checkBox22.Checked = true;
-                            fileSystemWatcher3.EnableRaisingEvents = false;
-                            if (clientSocket.Client.Connected == true)
-                                clientSocket.Client.Disconnect(true);
-                            // gotoFocus();
-                            //  return;
-                            /*
-                            NebListenStart(NebhWnd, SocketPort);
-                                
-                            Thread.Sleep(2000);
-                            fileSystemWatcher3.Filter = "*.fit";
-                            MetricCapture();
-                                
-                            while (working == true)
+                            metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
+                            current = GetMetric(metricpath, roundto);  //reads the current in-focus status from the HFR in the metric file name
+                        }
+                        else
+                        {
+                            fileSystemWatcher3.Filter = "*.bmp";
+                            string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
+                            //remd to use path2 settins    string[] filePaths = Directory.GetFiles(folderBrowserDialog1.SelectedPath, "*.bmp");         
+                            current = GetFileHFR(filePaths, roundto);
+                            //Need to add check box to select if backup below is wanted
+                            //     ****** fix  11-13-13   ******
+                            if (current > 600)//was 500, not working w/ nb filters  ******changed to 900 to override was 600*****
                             {
-                                WaitForSequenceDone("Sequnce done", NebhWnd);
-                                Log("waiting for seq done");
-                                Thread.Sleep(100);
+                                //***** 6-28  still seems to goto focus position twice after abort and before first metric.
+                                FineFocusAbort = true;
+                                Array.Clear(list, 0, arraysize1);
+                                Log("Focus star lost, using full frame metric");
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(2000);
+                                checkBox22.Checked = true;
+                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                if (clientSocket.Client.Connected == true)
+                                    clientSocket.Client.Disconnect(true);
+                                // gotoFocus();
+                                //  return;
+                                /*
+                                NebListenStart(NebhWnd, SocketPort);
+
+                                Thread.Sleep(2000);
+                                fileSystemWatcher3.Filter = "*.fit";
+                                MetricCapture();
+
+                                while (working == true)
+                                {
+                                    WaitForSequenceDone("Sequnce done", NebhWnd);
+                                    Log("waiting for seq done");
+                                    Thread.Sleep(100);
+                                }
+                                working = true;
+
+                              //  Thread.Sleep(4000);
+                                metricpath = Directory.GetFiles(path2.ToString(), "metric*.fit");
+                                current = GetMetric(metricpath, roundto);
+                                 */
+
+
+
                             }
-                            working = true;
-                                
-                          //  Thread.Sleep(4000);
-                            metricpath = Directory.GetFiles(path2.ToString(), "metric*.fit");
-                            current = GetMetric(metricpath, roundto);
-                             */
 
-
+                        }
+                        if (FineFocusAbort == false)
+                        {
+                            list[vProgress] = current;
+                            abc[vProgress] = current;
+                            sum = sum + list[vProgress];
+                            avg = sum / nn;
+                            string stdev = Math.Round(GetStandardDeviation(abc), 2).ToString();
+                            textBox9.Text = stdev.ToString();
+                            //     textBox14.Text = avg.ToString();
+                            Log("Goto Focus :\t  N " + (vProgress + 1).ToString() + "\tHFR" + abc[vProgress].ToString() + "\t  Avg " + avg.ToString() + "\t  StdDev " + stdev.ToString());
+                            FileLog2("Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString());
+                            //string strLogText = "Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString(); //changed 7-25-14
+                            //string path = textBox11.Text.ToString();
+                            //string fullpath = path + @"\log.txt";
+                            //StreamWriter log;
+                            //if (!File.Exists(fullpath))
+                            //{
+                            //    log = new StreamWriter(fullpath);
+                            //}
+                            //else
+                            //{
+                            //    log = File.AppendText(fullpath);
+                            //}
+                            //if (vProgress == 0)
+                            //{
+                            //    log.WriteLine(DateTime.Now);
+                            //    log.WriteLine("Type" + "\tHFR" + "\tAvg" + "\tN" + "\tStdDev");
+                            //}
+                            //log.WriteLine(strLogText);
+                            //log.Close();
+                            vProgress++;
+                            if ((checkBox22.Checked == true) && (vProgress != nn))
+                                MetricCapture();
+                            toolStripStatusLabel1.Text = "Finding Focus " + vProgress.ToString();//**************added 2_29 for testing
 
                         }
 
                     }
-                    if (FineFocusAbort == false)
+                    if (vProgress == nn) // calculate focus point from HFR
                     {
-                        list[vProgress] = current;
-                        abc[vProgress] = current;
-                        sum = sum + list[vProgress];
-                        avg = sum / nn;
-                        string stdev = Math.Round(GetStandardDeviation(abc), 2).ToString();
-                        textBox9.Text = stdev.ToString();
-                        //     textBox14.Text = avg.ToString();
-                        Log("Goto Focus :\t  N " + (vProgress + 1).ToString() + "\tHFR" + abc[vProgress].ToString() + "\t  Avg " + avg.ToString() + "\t  StdDev " + stdev.ToString());
-                        FileLog2("Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString());
-                        //string strLogText = "Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString(); //changed 7-25-14
-                        //string path = textBox11.Text.ToString();
-                        //string fullpath = path + @"\log.txt";
-                        //StreamWriter log;
-                        //if (!File.Exists(fullpath))
-                        //{
-                        //    log = new StreamWriter(fullpath);
-                        //}
-                        //else
-                        //{
-                        //    log = File.AppendText(fullpath);
-                        //}
-                        //if (vProgress == 0)
-                        //{
-                        //    log.WriteLine(DateTime.Now);
-                        //    log.WriteLine("Type" + "\tHFR" + "\tAvg" + "\tN" + "\tStdDev");
-                        //}
-                        //log.WriteLine(strLogText);
-                        //log.Close();
-                        vProgress++;
-                        if ((checkBox22.Checked == true) && (vProgress != nn))
-                            MetricCapture();
-                        toolStripStatusLabel1.Text = "Finding Focus " + vProgress.ToString();//**************added 2_29 for testing
-
-                    }
-
-                }
-                if (vProgress == nn)
-                {
-
-                    //?  may need FSW3 enalbing event = false here for std dev use
-                    if (_gotoFocusOn == true)
-                    {
-
-                        if (radioButton2.Checked == true)//use upslope
+                        focusSampleComplete = true;
+                        //?  may need FSW3 enalbing event = false here for std dev use
+                        if (_gotoFocusOn == true)
                         {
-                            // Data d = new Data();
-                            FillData();
-                            GetAvg();
 
-                            //  EnteredPID = Convert.ToInt32(textBox12.Text);
-                            //    EnteredSlopeUP = Convert.ToDouble(textBox10.Text);
-                            //      textBox14.Text = avg.ToString();
-                            BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
-
-                            //3-2-16
-                            Log("Calculated focus point = " + BestPos.ToString());
-                            if ((int)BestPos < 0 || (int)BestPos > travel)
+                            if (radioButton2.Checked == true)//use upslope
                             {
-                                redo++;
-                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+                                // Data d = new Data();
+                                FillData();
+                                GetAvg();
 
-                                posMin = count; //reset to prev focus point
-                                BestPos = count;
-                                fileSystemWatcher3.EnableRaisingEvents = false;
-                                if (redo < 4)
-                                    gotoFocus();
-                                else
-                                {
-                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
-                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
-                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
-                                    BestPos = count;
-                                    redo = 0;
-                                }
+                                //  EnteredPID = Convert.ToInt32(textBox12.Text);
+                                //    EnteredSlopeUP = Convert.ToDouble(textBox10.Text);
+                                //      textBox14.Text = avg.ToString();
+                                BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
 
-                                return;
-                            }
-                            //check to make sure there wasn't gross miscalculation 9-9-15
-                            if (!Simulator())
-                            {
-                                if (((double)BestPos > (count + (int)numericUpDown39.Value * 2)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 10)))
+                                //3-2-16
+                                Log("Calculated focus point = " + Math.Round(BestPos).ToString());
+                                if ((int)BestPos < 0 || (int)BestPos > travel)
                                 {
-                                    redo++;
-                                    Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                    calcRedo++;
+                                    Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
 
                                     posMin = count; //reset to prev focus point
                                     BestPos = count;
                                     fileSystemWatcher3.EnableRaisingEvents = false;
-                                    if (redo < 4)
+                                    if (calcRedo < 4)
                                         gotoFocus();
                                     else
                                     {
@@ -1146,571 +1134,489 @@ namespace Pololu.Usc.ScopeFocus
                                         FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
                                         Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
                                         BestPos = count;
-                                        redo = 0;
+                                        calcRedo = 0;
                                     }
 
                                     return;
                                 }
-
-
-
-                                else
+                                //check to make sure there wasn't gross miscalculation 9-9-15
+                                if (!Simulator())
                                 {
-                                    if (redo > 0)
-                                        redo = 0;
-                                    focuser.Move((int)BestPos);
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    if (((double)BestPos > (count + (int)numericUpDown39.Value * 2)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 10)))
+                                    {
+                                        redo++;
+                                        Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+
+                                        posMin = count; //reset to prev focus point
+                                        BestPos = count;
+                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        if (calcRedo < 4)
+                                            gotoFocus();
+                                        else
+                                        {
+                                            Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                            FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                            Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                            BestPos = count;
+                                            calcRedo = 0;
+                                        }
+
+                                        return;
+                                    }
+
+
+
+                                    else //if calculation seems ok...move to focus point then check w/ another exposure 
+                                    {
+                                        if (calcRedo > 0)
+                                            calcRedo = 0;
+                                        focuser.Move((int)BestPos);
+                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                    }
                                 }
-                            }
-                            ////9-9-15
-                            //// check to make sure HFR improved....it should always improve a little or sample point was too lcose to PID
-                            //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
-                            //current = GetFileHFR(filePaths, roundto);
-                            //Log("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
-                            //FileLog2("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
-                            //if (current > avg)
-                            //{
-                            //    Log("Focus did not improve, repeating on the other side of V-vurve");
-                            //    FileLog2("Focus did not improve, repeating on the other side of V-vurve");
-                            //    BestPos = count;
-                            //    radioButton2.Checked = false;
-                            //    radioButton3.Checked = true;
-                            //    //    redo = true;
-                            //    fileSystemWatcher3.EnableRaisingEvents = false;
-                            //    gotoFocus();
-                            //    return;
-                            //}
+                                ////9-9-15
+                                //// check to make sure HFR improved....it should always improve a little or sample point was too close to PID
+                                //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
+                                //current = GetFileHFR(filePaths, roundto);
+                                //Log("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
+                                //FileLog2("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
+                                //if (current > avg)
+                                //{
+                                //    Log("Focus did not improve, repeating on the other side of V-vurve");
+                                //    FileLog2("Focus did not improve, repeating on the other side of V-vurve");
+                                //    BestPos = count;
+                                //    radioButton2.Checked = false;
+                                //    radioButton3.Checked = true;
+                                //    //    redo = true;
+                                //    fileSystemWatcher3.EnableRaisingEvents = false;
+                                //    gotoFocus();
+                                //    return;
+                                //}
 
 
-                            //  gotopos(Convert.ToInt32(BestPos));//  4-24-14
-                            //Thread.Sleep(1000);
-                            //delay(1); 
+                                //  gotopos(Convert.ToInt32(BestPos));//  4-24-14
+                                //Thread.Sleep(1000);
+                                //delay(1); 
 
-                            //  fileSystemWatcher3.EnableRaisingEvents = false;
+                                //  fileSystemWatcher3.EnableRaisingEvents = false;
 
-                            HFRtestON = true;
+                                HFRtestON = true;
 
-                            _gotoFocusOn = false;
-                            Log("Goto Focus Position: " + ((int)BestPos).ToString());
-                            textBox4.Text = ((int)BestPos).ToString();
+                                _gotoFocusOn = false;
+                                Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                                textBox4.Text = ((int)BestPos).ToString();
 
-                            toolStripStatusLabel1.Text = "Focus Moving";
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
-                            //3-2-16 
-                            while (focuser.IsMoving)
-                            {
-                                delay(1); // 10-11-16 moved from space below on all similar x 3
-                                count = focuser.Position;
-                                textBox1.Text = count.ToString();
-                                
-                                positionbar();
-                                //  Log(focuser.IsMoving.ToString());
-                            }
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-                            toolStripStatusLabel1.Text = "Ready";
-
-
-                        }
-                        if (radioButton3.Checked == true)//use downslope
-                        {
-                            //Data d = new Data();
-                            FillData();
-                            GetAvg();
-
-                            //    EnteredPID = Convert.ToInt32(textBox12.Text);
-                            //    EnteredSlopeDWN = Convert.ToDouble(textBox3.Text);
-                            // textBox14.Text = avg.ToString();
-                            BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
-                            Log("Calculated focus point = " + BestPos.ToString());
-                            //3-2-16
-                            if ((int)BestPos < 0 || (int)BestPos > travel)
-                            {
-                                redo++;
-                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
-
-                                posMin = count; //reset to prev focus point
-                                BestPos = count;
-                                fileSystemWatcher3.EnableRaisingEvents = false;
-                                if (redo < 4)
-                                    gotoFocus();
-                                else
+                                toolStripStatusLabel1.Text = "Focus Moving";
+                                toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                                //3-2-16 
+                                while (focuser.IsMoving)
                                 {
-                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
-                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
-                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
-                                    BestPos = count;
-                                    redo = 0;
+                                    delay(1); // 10-11-16 moved from space below on all similar x 3
+                                    count = focuser.Position;
+                                    textBox1.Text = count.ToString();
+
+                                    positionbar();
+                                    //  Log(focuser.IsMoving.ToString());
                                 }
+                                toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                                toolStripStatusLabel1.Text = "Ready";
 
-                                return;
+
                             }
-
-
-                            //check calculation 9-9-15
-                            if (!Simulator())
+                            if (radioButton3.Checked == true)//use downslope
                             {
-                                if (((double)BestPos > (count + (int)numericUpDown39.Value * 10)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 2)))
-                                {
-                                    redo++;
-                                    Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                //Data d = new Data();
+                                FillData();
+                                GetAvg();
 
-                                    posMin = count;
+                                //    EnteredPID = Convert.ToInt32(textBox12.Text);
+                                //    EnteredSlopeDWN = Convert.ToDouble(textBox3.Text);
+                                // textBox14.Text = avg.ToString();
+                                BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
+                                Log("Calculated focus point = " + BestPos.ToString());
+                                //3-2-16
+                                if ((int)BestPos < 0 || (int)BestPos > travel)
+                                {
+                                    calcRedo++;
+                                    Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+
+                                    posMin = count; //reset to prev focus point
                                     BestPos = count;
                                     fileSystemWatcher3.EnableRaisingEvents = false;
-                                    if (redo < 4)
+                                    if (calcRedo < 4)
                                         gotoFocus();
                                     else
                                     {
                                         Log("The Focus Calcualtion Failed x 3 -- Aborted");
                                         FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
-                                        Send("GotoFocus Calculation Error - GotoFocus Aborted");
+                                        Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
                                         BestPos = count;
-                                        redo = 0;
+                                        calcRedo = 0;
                                     }
+
                                     return;
                                 }
 
 
-                                else
+                                //check calculation 9-9-15
+                                if (!Simulator())
                                 {
-                                    if (redo > 0)
-                                        redo = 0;
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
-                                    focuser.Move((int)BestPos);
+                                    if (((double)BestPos > (count + (int)numericUpDown39.Value * 10)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 2)))
+                                    {
+                                        calcRedo++;
+                                        Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+
+                                        posMin = count;
+                                        BestPos = count;
+                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        if (calcRedo < 4)
+                                            gotoFocus();
+                                        else
+                                        {
+                                            Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                            FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                            Send("GotoFocus Calculation Error - GotoFocus Aborted");
+                                            BestPos = count;
+                                            calcRedo = 0;
+                                        }
+                                        return;
+                                    }
+
+
+                                    else
+                                    {
+                                        if (calcRedo > 0)
+                                            calcRedo = 0;
+                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        //   focuser.Move((int)BestPos);
+                                        gotopos((int)BestPos);  // 10-13-16 try so waits for focuser move to complete...while below doesn't seem to work....
+                                    }
                                 }
+                                //3-2-16 
+
+                                //these were not prev on the downslope one....  10-13-16
+                                HFRtestON = true;
+
+                                _gotoFocusOn = false;
+                                Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                                textBox4.Text = ((int)BestPos).ToString();
+                                // end addt
+
+                                toolStripStatusLabel1.Text = "Focus Moving";
+                                toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                                while (focuser.IsMoving)
+                                {
+                                    delay(1);
+                                    count = focuser.Position;
+                                    textBox1.Text = count.ToString();
+
+                                    positionbar();
+                                    //  Log(focuser.IsMoving.ToString());
+                                }
+                                toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                                toolStripStatusLabel1.Text = "Ready";
+
                             }
-                            //3-2-16 
-                            toolStripStatusLabel1.Text = "Focus Moving";
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
-                            while (focuser.IsMoving)
-                            {
-                                delay(1);
-                                count = focuser.Position;
-                                textBox1.Text = count.ToString();
-                                
-                                positionbar();
-                                //  Log(focuser.IsMoving.ToString());
-                            }
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-                            toolStripStatusLabel1.Text = "Ready";
-                            // check to make sure HFR improved....
-                            //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
-                            //current = GetFileHFR(filePaths, roundto);
-                            //Log("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
-                            //FileLog2("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
-                            //if (current > avg)
-                            //{
+                            //*****7-25-14 try moving this from below**********
 
-                            //    Log("Focus did not improve, attempting sample repeat on the other side of V-vurve");
-                            //    FileLog2("Focus did not improve, attempting sample repeat on the other side of V-vurve");
-                            //    BestPos = count; //reset to prev position
-                            //    radioButton3.Checked = false;
-                            //    radioButton2.Checked = true;
-                            //    //    redo = true;
-                            //    fileSystemWatcher3.EnableRaisingEvents = false;
-                            //    gotoFocus();
-                            //    return;
-                            //}
-
-
-                            // gotopos(Convert.ToInt32(BestPos)); // not sure why this was removed??? 
-                            //  delay(1);
-                            //  Thread.Sleep(1000);
-
-
-                            //   fileSystemWatcher3.EnableRaisingEvents = false;
-
-
-                            _gotoFocusOn = false;
-                            Log("Goto Focus Position: " + ((int)BestPos).ToString());
-                            textBox4.Text = ((int)BestPos).ToString();
-                            HFRtestON = true;
-
-                            //3-2-16 
-                            toolStripStatusLabel1.Text = "Focus Moving";
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
-                            while (focuser.IsMoving)
-                            {
-                                delay(1);
-                                count = focuser.Position;
-                                textBox1.Text = count.ToString();
-                                
-                                positionbar();
-                                //  Log(focuser.IsMoving.ToString());
-                            }
-                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-                            toolStripStatusLabel1.Text = "Ready";
-
-                        }
-                        //*****7-25-14 try moving this from below**********
-
-
-                        if (checkBox22.Checked == true)
-                        {
-                            //*********moved to test area below********  unrem all if doesnt' work 
-                            //    fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
-                            //    _gotoFocusOn = false;
-                            ////    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
-                            //    textBox4.Text = ((int)BestPos).ToString();
-
-                            //    serverStream = clientSocket.GetStream();
-                            //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                            //    serverStream.Write(outStream, 0, outStream.Length);
-                            //    serverStream.Flush();
-
-                            //    Thread.Sleep(3000);
-                            //    serverStream.Close();
-                            //    SetForegroundWindow(Handles.NebhWnd);
-                            //    Thread.Sleep(1000);
-                            //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                            //    Thread.Sleep(1000);
-                            //    NebListenOn = false;
-                            //    // clientSocket.GetStream().Close();//added 5-17-12
-                            //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                            //    clientSocket.Close();
-                            HFRtestON = true;
-                        }
-                        FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_"); //7-25-14
-                        string strLogText;
-                        strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_";
-
-                        //string path = textBox11.Text.ToString();
-                        //string fullpath = path + @"\log.txt";
-                        //StreamWriter log;
-                        //if (!File.Exists(fullpath))
-                        //{
-                        //    log = new StreamWriter(fullpath);
-                        //}
-                        //else
-                        //{
-                        //    log = File.AppendText(fullpath);
-                        //}
-
-                        if (Filtertext != null)
-                            FileLog2(strLogText + Filtertext.ToString());
-                        else
-                            FileLog2(strLogText);
-
-                        //log.Close();
-                        if (FilterFocusOn == true)
-                        {
 
                             if (checkBox22.Checked == true)
                             {
-                                /*//  all below remd 7-1-14 this fixed the problem w/metric in  filterfocus.
-                                
-                              //   ShowWindow(Handles.NebhWnd, SW_SHOW);
-                                 //  ShowWindow(NebhWnd, SW_RESTORE);
-                                 SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
-                               //  Thread.Sleep(1000);
-                                  delay(1);//may not need 3-4 both (below too) were 1000 6-1
-                                 SetForegroundWindow(Handles.Aborthwnd);
-                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                                // Thread.Sleep(1000);
-                                 delay(1);//was 1000
-                               //  NebListenOn = false;
-                                 */
+                                //*********moved to test area below********  unrem all if doesnt' work 
+                                //    fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                                //    _gotoFocusOn = false;
+                                ////    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                                //    textBox4.Text = ((int)BestPos).ToString();
 
-                                if (metricpath[0] != null)
-                                    File.Delete(metricpath[0]);
+                                //    serverStream = clientSocket.GetStream();
+                                //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                //    serverStream.Write(outStream, 0, outStream.Length);
+                                //    serverStream.Flush();
 
+                                //    Thread.Sleep(3000);
+                                //    serverStream.Close();
+                                //    SetForegroundWindow(Handles.NebhWnd);
+                                //    Thread.Sleep(1000);
+                                //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                //    Thread.Sleep(1000);
+                                //    NebListenOn = false;
+                                //    // clientSocket.GetStream().Close();//added 5-17-12
+                                //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                //    clientSocket.Close();
+                                //HFRtestON = true;  remd 10-13-16 does nothing
                             }
+                            FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_"); //7-25-14
+                            string strLogText;
+                            strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_";
 
 
-                            if (checkBox22.Checked == false) //not using metric   
-                            {
+                            HFRtestON = true; // added 10-13-16
 
-                                //  FilterFocusOn = false;move to while belwo
-                                ShowWindow(Handles.NebhWnd, SW_SHOW);
-                                //  ShowWindow(NebhWnd, SW_RESTORE);
-                                SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
-                                Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
-                                SetForegroundWindow(Handles.Aborthwnd);
-                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                                Thread.Sleep(500);//was 1000
-                                NebListenOn = false;
-                                //     if (FineFocusAbort == true)
-                                //       FineFocusAbort = false;
+                            //string path = textBox11.Text.ToString();
+                            //string fullpath = path + @"\log.txt";
+                            //StreamWriter log;
+                            //if (!File.Exists(fullpath))
+                            //{
+                            //    log = new StreamWriter(fullpath);
+                            //}
+                            //else
+                            //{
+                            //    log = File.AppendText(fullpath);
+                            //}
 
-                            }
+                            if (Filtertext != null)
+                                FileLog2(strLogText + Filtertext.ToString());
+                            else
+                                FileLog2(strLogText);
 
-                            if (checkBox10.Checked == false)//cb10 is focus in image frame, if not needs to slew back
-                            {
-                                toolStripStatusLabel1.Text = "Slewing to Target";
-                                this.Refresh();
-
-                                // toolStripStatusLabel1.Text = "Slewing to Target Location";
-                                //   this.Refresh();
-                                //    FocusDoneTargetReturn();
-                                //   Thread.Sleep(1000);
-                                //  MessageBox.Show("simulate Slew");
-
-                                GotoTargetLocation();
-
-                                //while (MountMoving == true)
-                                //{
-                                //    Thread.Sleep(50); // pause for 1/20 second
-                                //    System.Windows.Forms.Application.DoEvents();
-                                //}
-                                //if (MountMoving == false)
-                                //{
-                                button35.Text = "At Target";
-                                button35.BackColor = System.Drawing.Color.Lime;
-                                button33.Text = "Goto";
-                                button33.UseVisualStyleBackColor = true;
-                                //   }
-                                //    Thread.Sleep(SlewDelay);
-
-                                //if (Handles.PHDVNumber == 2)  //resumes in GotoTargetLocation()
-                                //    resumePHD2();
-                                //else
-                                //ResumePHD();
-                                //    GotoTargetLocation(); //   *****rem for debugging*****
-                                //   Thread.Sleep(SlewDelay);
-                                //    ResumePHD();
-                            }
-                            //   SetForegroundWindow(NebhWnd);
-                            //   Thread.Sleep(1000);
-
-                            //    PostMessage(Aborthwnd, BN_CLICKED, 0, 0);
-                            /*
-                            if (clientSocket != null)
-                            {
-
-                                clientSocket.GetStream().Close();//added 5-17-12
-                                clientSocket.Client.Disconnect(true);//added 5-17-12
-                            }
-                            */
-                            //if (checkBox19.Checked == true)
-                            //    if (Handles.PHDVNumber == 2)
-                            //        resumePHD2();
-                            //    else
-                            //    ResumePHD();
-
-
-                            if (!IsSlave() && (checkBox22.Checked == false))
-                            {
-
-                                clientSocket.GetStream().Close();
-                                clientSocket.Close();// rem'd 5-17-12                                    
-
-                            }
-
-                            if (IsSlave())
-                            {
-
-                                clientSocket2.GetStream().Close();
-                                clientSocket2.Close();
-                            }
-
-
-                            delay(1);
-                            //    SlavePaused = true;
+                            //log.Close();
 
 
 
-                            if (IsServer())
-                            {
-                                Log("Waiting for slave focus");
-                                toolStripStatusLabel1.Text = "Waiting for slave focus";
-                                this.Refresh();
-                                while (working == true)
-                                {
-                                    WaitForSequenceDone("Fine focus done", GlobalVariables.NebSlavehwnd);
-                                    //  Thread.Sleep(50);
-                                }
-                                working = true;
-                                Log("Slave focus done");
-                            }
 
-                            /* // this works below  ********* 6-6 
-                        while (FilterFocusOn == true)
-                        {
-                            int StatusstripHandle = FindWindowEx(NebSlavehwnd, 0, "msctls_statusbar32", null);
+                            // ****  10-13-16  try moving this to end (copied from here )
 
-                            //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
-                            IntPtr statusHandle = new IntPtr(StatusstripHandle);
-                            StatusHelper sh = new StatusHelper(statusHandle);
-                            string[] captions = sh.Captions;
+                            //                        if ((FilterFocusOn == true) & (HFRtestON == false))
+                            //                        {
 
-                            if (captions[0] == "Fine focus done")
-                                FilterFocusOn = false;
-                            Thread.Sleep(50);
+                            //                            if (checkBox22.Checked == true)
+                            //                            {
+                            //                                /*//  all below remd 7-1-14 this fixed the problem w/metric in  filterfocus.
+
+                            //                              //   ShowWindow(Handles.NebhWnd, SW_SHOW);
+                            //                                 //  ShowWindow(NebhWnd, SW_RESTORE);
+                            //                                 SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                            //                               //  Thread.Sleep(1000);
+                            //                                  delay(1);//may not need 3-4 both (below too) were 1000 6-1
+                            //                                 SetForegroundWindow(Handles.Aborthwnd);
+                            //                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //                                // Thread.Sleep(1000);
+                            //                                 delay(1);//was 1000
+                            //                               //  NebListenOn = false;
+                            //                                 */
+
+                            //                                if (metricpath[0] != null)
+                            //                                    File.Delete(metricpath[0]);
+
+                            //                            }
 
 
+                            //                            if (checkBox22.Checked == false) //not using metric   
+                            //                            {
+                            //                                HFRtestON = true; // added 10-13-16
+                            //                                //  FilterFocusOn = false;move to while belwo
+                            //                                ShowWindow(Handles.NebhWnd, SW_SHOW);
+                            //                                //  ShowWindow(NebhWnd, SW_RESTORE);
+                            //                                SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                            //                                Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
+                            //                                SetForegroundWindow(Handles.Aborthwnd);
+                            //                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //                                Thread.Sleep(500);//was 1000
+                            //                                NebListenOn = false;
+                            //                                //     if (FineFocusAbort == true)
+                            //                                //       FineFocusAbort = false;
+
+                            //                            }
+
+                            //                            if (checkBox10.Checked == false)//cb10 is focus in image frame, if not needs to slew back
+                            //                            {
+                            //                                toolStripStatusLabel1.Text = "Slewing to Target";
+                            //                                this.Refresh();
+
+                            //                                // toolStripStatusLabel1.Text = "Slewing to Target Location";
+                            //                                //   this.Refresh();
+                            //                                //    FocusDoneTargetReturn();
+                            //                                //   Thread.Sleep(1000);
+                            //                                //  MessageBox.Show("simulate Slew");
+
+                            //                                GotoTargetLocation();
+
+                            //                                //while (MountMoving == true)
+                            //                                //{
+                            //                                //    Thread.Sleep(50); // pause for 1/20 second
+                            //                                //    System.Windows.Forms.Application.DoEvents();
+                            //                                //}
+                            //                                //if (MountMoving == false)
+                            //                                //{
+                            //                                button35.Text = "At Target";
+                            //                                button35.BackColor = System.Drawing.Color.Lime;
+                            //                                button33.Text = "Goto";
+                            //                                button33.UseVisualStyleBackColor = true;
+                            //                                //   }
+                            //                                //    Thread.Sleep(SlewDelay);
+
+                            //                                //if (Handles.PHDVNumber == 2)  //resumes in GotoTargetLocation()
+                            //                                //    resumePHD2();
+                            //                                //else
+                            //                                //ResumePHD();
+                            //                                //    GotoTargetLocation(); //   *****rem for debugging*****
+                            //                                //   Thread.Sleep(SlewDelay);
+                            //                                //    ResumePHD();
+                            //                            }
+                            //                            //   SetForegroundWindow(NebhWnd);
+                            //                            //   Thread.Sleep(1000);
+
+                            //                            //    PostMessage(Aborthwnd, BN_CLICKED, 0, 0);
+                            //                            /*
+                            //                            if (clientSocket != null)
+                            //                            {
+
+                            //                                clientSocket.GetStream().Close();//added 5-17-12
+                            //                                clientSocket.Client.Disconnect(true);//added 5-17-12
+                            //                            }
+                            //                            */
+                            //                            //if (checkBox19.Checked == true)
+                            //                            //    if (Handles.PHDVNumber == 2)
+                            //                            //        resumePHD2();
+                            //                            //    else
+                            //                            //    ResumePHD();
+
+
+                            //                            if (!IsSlave() && (checkBox22.Checked == false))
+                            //                            {
+
+                            //                                clientSocket.GetStream().Close();
+                            //                                clientSocket.Close();// rem'd 5-17-12                                    
+
+                            //                            }
+
+                            //                            if (IsSlave())
+                            //                            {
+
+                            //                                clientSocket2.GetStream().Close();
+                            //                                clientSocket2.Close();
+                            //                            }
+
+
+                            //                            delay(1);
+                            //                            //    SlavePaused = true;
+
+
+
+                            //                            if (IsServer())
+                            //                            {
+                            //                                Log("Waiting for slave focus");
+                            //                                toolStripStatusLabel1.Text = "Waiting for slave focus";
+                            //                                this.Refresh();
+                            //                                while (working == true)
+                            //                                {
+                            //                                    WaitForSequenceDone("Fine focus done", GlobalVariables.NebSlavehwnd);
+                            //                                    //  Thread.Sleep(50);
+                            //                                }
+                            //                                working = true;
+                            //                                Log("Slave focus done");
+                            //                            }
+
+                            //                            // remd 10-12-16 moved to the very end
+                            //                            // unremd 10-13-16
+                            //                            FilterFocusOn = false;
+                            //                            if (!IsSlave())
+                            //                            {
+
+                            //                                fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                            //                                NebCapture();//*************un remd 3_4
+                            //                                /*
+                            //                                if (backgroundWorker2.IsBusy != true)
+                            //                                {
+                            //                                    // Start the asynchronous operation.
+                            //                                    backgroundWorker2.RunWorkerAsync();
+                            //                                }
+                            //*/
+                            //                            }
+
+
+
+                            //                        }
+                            //*********  7-25-14 try moving up  (see avobe) here it gets called after a gotofocus even without a lost start
+                            //else //if not filterfocus, just using gotfocu button, then close socket //added 7-18-14 to fix only able to do 1 metric goto focus
+                            //{
+                            //    if (checkBox22.Checked == true)
+                            //    {
+                            //        serverStream = clientSocket.GetStream();
+                            //        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                            //        serverStream.Write(outStream, 0, outStream.Length);
+                            //        serverStream.Flush();
+
+                            //        Thread.Sleep(3000);
+                            //        serverStream.Close();
+                            //        SetForegroundWindow(Handles.NebhWnd);
+                            //        Thread.Sleep(1000);
+                            //        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //        Thread.Sleep(1000);
+                            //        NebListenOn = false;
+                            //        // clientSocket.GetStream().Close();//added 5-17-12
+                            //        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                            //        clientSocket.Close();
+                            //    }
+                            //}
                         }
-                                
-                             */
+                        //                      // 7-1-14 moved up above
+                        //                    if (checkBox22.Checked == true)
+                        //                    {
 
-                            /*
-                            if (IsSlave())
-                            {
-                                while (FilterFocusOn == true)
-                                {
-                                    int StatusstripHandle = FindWindowEx(NebhWnd, 0, "msctls_statusbar32", null);
+                        //                 //        
+                        //                        /*
+                        //                        ShowWindow(Handles.NebhWnd, SW_SHOW);
+                        //                        //  ShowWindow(NebhWnd, SW_RESTORE);
+                        //                        SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                        //                        Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
+                        //                        SetForegroundWindow(Handles.Aborthwnd);
+                        //                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        //                        Thread.Sleep(500);//was 1000
+                        //                        NebListenOn = false;
+                        //                //        */
 
-                                    //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
-                                    IntPtr statusHandle = new IntPtr(StatusstripHandle);
-                                    StatusHelper sh = new StatusHelper(statusHandle);
-                                    string[] captions = sh.Captions;
+                        //                        if (metricpath[0] != null)
+                        //                            File.Delete(metricpath[0]);
+                        ///*
 
-                                    while (captions[0] != "Fine focus done")
-                                    {
-                                        Thread.Sleep(50); // pause for 1/20 second
-                                        System.Windows.Forms.Application.DoEvents();
+                        // //*****rem all this 6-1-14 //******** fixes Metric focus socket disconnect problem 
 
-                                    }
-                                    FilterFocusOn = false;
-                                }
-                            }
-                                
-           */
+                        //                   //see 3950 for end of sequence closing as reference     
+                        //            //    serverStream = clientSocket.GetStream();
+                        //                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        //                serverStream.Write(outStream, 0, outStream.Length);
+                        //                Thread.Sleep(1000);
+                        //                serverStream.Flush();
+                        //                Thread.Sleep(2000);
+                        //                serverStream.Close();
+                        //                SetForegroundWindow(Handles.NebhWnd);
+                        //                Thread.Sleep(1000);
+                        //                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        //                Thread.Sleep(1000);
+                        //                NebListenOn = false;
+                        //             //   clientSocket.GetStream().Close();//added 5-17-12
 
-
-
-
-
-                            /*      ******change to wait for neb status to say "Fine focue done"   *******
-                                                            if (IsServer())
-                                                            {
-                                                                Log("Waiting for Slave focus");
-                                    
-                                                                while (textBox41.Text != "Focus Done")
-                                                                {
-                                                                    textBox41.Refresh();
-                                                                    Thread.Sleep(50); // pause for 1/20 second
-                                                                    System.Windows.Forms.Application.DoEvents();
-                                                                }
-                                                            }
-                                                            if (IsSlave())
-                                                            {
-                                                                Log("Waiting for Server focus");
-                                                                while (textBox41.Text != "Focus Done")
-                                                                {
-                                                                    textBox41.Refresh();
-                                                                    Thread.Sleep(50); // pause for 1/20 second
-                                                                    System.Windows.Forms.Application.DoEvents();
-                                                                }
-                                                            }
-                            */
-                            /*
-                            if (IsSlave())
-                            {
-                                while (textBox41.Text != "Capturing")
-                                {
-                                    textBox41.Refresh();
-                                    Thread.Sleep(50); // pause for 1/20 second
-                                    System.Windows.Forms.Application.DoEvents();
-                                }
-                            }
-                            if (IsServer())
-                                SendtoSlave("Capturing");
-                             */
-
-                            FilterFocusOn = false;
-                            if (!IsSlave())
-                            {
-
-                                fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
-                                NebCapture();//*************un remd 3_4
-                                /*
-                                if (backgroundWorker2.IsBusy != true)
-                                {
-                                    // Start the asynchronous operation.
-                                    backgroundWorker2.RunWorkerAsync();
-                                }
-*/
-                            }
+                        //                        //    clientSocket.Client.Disconnect(true);//added 5-17-12  ***use this one
+                        //                            clientSocket.Close();
+                        //                         //   if (FineFocusAbort == true)
+                        //                         //       FineFocusAbort = false;
+                        //// */
+                        //                    }
 
 
-
-                        }
-                        //*********  7-25-14 try moving up  (see avobe) here it gets called after a gotofocus even without a lost start
-                        //else //if not filterfocus, just using gotfocu button, then close socket //added 7-18-14 to fix only able to do 1 metric goto focus
-                        //{
-                        //    if (checkBox22.Checked == true)
-                        //    {
-                        //        serverStream = clientSocket.GetStream();
-                        //        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                        //        serverStream.Write(outStream, 0, outStream.Length);
-                        //        serverStream.Flush();
-
-                        //        Thread.Sleep(3000);
-                        //        serverStream.Close();
-                        //        SetForegroundWindow(Handles.NebhWnd);
-                        //        Thread.Sleep(1000);
-                        //        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                        //        Thread.Sleep(1000);
-                        //        NebListenOn = false;
-                        //        // clientSocket.GetStream().Close();//added 5-17-12
-                        //        //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                        //        clientSocket.Close();
-                        //    }
-                        //}
                     }
-                    //                      // 7-1-14 moved up above
-                    //                    if (checkBox22.Checked == true)
-                    //                    {
-
-                    //                 //        
-                    //                        /*
-                    //                        ShowWindow(Handles.NebhWnd, SW_SHOW);
-                    //                        //  ShowWindow(NebhWnd, SW_RESTORE);
-                    //                        SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
-                    //                        Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
-                    //                        SetForegroundWindow(Handles.Aborthwnd);
-                    //                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                    //                        Thread.Sleep(500);//was 1000
-                    //                        NebListenOn = false;
-                    //                //        */
-
-                    //                        if (metricpath[0] != null)
-                    //                            File.Delete(metricpath[0]);
-                    ///*
-
-                    // //*****rem all this 6-1-14 //******** fixes Metric focus socket disconnect problem 
-
-                    //                   //see 3950 for end of sequence closing as reference     
-                    //            //    serverStream = clientSocket.GetStream();
-                    //                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                    //                serverStream.Write(outStream, 0, outStream.Length);
-                    //                Thread.Sleep(1000);
-                    //                serverStream.Flush();
-                    //                Thread.Sleep(2000);
-                    //                serverStream.Close();
-                    //                SetForegroundWindow(Handles.NebhWnd);
-                    //                Thread.Sleep(1000);
-                    //                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                    //                Thread.Sleep(1000);
-                    //                NebListenOn = false;
-                    //             //   clientSocket.GetStream().Close();//added 5-17-12
-
-                    //                        //    clientSocket.Client.Disconnect(true);//added 5-17-12  ***use this one
-                    //                            clientSocket.Close();
-                    //                         //   if (FineFocusAbort == true)
-                    //                         //       FineFocusAbort = false;
-                    //// */
-                    //                    }
-
-
+                    if (FineFocusAbort == true)
+                    {
+                        //  FineFocusAbort = false;
+                        gotoFocus();
+                    }
                 }
-                if (FineFocusAbort == true)
-                {
-                    //  FineFocusAbort = false;
-                    gotoFocus();
-                }
-            }
-            // }
-            /*     
-             catch(Exception ex) 
-             {
-                 Log("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
-                 Send("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
-                 FileLog("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
+                // }
+                /*     
+                 catch(Exception ex) 
+                 {
+                     Log("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
+                     Send("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
+                     FileLog("Unknown Error FilesystemWatcher3 - StdDev/GotoFocus" + ex.ToString());
 
-             }
-             */
-            //  
+                 }
+                 */
+                //  
+            } // end if (HFRtestON == false) from way above
+
+
+
             if (!Simulator())
             {
                 //check for improvement.... 9-9-15
@@ -1756,7 +1662,7 @@ namespace Pololu.Usc.ScopeFocus
                         FileLog2("Test HFR = " + test.ToString() + " versus average sample HFR = " + avg.ToString());
                         if (test > avg)
                         {
-                            if ((redo == 1) & (checkBox22.Checked == false))  //if single star fails twice can try metric.
+                            if ((redo == 1) & (checkBox22.Checked == false))  //if single star fails twice can try metric.    
                             {
                                 SetForegroundWindow(Handles.NebhWnd);
                                 Thread.Sleep(1000);
@@ -1832,16 +1738,34 @@ namespace Pololu.Usc.ScopeFocus
                                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
                                 clientSocket.Close();
                             }
-                            posMin = Convert.ToInt32(BestPos);
+                          //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
+                           //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
                             Log("Using previous focus position - " + posMin.ToString());  //may not be right
+                            textBox4.Text = posMin.ToString();  // 10-13-16
                             gotoFocus();
                             return;
                         }
                         HFRtestON = false;
+                        
                         Log("Focus Improved at " + Convert.ToInt32(BestPos).ToString());
                         FileLog2("Focus Improved - Final Focus Position = " + Convert.ToInt32(BestPos).ToString());
                         redo = 0;
+                        posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
                         fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
+
+                        // try add 10-13-16
+                        //FilterFocusOn = false;
+                        //if (!IsSlave())
+                        //{
+
+                        //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                        //NebCapture();
+
+                        //}
+                        // end add
+
+
+
 
                         if (checkBox22.Checked == true)
                         {
@@ -1874,34 +1798,214 @@ namespace Pololu.Usc.ScopeFocus
             else
                 Log("Simulator -- quality check disabled");
             // end test for improvement addition
+            // remd 10-13-16 seems to do nothing.  
+            //        if (HFRtestON == false) // added 1--13-16
+            //        {
+            //            posMin = Convert.ToInt32(BestPos);
+            //            //************** added 9-17-14,  textBox 1 was not displaying position after gotofocus.  
+            //            //   if problems could try adding another timer and poll the focusers position every couple seconds.  
+            //            // also not sure why gotopos is NOT used above  but based on 4/14 change must have caused problems...could try reverting that back to gotopos if needed
+            //            while (focuser.IsMoving)
+            //            {
+            //                delay(1);
+            //                count = focuser.Position;
+            //                textBox1.Text = count.ToString();
+
+            //                positionbar();
+            //                //  Log(focuser.IsMoving.ToString());
+            //            }
+            //            // end add
 
 
-            posMin = Convert.ToInt32(BestPos);
-            //************** added 9-17-14,  textBox 1 was not displaying position after gotofocus.  
-            //   if problems could try adding another timer and poll the focusers position every couple seconds.  
-            // also not sure why gotopos is NOT used above  but based on 4/14 change must have caused problems...could try reverting that back to gotopos if needed
-            while (focuser.IsMoving)
+
+            //            count = focuser.Position;
+            //            textBox1.Text = count.ToString();
+            //            //   textBox1.Text = focuser.Position.ToString();
+            //            if (!ContinuousHoldOn)
+            //                focuser.Halt();
+            //            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+            //            toolStripStatusLabel1.Text = "Ready";
+
+            //            textBox1.Text = focuser.Position.ToString(); //added 9-17-14
+
+            //            // moved from above on 10-12-16
+            //            // remd here., unremd orig 10-13-16
+            //            //  FilterFocusOn = false;  //*****   remd 1-12-16 
+            ////            if (!IsSlave())
+            ////            {
+            ////                FilterFocusOn = false;
+            ////                fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+            ////                NebCapture();//*************un remd 3_4
+            ////                             /*
+            ////                             if (backgroundWorker2.IsBusy != true)
+            ////                             {
+            ////                                 // Start the asynchronous operation.
+            ////                                 backgroundWorker2.RunWorkerAsync();
+            ////                             }
+            ////*/
+            ////            }
+
+            //        }
+
+
+
+            // 10-13-16 this was copied from above 
+            if ((FilterFocusOn == true) & (HFRtestON == false) & (focusSampleComplete == true)) // 10-13-16 add focusSampleComplete 
             {
+
+                if (checkBox22.Checked == true)
+                {
+                    /*//  all below remd 7-1-14 this fixed the problem w/metric in  filterfocus.
+
+                  //   ShowWindow(Handles.NebhWnd, SW_SHOW);
+                     //  ShowWindow(NebhWnd, SW_RESTORE);
+                     SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                   //  Thread.Sleep(1000);
+                      delay(1);//may not need 3-4 both (below too) were 1000 6-1
+                     SetForegroundWindow(Handles.Aborthwnd);
+                     PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    // Thread.Sleep(1000);
+                     delay(1);//was 1000
+                   //  NebListenOn = false;
+                     */
+
+                    if (metricpath[0] != null)
+                        File.Delete(metricpath[0]);
+
+                }
+
+
+                if (checkBox22.Checked == false) //not using metric   
+                {
+                  //  HFRtestON = true; // added 10-13-16
+                                      //  FilterFocusOn = false;move to while belwo
+                    ShowWindow(Handles.NebhWnd, SW_SHOW);
+                    //  ShowWindow(NebhWnd, SW_RESTORE);
+                    SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                    Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
+                    SetForegroundWindow(Handles.Aborthwnd);
+                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    Thread.Sleep(500);//was 1000
+                    NebListenOn = false;
+                    //     if (FineFocusAbort == true)
+                    //       FineFocusAbort = false;
+
+                }
+
+                if (checkBox10.Checked == false)//cb10 is focus in image frame, if not needs to slew back
+                {
+                    toolStripStatusLabel1.Text = "Slewing to Target";
+                    this.Refresh();
+
+                    // toolStripStatusLabel1.Text = "Slewing to Target Location";
+                    //   this.Refresh();
+                    //    FocusDoneTargetReturn();
+                    //   Thread.Sleep(1000);
+                    //  MessageBox.Show("simulate Slew");
+
+                    GotoTargetLocation();
+
+                    //while (MountMoving == true)
+                    //{
+                    //    Thread.Sleep(50); // pause for 1/20 second
+                    //    System.Windows.Forms.Application.DoEvents();
+                    //}
+                    //if (MountMoving == false)
+                    //{
+                    button35.Text = "At Target";
+                    button35.BackColor = System.Drawing.Color.Lime;
+                    button33.Text = "Goto";
+                    button33.UseVisualStyleBackColor = true;
+                    //   }
+                    //    Thread.Sleep(SlewDelay);
+
+                    //if (Handles.PHDVNumber == 2)  //resumes in GotoTargetLocation()
+                    //    resumePHD2();
+                    //else
+                    //ResumePHD();
+                    //    GotoTargetLocation(); //   *****rem for debugging*****
+                    //   Thread.Sleep(SlewDelay);
+                    //    ResumePHD();
+                }
+                //   SetForegroundWindow(NebhWnd);
+                //   Thread.Sleep(1000);
+
+                //    PostMessage(Aborthwnd, BN_CLICKED, 0, 0);
+                /*
+                if (clientSocket != null)
+                {
+
+                    clientSocket.GetStream().Close();//added 5-17-12
+                    clientSocket.Client.Disconnect(true);//added 5-17-12
+                }
+                */
+                //if (checkBox19.Checked == true)
+                //    if (Handles.PHDVNumber == 2)
+                //        resumePHD2();
+                //    else
+                //    ResumePHD();
+
+
+                if (!IsSlave() && (checkBox22.Checked == false))
+                {
+
+                    clientSocket.GetStream().Close();
+                    clientSocket.Close();// rem'd 5-17-12                                    
+
+                }
+
+                if (IsSlave())
+                {
+
+                    clientSocket2.GetStream().Close();
+                    clientSocket2.Close();
+                }
+
+
                 delay(1);
-                count = focuser.Position;
-                textBox1.Text = count.ToString();
-                
-                positionbar();
-                //  Log(focuser.IsMoving.ToString());
+                //    SlavePaused = true;
+
+
+
+                if (IsServer())
+                {
+                    Log("Waiting for slave focus");
+                    toolStripStatusLabel1.Text = "Waiting for slave focus";
+                    this.Refresh();
+                    while (working == true)
+                    {
+                        WaitForSequenceDone("Fine focus done", GlobalVariables.NebSlavehwnd);
+                        //  Thread.Sleep(50);
+                    }
+                    working = true;
+                    Log("Slave focus done");
+                }
+
+                // remd 10-12-16 moved to the very end
+                // unremd 10-13-16
+                FilterFocusOn = false;
+                if (!IsSlave())
+                {
+
+                    fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                    NebCapture();//*************un remd 3_4
+                                 /*
+                                 if (backgroundWorker2.IsBusy != true)
+                                 {
+                                     // Start the asynchronous operation.
+                                     backgroundWorker2.RunWorkerAsync();
+                                 }
+ */
+                }
+
+
+
             }
-            // end add
+            // end copy/paste
 
 
 
-            count = focuser.Position;
-            textBox1.Text = count.ToString();
-            //   textBox1.Text = focuser.Position.ToString();
-            if (!ContinuousHoldOn)
-                focuser.Halt();
-            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-            toolStripStatusLabel1.Text = "Ready";
 
-            textBox1.Text = focuser.Position.ToString(); //added 9-17-14
         }
 
         public bool Simulator()
@@ -3110,7 +3214,7 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         //gotofocushere
-        //goes to near focus point uses std dev routine, takes 10 exposures, calculates best focus and goes there
+        //goes to near focus point uses std dev routine, takes 'Course N' exposures, calculates best focus and goes there
         public void gotoFocus()
         {
             try
@@ -3199,7 +3303,7 @@ namespace Pololu.Usc.ScopeFocus
                 fileSystemWatcher3.EnableRaisingEvents = true;
                 fileSystemWatcher1.EnableRaisingEvents = false;
                 fileSystemWatcher4.EnableRaisingEvents = false;
-
+                focusSampleComplete = false; // 10-13-16
                 _gotoFocusOn = true;//~line 440
                 min = 1;
                 sum = 0;
@@ -3633,6 +3737,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 GlobalVariables.LocalPlateSolve = radioButton_local.Checked;
 
+              
             }
             catch (Exception ex)
             {
@@ -5256,7 +5361,7 @@ namespace Pololu.Usc.ScopeFocus
         }
 
 
-
+        // for sequences
         private void fileSystemWatcher4_Changed(object sender, FileSystemEventArgs e)
         {
             //if (FlatDone == false)
@@ -13069,6 +13174,15 @@ namespace Pololu.Usc.ScopeFocus
         private void checkBox22_CheckedChanged_1(object sender, EventArgs e)
         {
             EquipRefresh();
+            metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
+            if (checkBox22.Checked == true)
+            {
+                if (metricpath.Length> 0)
+                {
+                    if (metricpath[0] != null) // clear all prev metric files
+                        File.Delete(metricpath[0]);
+                }
+            }
             //this stuff not used w/ full frame metric
             //   checkBox10.Checked = false;  rem'd 8-26-13.  this should stay checked o/w will try to slew to target when not needed.
             //   checkBox10.Enabled = false;
@@ -16194,6 +16308,16 @@ string cmd = "CD ..";
             selectedID = (int)dataGridView1.SelectedRows[0].Cells[0].Value;
             scrollIndex = dataGridView1.FirstDisplayedScrollingRowIndex;
             IsSelectedRow = true;
+            GetAvg();
+            //if (checkBox22.Checked)
+            //{
+            //    textBox12.Text = _enteredPID.ToString();
+            //    textBox3.Text = _enteredSlopeDWN.ToString();
+            //    textBox10.Text = _enteredSlopeUP.ToString();
+            //    textBox16.Clear();
+            //    textBox14.Clear();
+            //    textBox15.Clear();
+            //}
         }
 
         private void dataGridView1_DataBindingComplete_1(object sender, DataGridViewBindingCompleteEventArgs e)
