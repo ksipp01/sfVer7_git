@@ -2360,7 +2360,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         testMetricHFR = GetMetric(metricpath, roundto);
                         textBox25.Text = testMetricHFR.ToString();
-                        Log("MetricHFR" + testMetricHFR.ToString());
+                      //  Log("MetricHFR" + testMetricHFR.ToString());
                     }
                     catch (Exception e)
                     {
@@ -13223,10 +13223,13 @@ namespace Pololu.Usc.ScopeFocus
             metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
             if (checkBox22.Checked == true)
             {
-                if (metricpath.Length> 0)
+                if (metricpath.Length> 0) // delete all prev metric files.  
                 {
-                    if (metricpath[0] != null) // clear all prev metric files
-                        File.Delete(metricpath[0]);
+                  for (int x = 0; x < metricpath.Length; x++)
+                        {
+                            File.Delete(metricpath[x]);
+                        }                 
+                      
                 }
             }
             //this stuff not used w/ full frame metric
