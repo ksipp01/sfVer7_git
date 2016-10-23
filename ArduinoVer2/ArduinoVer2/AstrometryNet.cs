@@ -100,6 +100,7 @@ namespace Pololu.Usc.ScopeFocus
         internal string apikey = "ckylhfaafccqhumf";  // ? to settings
         internal string session = "";
         private string URI = "http://nova.astrometry.net";
+     //   private string URI = "http://127.0.0.1:8081"; // 10-21-16
         private string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         System.Timers.Timer timer = new System.Timers.Timer();
         internal string jobid = "";
@@ -319,7 +320,9 @@ namespace Pololu.Usc.ScopeFocus
             String input = "&request-json=" + jsonObject.ToString();
          //   Log("Astrometry.net login started");
          //   FileLog2("Astrometry.net login started - apikey: " + apikey);
+
             string baseAddress = "http://nova.astrometry.net/api/login";
+         //   string baseAddress = "http://127.0.0.1:8081/api/login"; // 10-21-16
             try
             {
                 using (var httpClient = new HttpClient())
@@ -371,6 +374,7 @@ namespace Pololu.Usc.ScopeFocus
             JsonObject jsonObject = getUploadJson(session);
             String input = jsonObject.ToString();  // was &json-request...
             string baseAddress = "http://nova.astrometry.net/api/upload";
+          //string baseAddress = "http://127.0.0.1:8081/api/upload"; // 10-21-16
             using (var httpClient = new HttpClient())
             {
                 httpClient.Timeout = TimeSpan.FromMinutes(3);
@@ -455,6 +459,7 @@ namespace Pololu.Usc.ScopeFocus
             string result = "";
             StringBuilder sb = new StringBuilder();
             string URI = "http://nova.astrometry.net/api/jobs/" + jobid + "/calibration";
+          //  string URI = "http://127.0.0.1:8081/api/jobs/" + jobid + "/calibration"; // 10-21-16
             var httpClient = new HttpClient();
             try
             {
@@ -612,6 +617,7 @@ namespace Pololu.Usc.ScopeFocus
             StringBuilder sb = new StringBuilder();
             string result;
             string url = "http://nova.astrometry.net/api/submissions/" + subid;
+        //    string url = "http://127.0.0.1:8081/api/submissions/" + subid; // 10-21-16
             var httpClient = new HttpClient();
             try
             {
@@ -754,7 +760,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             string pathToCorr = "";
             if (GlobalVariables.LocalPlateSolve)
-            pathToCorr = @"c:\cygwin\home\astro\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr";
+                pathToCorr = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr"; // 10-22-16
+            // pathToCorr = @"c:\cygwin\home\astro\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr";
             //pathToCorr = @"c:\cygwin\home\astro\solve.corr";
             else
                 pathToCorr = GlobalVariables.Path2 + "\\corr.fits";

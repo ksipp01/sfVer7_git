@@ -3761,7 +3761,8 @@ namespace Pololu.Usc.ScopeFocus
                 toolStripStatusLabel4.Text = "No Filter";
                 toolStripStatusLabel2.Text = "Idle";
                 toolStripStatusLabel3.Text = "Equip";
-                if (!Directory.Exists(@"C:\cygwin\home\astro"))
+                // if (!Directory.Exists(@"C:\cygwin\home\astro"))
+                if (!Directory.Exists((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr"))) 
                     {
                     radioButton5_astrometry.Checked = true;
                     radioButton_local.Enabled = false;
@@ -14309,14 +14310,24 @@ namespace Pololu.Usc.ScopeFocus
                 if (GlobalVariables.LocalPlateSolve)
                 {
                     //scope = new ASCOM.DriverAccess.Telescope(devId);
+                  
                     if (usingASCOM == false)
                     {
                         MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
                         return;
                     }
+
+
                     CurrentRA = scope.RightAscension;
                     CurrentDEC = scope.Declination;
-                    var destDir = @"c:\cygwin\home\astro";
+                    //    var destDir = @"c:\cygwin\home\astro";
+                    //    var destDir = @"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\bin"; // 10-22-16
+                    //   var destDir = @"%localappdata%\cygwin_ansvr\bin"; // 10-22-16
+
+                    var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\bin"); // 10-22-16
+                   
+
+
                     // var pattern = "*.csv";
                     // var file = solveImage;
                     //   var sourceDir = @"c:\cygwin\home\astro";
@@ -14339,24 +14350,31 @@ namespace Pololu.Usc.ScopeFocus
                     var destfile = Path.GetFileName(GlobalVariables.SolveImage);
 
 
-                    if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
-                    {
-                        foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
-                        {
-                            if (files.Name != "tablist.exe")
-                                files.Delete();//empty the directory
-                        }
-                        // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                         File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin  this one works!
+                    // rem below 10-22-16  // changed solve-filed option -O to allow overwrite, no need to delet anything.  
 
-                        
-                    }
+                    //if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
+                    //{
+                    //    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    //    {
+                    //        if (files.Name != "tablist.exe")
+                    //            files.Delete();//empty the directory
+                    //    }
+                    //    // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                    //    File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));//copy to cygwin  this one works!
+
+
+                    //}
+
                     ExecuteCommand();
 
 
 
-                    StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
+                   // StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
                                                                                    //  reader = FileInfo.OpenText("filename.txt");
+                //    StreamReader reader = new StreamReader(@"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\text.txt"); // 10-22-16
+                    StreamReader reader = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\text.txt"); // 10-22-16
+
+
                     string line;
                     // while ((line = reader.ReadToEnd()) != null) {
                     line = reader.ReadToEnd();
@@ -14899,10 +14917,12 @@ namespace Pololu.Usc.ScopeFocus
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.RedirectStandardError = true;
                 proc.StartInfo.CreateNoWindow = true;
-                proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";
+                //   proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe"; // remd 10-22-16
+                //  proc.StartInfo.FileName = @"\cygwin_ansvr\bin\mintty.exe";
                 // @"c:/cygwin/bin/mintty.exe";
-
-                proc.StartInfo.Arguments = "--log /home/astro/text2.txt -i /Cygwin-Terminal.ico -";
+                string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
+                proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
+                proc.StartInfo.Arguments = "--log /table.txt -i /Cygwin-Terminal.ico -";
                 //creates text file of the cygwin terminal.  
                 //parse the needed info from the txt file
                 proc.Start();
@@ -14915,7 +14935,8 @@ namespace Pololu.Usc.ScopeFocus
                 sw.AutoFlush = true;
                 Thread.Sleep(2000);
                 //    string command = "./tablist " +  "solve.xyls";
-                SendKeys.Send("cd" + " " + "/home/astro");
+           //     SendKeys.Send("cd" + " " + "/home/astro"); // remd 10-22-16
+                SendKeys.Send("cd" + " " + "/tmp");
                 Thread.Sleep(200);
                 SendKeys.Send("~");
                 Thread.Sleep(200);
@@ -14924,15 +14945,19 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(200);
                 SendKeys.SendWait("~");
 
+
                 SendKeys.Send("exit");
                 SendKeys.Send("~");
 
-
+               
                 sw.Close();
 
                 reader.Close();
 
                 proc.WaitForExit();
+              
+
+
                 proc.Close();
             }
             catch (Exception e)
@@ -14945,6 +14970,8 @@ namespace Pololu.Usc.ScopeFocus
         public static string text;
         private int cygwinId;
         Process proc = new Process();
+        // executecommandhere
+
         public void ExecuteCommand()//starts cygwin term, saves log.txt that captures terminal screen, executes solve command
         {
             try
@@ -14957,18 +14984,31 @@ namespace Pololu.Usc.ScopeFocus
                 //   string stOut = "";
                 if (textBox60.Text == "" || textBox61.Text == "" || textBox62.Text == "")
                     MessageBox.Show("Plate solve parameters cannot be blank", "scopefocus");
-                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.UseShellExecute = false; 
                 proc.StartInfo.RedirectStandardInput = true;
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.CreateNoWindow = true;
-                proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //orig working
-                // @"c:/cygwin/bin/mintty.exe";
-              //  proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe --log /text.txt -i /Cygwin-Terminal.ico -";
+                proc.StartInfo.CreateNoWindow = true; // 10-22-16 was true
+                                                      //   proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal; // new 10-22-16
+
+
+                string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
+              //  proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //orig working
+                proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
                 proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
 
+
+             
                 proc.Start();
-                cygwinId = proc.Id;
+                Thread.Sleep(1000);
+
+              //  cygwinId = proc.Id; // remd 10-22-16
+
+
+                // rem below 10-22-16
+
+
+
 
                 StreamWriter sw = proc.StandardInput;
                 StreamReader reader = proc.StandardOutput;
@@ -14977,23 +15017,15 @@ namespace Pololu.Usc.ScopeFocus
 
                 sw.AutoFlush = true;
                 Thread.Sleep(2000);
-                /*
-string cmd = "CD ..";
- sw.WriteLine(cmd);
- Thread.Sleep(500);
- string cmd2 = "CD astro";
- sw.WriteLine(cmd2);
- Thread.Sleep(500);
- string cmd3 = "solve-field --sigma 100 -L .5 -H 2 r.fit";
- sw.WriteLine(cmd3)
-*/
+
 
                 //     string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";  // Original working command line
-                string command = "solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
-
+                string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
+             //   string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + GlobalVariables.SolveImage;
 
                 //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
-                SendKeys.Send("cd" + " " + "/home/astro");
+                //  SendKeys.Send("cd" + " " + "/home/astro");  changed 10-22-16
+                SendKeys.Send("cd" + " " + "/tmp");
                 Thread.Sleep(200);
                 SendKeys.Send("~");
                 Thread.Sleep(200);
@@ -15001,35 +15033,47 @@ string cmd = "CD ..";
                 SendKeys.Send(command);
                 Thread.Sleep(500); // was 200
                 SendKeys.SendWait("~");
-                Thread.Sleep(2000); // was rem'd
-                //  text = reader.ReadToEnd();
-                //  Thread.Sleep(5000);
+           //     Thread.Sleep(2000); // was rem'd
+                                    //  text = reader.ReadToEnd();
+                                    //  Thread.Sleep(5000);
                 SendKeys.Send("exit");
                 SendKeys.Send("~");
+
+
+
+
                 /*
                while(true)
                 {
-    
+
                 if(sr.Peek() >= 0)
                                 {
                                 Console.WriteLine("sr.Peek = " + sr.Peek());
                                 Console.WriteLine("sr = " + sr.ReadLine());
                                 }
- 
+
                                if(se.Peek() >= 0)
                                 {
                                 Console.WriteLine("se.Peek = " + se.Peek());
                                 Console.WriteLine("se = " + se.ReadLine());
                                 }
                                 }
- 
+
                                */
+
+                while (!IsFileReady((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\text.txt")))
+                    Thread.Sleep(20);
+
+
 
                 sw.Close();
                 // sr.Close();
-                reader.Close();
 
+                reader.Close();
+               
                 proc.WaitForExit();
+
+               
                 proc.Close();
 
             }
@@ -15040,7 +15084,37 @@ string cmd = "CD ..";
             }
         }
 
-            double TimeToFlip;
+
+        public static bool IsFileReady(String sFilename)
+        {
+            // If the file can be opened for exclusive access it means that the file
+            // is no longer locked by another process.
+            try
+            {
+                using (FileStream inputStream = File.Open(sFilename, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    if (inputStream.Length > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+
+
+
+        double TimeToFlip;
             double CurrentRA;
             double CurrentDEC;
             bool FlipNeeded = false;
@@ -15186,10 +15260,13 @@ string cmd = "CD ..";
                 DialogResult result = openFileDialog2.ShowDialog();
                GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
                 textBox58.Text = GlobalVariables.SolveImage;
-              //  var sourceDir = @"c:\sourcedir";
-              if (GlobalVariables.LocalPlateSolve)
-            { 
-                var destDir = @"c:\cygwin\home\astro";
+            //  var sourceDir = @"c:\sourcedir";
+
+            // remd 10-22-16
+            if (GlobalVariables.LocalPlateSolve)
+            {
+                // var destDir = @"c:\cygwin\home\astro";
+                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
                 // var pattern = "*.csv";
                 // var file = solveImage;
                 //   var sourceDir = @"c:\cygwin\home\astro";
@@ -15198,16 +15275,18 @@ string cmd = "CD ..";
 
                 if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
                 {
+                    // remd 10-22-16
+
                     foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
                     {
                         if (files.Name != "tablist.exe")
                             files.Delete();//empty the directory
                     }
-                    // File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                  //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
                     File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));
                 }
-                }
             }
+        }
             
             private void textBox59_TextChanged(object sender, EventArgs e)
             {
@@ -16397,8 +16476,28 @@ string cmd = "CD ..";
 
         private void button50_Click(object sender, EventArgs e)
         {
-            // tablistViewer("C48_5secForAT_platesolve_001.corr");
-          //  cramersRule();
+            if (!File.Exists((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp\" + "tablist.exe")))
+            {
+                MessageBox.Show("you must place tablist.exe in " + @"c:\users\'username'\appdata\local\cygwin_ansvr\tmp");
+                return;
+            }
+
+            openFileDialog2.Filter = "All files (*.*)|*.*";
+       //     DialogResult result = openFileDialog2.ShowDialog();
+            if (openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+               
+                string file = openFileDialog2.FileName.ToString();
+                string path = Path.GetDirectoryName(file);
+                if (Path.GetDirectoryName(file) != (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp"))
+                    File.Copy(file, (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp" + Path.GetFileName(file)), true);
+
+                tablistViewer(Path.GetFileName(file));
+                //  cramersRule();
+                Log("table.txt saved to " + (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr"));
+            }
+            else
+                return;
         }
 
         private void button51_Click(object sender, EventArgs e)
