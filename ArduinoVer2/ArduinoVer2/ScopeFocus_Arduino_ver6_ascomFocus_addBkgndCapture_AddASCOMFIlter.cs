@@ -8912,7 +8912,13 @@ namespace Pololu.Usc.ScopeFocus
                 //else  // if not using plate solve    remd w/ 4-14-16 rem above.
                 //{
                 Log("at focus star");
-                    if (checkBox16.Checked == true)//resume if guide on focus enabled
+                toolStripStatusLabel1.Text = "Ready";
+                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                button33.Text = "At Focus";
+                button33.BackColor = Color.Lime;
+                button35.Text = "Goto";
+                button35.UseVisualStyleBackColor = true;
+                if (checkBox16.Checked == true)//resume if guide on focus enabled
                     {
                         //if (Handles.PHDVNumber == 2)
                             resumePHD2();
@@ -9204,7 +9210,15 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 if (backgroundWorker2.IsBusy == false)
-                    Log("at target");
+                {
+                    Log("At target");
+                    toolStripStatusLabel1.Text = "Ready";
+                    toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                    button35.Text = "At Target";
+                    button35.BackColor = Color.Lime;
+                    button33.Text = "Goto";
+                    button33.UseVisualStyleBackColor = true;
+                }
                 // if (PHDpaused)//resume for button push.  
                 if (Handles.PHDVNumber == 2)
                     resumePHD2();
