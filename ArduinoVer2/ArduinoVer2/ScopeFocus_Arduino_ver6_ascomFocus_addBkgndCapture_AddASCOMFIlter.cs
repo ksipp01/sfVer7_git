@@ -15034,7 +15034,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 //     string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";  // Original working command line
-                string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
+                string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
              //   string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + GlobalVariables.SolveImage;
 
                 //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
