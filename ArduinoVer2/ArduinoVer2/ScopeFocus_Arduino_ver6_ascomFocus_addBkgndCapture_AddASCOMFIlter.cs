@@ -672,12 +672,21 @@ namespace Pololu.Usc.ScopeFocus
             //    LogTextBox.Invoke(method, new object[] { text });
             //    return;
             //}
-            if (LogTextBox.Text != "")
-                LogTextBox.Text += Environment.NewLine;
-            LogTextBox.Text += DateTime.Now.ToLongTimeString() + "  " + text;
-            LogTextBox.SelectionStart = LogTextBox.Text.Length;
-            LogTextBox.ScrollToCaret();
+            try // added 10-25-16
+            {
+                if (LogTextBox.Text != "")
+                    LogTextBox.Text += Environment.NewLine;
+                LogTextBox.Text += DateTime.Now.ToLongTimeString() + "  " + text;
+                LogTextBox.SelectionStart = LogTextBox.Text.Length;
+                LogTextBox.ScrollToCaret();
+            }
+            catch (Exception e) // added 10-25-16
+            {
+                Log("logging error line 667");
+                FileLog2("Logging error " + e.ToString());
 
+            }
+            
         }
         #endregion
 
@@ -976,7 +985,7 @@ namespace Pololu.Usc.ScopeFocus
 
         }
         bool FineFocusAbort = false;
-        bool NebListenOn = false;
+       // bool NebListenOn = false; // remd all 10-25-16
         //std dev, avg and gotofocus
         // bool focusing = false;
         private double BestPos;
@@ -1007,7 +1016,7 @@ namespace Pololu.Usc.ScopeFocus
                 // int nn = 10;
                 int current;
                 int nn;
-                roundto = (int)numericUpDown1.Value;
+                roundto = 1; // 10-25-16
                 if (checkBox22.Checked == true)
                     nn = (int)numericUpDown21.Value;
                 else
@@ -1078,7 +1087,7 @@ namespace Pololu.Usc.ScopeFocus
                             sum = sum + list[vProgress];
                             avg = sum / nn;
                             string stdev = Math.Round(GetStandardDeviation(abc), 2).ToString();
-                            textBox9.Text = stdev.ToString();
+                          //  textBox9.Text = stdev.ToString(); // remd 10-25-16
                             //     textBox14.Text = avg.ToString();
                             Log("Goto Focus :\t  N " + (vProgress + 1).ToString() + "\tHFR" + abc[vProgress].ToString() + "\t  Avg " + avg.ToString() + "\t  StdDev " + stdev.ToString());
                             FileLog2("Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString());
@@ -1184,6 +1193,11 @@ namespace Pololu.Usc.ScopeFocus
                                         focuser.Move((int)BestPos);
                                         fileSystemWatcher3.EnableRaisingEvents = false;
                                     }
+                                }
+                                else // added 10-24-16
+                                {
+                                    focuser.Move((int)BestPos);
+                                    fileSystemWatcher3.EnableRaisingEvents = false;
                                 }
                                 ////9-9-15
                                 //// check to make sure HFR improved....it should always improve a little or sample point was too close to PID
@@ -1303,6 +1317,12 @@ namespace Pololu.Usc.ScopeFocus
                                         gotopos((int)BestPos);  // 10-13-16 try so waits for focuser move to complete...while below doesn't seem to work....
                                     }
                                 }
+                                else // added 10-24-16
+                                {
+                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    //   focuser.Move((int)BestPos);
+                                    gotopos((int)BestPos);
+                                }
                                 //3-2-16 
 
                                 //these were not prev on the downslope one....  10-13-16
@@ -1331,34 +1351,34 @@ namespace Pololu.Usc.ScopeFocus
                             //*****7-25-14 try moving this from below**********
 
 
-                            if (checkBox22.Checked == true)
-                            {
-                                //*********moved to test area below********  unrem all if doesnt' work 
-                                //    fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
-                                //    _gotoFocusOn = false;
-                                ////    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
-                                //    textBox4.Text = ((int)BestPos).ToString();
+                            //if (checkBox22.Checked == true)
+                            //{
+                            //    *********moved to test area below********unrem all if doesnt' work 
+                            //        fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                            //    _gotoFocusOn = false;
+                            //    //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                            //    textBox4.Text = ((int)BestPos).ToString();
 
-                                //    serverStream = clientSocket.GetStream();
-                                //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                                //    serverStream.Write(outStream, 0, outStream.Length);
-                                //    serverStream.Flush();
+                            //    serverStream = clientSocket.GetStream();
+                            //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                            //    serverStream.Write(outStream, 0, outStream.Length);
+                            //    serverStream.Flush();
 
-                                //    Thread.Sleep(3000);
-                                //    serverStream.Close();
-                                //    SetForegroundWindow(Handles.NebhWnd);
-                                //    Thread.Sleep(1000);
-                                //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                                //    Thread.Sleep(1000);
-                                //    NebListenOn = false;
-                                //    // clientSocket.GetStream().Close();//added 5-17-12
-                                //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                                //    clientSocket.Close();
-                                //HFRtestON = true;  remd 10-13-16 does nothing
-                            }
-                            FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_"); //7-25-14
+                            //    Thread.Sleep(3000);
+                            //    serverStream.Close();
+                            //    SetForegroundWindow(Handles.NebhWnd);
+                            //    Thread.Sleep(1000);
+                            //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //    Thread.Sleep(1000);
+                            //    NebListenOn = false;
+                            //    // clientSocket.GetStream().Close();//added 5-17-12
+                            //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                            //    clientSocket.Close();
+                            //    HFRtestON = true; remd 10 - 13 - 16 does nothing
+                            //}
+                            FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_"); //7-25-14
                             string strLogText;
-                            strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + "Current Filter_";
+                            strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_";
 
 
                             HFRtestON = true; // added 10-13-16
@@ -1690,7 +1710,7 @@ namespace Pololu.Usc.ScopeFocus
                                 else
                                 {
                                     Log("Unable to attempt Full Frame Metric focus due to no V-curve data, attempting auto V-curve");
-                                   // BestPos = count;
+                                    // BestPos = count;
                                     redo = 0;
                                     //  posMin = Convert.ToInt32(BestPos);
                                     autoMetricVcurve = true;
@@ -1764,20 +1784,20 @@ namespace Pololu.Usc.ScopeFocus
                                 Thread.Sleep(1000);
                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                                 Thread.Sleep(1000);
-                                NebListenOn = false;
+                             //   NebListenOn = false;
                                 // clientSocket.GetStream().Close();//added 5-17-12
                                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
                                 clientSocket.Close();
                             }
-                          //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
-                           //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
+                            //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
+                            //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
                             Log("Using previous focus position - " + posMin.ToString());  //may not be right
                             textBox4.Text = posMin.ToString();  // 10-13-16
                             gotoFocus();
                             return;
                         }
                         HFRtestON = false;
-                        
+
                         Log("Focus Improved at " + Convert.ToInt32(BestPos).ToString());
                         FileLog2("Focus Improved - Final Focus Position = " + Convert.ToInt32(BestPos).ToString());
                         redo = 0;
@@ -1816,7 +1836,7 @@ namespace Pololu.Usc.ScopeFocus
                             Thread.Sleep(1000);
                             PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                             Thread.Sleep(1000);
-                            NebListenOn = false;
+                          //  NebListenOn = false;
                             // clientSocket.GetStream().Close();//added 5-17-12
                             //  clientSocket.Client.Disconnect(true);//added 5-17-12
                             clientSocket.Close();
@@ -1827,61 +1847,111 @@ namespace Pololu.Usc.ScopeFocus
                 }
             }
             else
+            {
                 Log("Simulator -- quality check disabled");
-            // end test for improvement addition
-            // remd 10-13-16 seems to do nothing.  
-            //        if (HFRtestON == false) // added 1--13-16
-            //        {
-            //            posMin = Convert.ToInt32(BestPos);
-            //            //************** added 9-17-14,  textBox 1 was not displaying position after gotofocus.  
-            //            //   if problems could try adding another timer and poll the focusers position every couple seconds.  
-            //            // also not sure why gotopos is NOT used above  but based on 4/14 change must have caused problems...could try reverting that back to gotopos if needed
-            //            while (focuser.IsMoving)
-            //            {
-            //                delay(1);
-            //                count = focuser.Position;
-            //                textBox1.Text = count.ToString();
 
-            //                positionbar();
-            //                //  Log(focuser.IsMoving.ToString());
-            //            }
-            //            // end add
+                // added 10-24-16 
 
+                HFRtestON = false;
+                focusSampleComplete = true;
+                posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
+                fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
 
+                // try add 10-13-16
+                //FilterFocusOn = false;
+                //if (!IsSlave())
+                //{
 
-            //            count = focuser.Position;
-            //            textBox1.Text = count.ToString();
-            //            //   textBox1.Text = focuser.Position.ToString();
-            //            if (!ContinuousHoldOn)
-            //                focuser.Halt();
-            //            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-            //            toolStripStatusLabel1.Text = "Ready";
+                //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                //NebCapture();
 
-            //            textBox1.Text = focuser.Position.ToString(); //added 9-17-14
-
-            //            // moved from above on 10-12-16
-            //            // remd here., unremd orig 10-13-16
-            //            //  FilterFocusOn = false;  //*****   remd 1-12-16 
-            ////            if (!IsSlave())
-            ////            {
-            ////                FilterFocusOn = false;
-            ////                fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
-            ////                NebCapture();//*************un remd 3_4
-            ////                             /*
-            ////                             if (backgroundWorker2.IsBusy != true)
-            ////                             {
-            ////                                 // Start the asynchronous operation.
-            ////                                 backgroundWorker2.RunWorkerAsync();
-            ////                             }
-            ////*/
-            ////            }
-
-            //        }
+                //}
+                // end add
 
 
 
-            // 10-13-16 this was copied from above 
-            if ((FilterFocusOn == true) & (HFRtestON == false) & (focusSampleComplete == true)) // 10-13-16 add focusSampleComplete 
+
+                if (checkBox22.Checked == true)
+                {
+                    fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                    _gotoFocusOn = false;
+                    //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                    textBox4.Text = ((int)BestPos).ToString();
+
+                    serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+
+                    Thread.Sleep(3000);
+                    serverStream.Close();
+                    SetForegroundWindow(Handles.NebhWnd);
+                    Thread.Sleep(1000);
+                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    Thread.Sleep(1000);
+                //    NebListenOn = false;
+                    // clientSocket.GetStream().Close();//added 5-17-12
+                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                    clientSocket.Close();
+                }
+            }
+
+
+
+                // end test for improvement addition
+                // remd 10-13-16 seems to do nothing.  
+                //        if (HFRtestON == false) // added 1--13-16
+                //        {
+                //            posMin = Convert.ToInt32(BestPos);
+                //            //************** added 9-17-14,  textBox 1 was not displaying position after gotofocus.  
+                //            //   if problems could try adding another timer and poll the focusers position every couple seconds.  
+                //            // also not sure why gotopos is NOT used above  but based on 4/14 change must have caused problems...could try reverting that back to gotopos if needed
+                //            while (focuser.IsMoving)
+                //            {
+                //                delay(1);
+                //                count = focuser.Position;
+                //                textBox1.Text = count.ToString();
+
+                //                positionbar();
+                //                //  Log(focuser.IsMoving.ToString());
+                //            }
+                //            // end add
+
+
+
+                //            count = focuser.Position;
+                //            textBox1.Text = count.ToString();
+                //            //   textBox1.Text = focuser.Position.ToString();
+                //            if (!ContinuousHoldOn)
+                //                focuser.Halt();
+                //            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                //            toolStripStatusLabel1.Text = "Ready";
+
+                //            textBox1.Text = focuser.Position.ToString(); //added 9-17-14
+
+                //            // moved from above on 10-12-16
+                //            // remd here., unremd orig 10-13-16
+                //            //  FilterFocusOn = false;  //*****   remd 1-12-16 
+                ////            if (!IsSlave())
+                ////            {
+                ////                FilterFocusOn = false;
+                ////                fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                ////                NebCapture();//*************un remd 3_4
+                ////                             /*
+                ////                             if (backgroundWorker2.IsBusy != true)
+                ////                             {
+                ////                                 // Start the asynchronous operation.
+                ////                                 backgroundWorker2.RunWorkerAsync();
+                ////                             }
+                ////*/
+                ////            }
+
+                //        }
+
+
+
+                // 10-13-16 this was copied from above 
+                if ((FilterFocusOn == true) & (HFRtestON == false) & (focusSampleComplete == true)) // 10-13-16 add focusSampleComplete 
             {
 
                 if (checkBox22.Checked == true)
@@ -1917,7 +1987,7 @@ namespace Pololu.Usc.ScopeFocus
                     SetForegroundWindow(Handles.Aborthwnd);
                     PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                     Thread.Sleep(500);//was 1000
-                    NebListenOn = false;
+                 //   NebListenOn = false;
                     //     if (FineFocusAbort == true)
                     //       FineFocusAbort = false;
 
@@ -2121,7 +2191,7 @@ namespace Pololu.Usc.ScopeFocus
                 //focus moving here for toolstrip rest see 1877
                 toolStripStatusLabel1.Text = "Focus Moving";
                 toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
-
+                this.Refresh(); // added 10-24-16
 
                 focuser.Move(value);
 
@@ -2147,7 +2217,7 @@ namespace Pololu.Usc.ScopeFocus
                     focuser.Halt();
                 toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
                 toolStripStatusLabel1.Text = "Ready";
-
+                this.Refresh();
                 positionbar();
             }
 
@@ -2295,7 +2365,7 @@ namespace Pololu.Usc.ScopeFocus
                     return;
                 }
             }
-            roundto = (int)numericUpDown1.Value;
+            roundto = 1;  // 10-25-16
             int MoveDelay = (int)numericUpDown9.Value;
 
             vcurveenable = 1;
@@ -2868,7 +2938,7 @@ namespace Pololu.Usc.ScopeFocus
                             Thread.Sleep(1000);
                             PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                             Thread.Sleep(1000);
-                            NebListenOn = false;
+                        //    NebListenOn = false;
                             // clientSocket.GetStream().Close();//added 5-17-12
                             //  clientSocket.Client.Disconnect(true);//added 5-17-12
                             clientSocket.Close();
@@ -3254,8 +3324,8 @@ namespace Pololu.Usc.ScopeFocus
                 //Data d = new Data();
                 GetAvg();
                 FillData();
-                toolStripStatusLabel1.Text = "Taking up Backlash";
-                this.Refresh();
+              //toolStripStatusLabel1.Text = "Taking up Backlash"; // remd 10-24-16 too brief until changed by gotopos
+              //  this.Refresh(); // remd 10-24-16
                 if (radioButton2.Checked == true)//using upslope
                 {//this was original 
                     /*
@@ -4975,7 +5045,7 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(1000);
                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                 Thread.Sleep(3000);
-                NebListenOn = false;
+             //   NebListenOn = false;
                 // clientSocket.GetStream().Close();//added 5-17-12
                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
                 clientSocket.Close();
@@ -5297,6 +5367,7 @@ namespace Pololu.Usc.ScopeFocus
                 serverStream.Write(outStream, 0, outStream.Length);
                 serverStream.Flush();
                 toolStripStatusLabel1.Text = "Sequence Done";
+                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
                 this.Refresh();
                 if (DarksOn == true)
                     DarksOn = false;
@@ -5311,7 +5382,7 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(1000);
                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                 Thread.Sleep(3000);
-                NebListenOn = false;
+         //       NebListenOn = false;
                 // clientSocket.GetStream().Close();//added 5-17-12
                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
                 clientSocket.Close();
@@ -6886,7 +6957,8 @@ namespace Pololu.Usc.ScopeFocus
                 else
                 {
                     toolStripStatusLabel1.Text = "Capturing";
-                    //  this.Refresh();
+                    toolStripStatusLabel1.BackColor = Color.Lime; // added 10-24-16
+                     //his.Refresh(); 
                 }
                 string prefix = textBox19.Text.ToString();
                 //   NetworkStream serverstream;
@@ -7196,9 +7268,15 @@ namespace Pololu.Usc.ScopeFocus
                         if ((captions[0].Substring(0, 10) == "Requesting") || (captions[0].Substring(0, 10) == "DITHER: Wa") && (!flipCheckDone))
                             CheckForFlip();
                         if ((captions[0].Substring(0, 10) == "Requesting") && (flipCheckDone))
+                        {
                             toolStripStatusLabel1.Text = "Waiting for Dither";
-                        if (captions[0].Substring(0, 8) == "Sequence")
-                            toolStripStatusLabel1.Text = "Capturing";
+                          //toolStripStatusLabel1.BackColor = Color.Yellow;
+                        }
+                        if (captions[0].Substring(0, 10) == "Sequence a") // 10-24-16 added the space_a to eliminate "sequence done" triggering.
+                        {
+                           toolStripStatusLabel1.Text = "Capturing"; // remd 10-24-16
+                          //toolStripStatusLabel1.BackColor = Color.Lime;
+                        }
                     }
                 }
 
@@ -8077,7 +8155,7 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(1000);
                     PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                     Thread.Sleep(1000);
-                    NebListenOn = false;
+              //      NebListenOn = false;
                     // clientSocket.GetStream().Close();//added 5-17-12
                     //  clientSocket.Client.Disconnect(true);//added 5-17-12
                     clientSocket.Close();
@@ -8206,6 +8284,7 @@ namespace Pololu.Usc.ScopeFocus
                 Log("MetricCapture Error line 7492" + ex.ToString());
                 Send("MetricCapture Error line 7492" + ex.ToString());
                 FileLog("MetricCapture Error line 7492" + ex.ToString());
+                return;
 
             }
 
@@ -8251,9 +8330,16 @@ namespace Pololu.Usc.ScopeFocus
 
                 serverStream.Flush();
             }
+            catch (ObjectDisposedException e)
+            {
+                MessageBox.Show("Error Communicating with Nebulosity, Make Sure it's open and click Rescan on Setup tab", "scopefocus");
+                return;
+            }
+
             catch (Exception ex)
             {
-                Log("SampleMetric Error Line 5642" + ex.ToString());
+                Log("SampleMetric Error Line 8301" + ex.ToString());
+                return;
             }
 
         }
@@ -8938,6 +9024,12 @@ namespace Pololu.Usc.ScopeFocus
 
             catch (Exception ex)
             {
+
+
+
+
+
+
                 Log("GotoFocus Location Error" + ex.ToString());
                 Send("GotoFocus Location Error" + ex.ToString());
                 FileLog("GotoFocus Location Error" + ex.ToString());
@@ -9885,6 +9977,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+               
                 int hwndChild;
                 int hwndChild1;
                 int hwndChild2;
@@ -9936,7 +10029,8 @@ namespace Pololu.Usc.ScopeFocus
                 //   Log("cb" + hwndChild1.ToString());
                 hwndChild2 = FindWindowEx(hwndChild1, 0, "edit", null);
                 //  Log("enterscript name box" + hwndChild2.ToString());
-
+                if (hwndChild == 0 || hwndChild1 == 0 || hwndChild2 == 0)
+                    return;
                 if (checkBox14.Checked == true)
                 {
                     port = 4302;
@@ -9958,7 +10052,9 @@ namespace Pololu.Usc.ScopeFocus
                 //  sb = send;
                 SendMessage(hwndChild2, WM_SETTEXT, 0, sb);
                 Thread.Sleep(1000);//******5-29 was 250
-                SendKeys.SendWait("~");
+           //  SendKeys.SendWait("~"); // 10-25-16 changed to  send not sendwait below
+                SendKeys.Send("~");
+                Thread.Sleep(250); // added 10-25-16
                 SendKeys.Flush();
                 Thread.Sleep(1000);
 
@@ -10043,7 +10139,7 @@ namespace Pololu.Usc.ScopeFocus
                     working = true;
                 }
                  */
-                NebListenOn = true;
+              //  NebListenOn = true;
             }
             catch (Exception ex)
             {
@@ -10080,25 +10176,117 @@ namespace Pololu.Usc.ScopeFocus
 
         private void Connect1(int port)
         {
-            try
-            {
-                //  if (clientSocket.Connected == false)//**************try adding 2_29
-                //  { 
-                clientSocket = new TcpClient();
-                LingerOption lingerOption = new LingerOption(true, 0);
-                clientSocket.LingerState = lingerOption;
-                clientSocket.Connect("127.0.0.1", port);//*************try adding and red above)
-                Thread.Sleep(1000);
-                //   Log(port.ToString() + " Conneceted");
-                //   }
-            }
-            catch (Exception e)
-            {
-                Log("Connect Error Line 9009" + e.ToString());
-                Send("Connect Error Line 9009" + e.ToString());
-                FileLog("Connect Error Line 9009" + e.ToString());
+            //bool tryagain = true;
+            //while (tryagain)
+            //{
+                try
+                {
+                    //  if (clientSocket.Connected == false)//**************try adding 2_29
+                    //  { 
+                    clientSocket = new TcpClient();
+                    LingerOption lingerOption = new LingerOption(true, 1); // 10-25-16 was 1
+                    clientSocket.LingerState = lingerOption;
+                    clientSocket.Connect("127.0.0.1", port);//*************try adding and red above)
+                    Thread.Sleep(1000);
+                 //   tryagain = false;
+                    //   Log(port.ToString() + " Conneceted");
+                    //   }
+                }
+                catch (SocketException e) // added 10-25-16
+                {
+                    Log("A connection error occured, rescan for Neb and PHD handles");
+                FileLog("A connection error occured, rescan for Neb and PHD handles");
+                Send("A connection error occured, rescan for Neb and PHD handles");
 
-            }
+                MessageBox.Show("Unable to communicate with Nebulosity, Open Neb and click Rescan on Setup tab", "scopefocus");
+                        return;
+
+                    //DialogResult result1;
+                    //result1 = MessageBox.Show("A connection error occured, click 'retry' to rescan or 'abort' to quit", "scopefocus",
+                    //         MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);
+                    //if (result1 == DialogResult.Retry)
+                    //{
+                    //    button51.PerformClick();
+                    //    delay(1);
+                    //}
+                    //if (result1 == DialogResult.Abort)
+                    //{
+                    //    DialogResult result2;
+                    //            result2 = MessageBox.Show("Dou you really wnat to quit?", "scopefocus",
+                    //                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    //            if (result2 == DialogResult.Yes)
+                    //                System.Environment.Exit(0);
+                    //}
+                    //Handles H = new Handles();
+                    //Callback myCallBack = new Callback(H.EnumChildGetValue);
+
+                    //H.FindHandles();
+                    //if (Handles.PHDhwnd == 0)//this can really just serve as reminded that PHD is needed for some functions...not necessary for focusing.  
+                    //{
+                    //    DialogResult result1;
+                    //    result1 = MessageBox.Show("PHD Not Found - Open and 'Retry', 'Ignore' or 'Abort' to Close", "scopefocus",
+                    //         MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);
+
+                    //    if (result1 == DialogResult.Ignore)
+                    //        this.Refresh();
+                    //    if (result1 == DialogResult.Retry)
+                    //    {
+                    //        H.FindHandles();
+                    //        this.Refresh();
+                    //    }
+                    //    if (result1 == DialogResult.Abort)
+                    //    {
+                    //        DialogResult result2;
+                    //        result2 = MessageBox.Show("Dou you really wnat to quit?", "scopefocus",
+                    //             MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    //        if (result2 == DialogResult.Yes)
+                    //            System.Environment.Exit(0);
+
+                    //    }
+
+                    //}
+                    //else
+                    //    Log("PHD version " + Handles.PHDVNumber.ToString());
+
+
+                    //if (Handles.NebhWnd == 0)
+                    //{
+                    //    DialogResult result;
+                    //    result = MessageBox.Show("Nebulosity Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
+                    //       "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
+                    //    if (result == DialogResult.Ignore)
+                    //        this.Refresh();
+                    //    if (result == DialogResult.Retry)
+                    //    {
+                    //        H.FindHandles();
+                    //        this.Refresh();
+                    //    }
+                    //    if (result == DialogResult.Abort)
+                    //    {
+                    //        DialogResult result2;
+                    //        result2 = MessageBox.Show("Dou you really wnat to quit?", "scopefocus",
+                    //             MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    //        if (result2 == DialogResult.Yes)
+                    //            System.Environment.Exit(0);
+                    //    }
+
+                    //    //Log("Connect Error Line 10172" + e.ToString());
+                    //    //Send("Connect Error Line 10172" + e.ToString());
+                    //    //FileLog("Connect Error Line 10172" + e.ToString());
+
+                    //}
+
+                }
+                catch (Exception e)
+                {
+                    Log("Connect Error Line 10172" + e.ToString());
+                    Send("Connect Error Line 10172" + e.ToString());
+                    FileLog("Connect Error Line 10172" + e.ToString());
+                return;
+                //    tryagain = false;
+                   
+                }
+            
         }
 
         //Neb Listen Start button...maybe not needed
@@ -11655,25 +11843,25 @@ namespace Pololu.Usc.ScopeFocus
             GlobalVariables.NebPath = folderBrowserDialog2.SelectedPath.ToString();
             textBox35.Text = GlobalVariables.NebPath;
         }
-        //std dev button
-        private void Button2000_Click(object sender, EventArgs e)
-        {
-            //   port.DiscardInBuffer();
-            // port.DiscardOutBuffer();
-            fileSystemWatcher2.EnableRaisingEvents = false;
-            fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
-            fileSystemWatcher3.EnableRaisingEvents = true;
-            fileSystemWatcher1.EnableRaisingEvents = false;
-            list = new int[arraysize2];
-            abc = new double[arraysize2];
+        //std dev button // remd 10-25-16
+        //private void Button2000_Click(object sender, EventArgs e)
+        //{
+        //    //   port.DiscardInBuffer();
+        //    // port.DiscardOutBuffer();
+        //    fileSystemWatcher2.EnableRaisingEvents = false;
+        //    fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
+        //    fileSystemWatcher3.EnableRaisingEvents = true;
+        //    fileSystemWatcher1.EnableRaisingEvents = false;
+        //    list = new int[arraysize2];
+        //    abc = new double[arraysize2];
 
-            posMin = 0;
-            min = 1;
-            sum = 0;
-            avg = 0;
-            vDone = 0;
-            vProgress = 0;
-        }
+        //    posMin = 0;
+        //    min = 1;
+        //    sum = 0;
+        //    avg = 0;
+        //    vDone = 0;
+        //    vProgress = 0;
+        //}
 
 
 
@@ -12223,6 +12411,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 backgroundWorker2.CancelAsync();// added 1-23-13
 
+
                 ShowWindowAsync(Handles.NebhWnd, SW_SHOW);
                 Thread.Sleep(200);
                 SetForegroundWindow(Handles.Aborthwnd);
@@ -12238,13 +12427,87 @@ namespace Pololu.Usc.ScopeFocus
                 subCountCurrent = 0;
                 standby();
 
+                MessageBox.Show("Close and restart Nebulosity, then click rescan on setup tab");
+
+                // 10-25-16 try (doesn't work get socket closed then error on restart seqeunce
+
+                //serverStream = clientSocket.GetStream();
+                //byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                //serverStream.Write(outStream, 0, outStream.Length);
+                //serverStream.Flush();
+
+                //Thread.Sleep(3000);
+                //serverStream.Close();
+                //SetForegroundWindow(Handles.NebhWnd);
+                //Thread.Sleep(1000);
+                //PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                //Thread.Sleep(1000);
+                //NebListenOn = false;
+                //// clientSocket.GetStream().Close();//added 5-17-12
+                ////  clientSocket.Client.Disconnect(true);//added 5-17-12
+                //clientSocket.Close();
 
 
 
-                clientSocket2.Close();
-                Thread.Sleep(250);
-                SendKeys.SendWait("~");
-                SendKeys.Flush();
+
+
+                //clientSocket2.Close();
+                //Thread.Sleep(250);
+                //SendKeys.SendWait("~");
+                //SendKeys.Flush();
+
+
+                // 10-25-16 addition
+
+
+                //serverStream = clientSocket.GetStream();
+                //byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                //serverStream.Write(outStream, 0, outStream.Length);
+                //serverStream.Flush();
+                toolStripStatusLabel1.Text = "Sequence Aborted";
+                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                this.Refresh();
+
+
+
+
+                //fileSystemWatcher4.EnableRaisingEvents = false;
+                ////NetworkStream serverStream = clientSocket.GetStream();
+                //serverStream = clientSocket.GetStream();
+                //byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                //serverStream.Write(outStream, 0, outStream.Length);
+                //serverStream.Flush();
+                //toolStripStatusLabel1.Text = "Sequence Aborted";
+                //toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                //this.Refresh();
+                //if (DarksOn == true)
+                //    DarksOn = false;
+                //currentfilter = 1;
+                //DisplayCurrentFilter();
+                ////      currentfilter = 0;
+                //subCountCurrent = 0;
+                //filterCountCurrent = 0;
+                //Thread.Sleep(3000);//prevent overlapping sounds
+                //serverStream.Close();
+                //SetForegroundWindow(Handles.NebhWnd);
+                //Thread.Sleep(1000);
+                //PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                //Thread.Sleep(3000);
+                //NebListenOn = false;
+                //// clientSocket.GetStream().Close();//added 5-17-12
+                ////  clientSocket.Client.Disconnect(true);//added 5-17-12
+                //clientSocket.Close();
+                //toolStripStatusLabel4.BackColor = System.Drawing.Color.LightGray;
+                //toolStripStatusLabel4.Text = Filtertext.ToString();
+                ////  button12.UseVisualStyleBackColor = true;
+                ////   button31.UseVisualStyleBackColor = true;
+
+
+
+
+
+
+
 
                 // ************ end 11-23-13 addt
 
@@ -12359,6 +12622,143 @@ namespace Pololu.Usc.ScopeFocus
         //this likely needs to be removed  *****  4-8-14  ******
         private void checkBox17_CheckedChanged(object sender, EventArgs e)
         {
+            if (checkBox17.Checked)
+                {
+                //if (numericUpDown38.Value == 0) // remd 10-24-16
+                //    MessageBox.Show("Value cannot be zero", "scopefoucs");
+                //if (numericUpDown38.Value < 4) // remd 10-24-16
+                //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
+                FocusPerSub = (int)numericUpDown38.Value;
+                if (checkBox1.Checked == true)
+                {
+                    if (numericUpDown12.Value == 0)
+                    {
+                        MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
+                    if (FocusGroup[0] != Math.Round(FocusGroup[0]))
+                    {
+                        MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
+                    if (FocusGroup[0] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[0] = 0;
+                        FocusGroup[0] = 0;
+                    }
+                }
+                if (checkBox2.Checked == true)
+                {
+                    if (numericUpDown13.Value == 0)
+                    {
+                        MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
+                    if (FocusGroup[1] != Math.Round(FocusGroup[1]))
+                    {
+                        MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
+                    if (FocusGroup[1] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[1] = 0;
+                        FocusGroup[1] = 0;
+                    }
+                }
+                if (checkBox3.Checked == true)
+                {
+                    if (numericUpDown14.Value == 0)
+                    {
+                        MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
+                    if (FocusGroup[2] != Math.Round(FocusGroup[2]))
+                    {
+                        MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
+                    if (FocusGroup[2] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[2] = 0;
+                        FocusGroup[2] = 0;
+                    }
+                }
+                if (checkBox4.Checked == true)
+                {
+                    if (numericUpDown15.Value == 0)
+                    {
+                        MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
+                    if (FocusGroup[3] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
+                    if (FocusGroup[3] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[3] = 0;
+                        FocusGroup[3] = 0;
+                    }
+                }
+                if (checkBox5.Checked == true)
+                {
+                    if (numericUpDown20.Value == 0)
+                    {
+                        MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
+                    if (FocusGroup[4] != Math.Round(FocusGroup[4]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
+                    if (FocusGroup[4] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[4] = 0;
+                        FocusGroup[4] = 0;
+                    }
+                }
+                if (checkBox9.Checked == true)
+                {
+                    if (numericUpDown29.Value == 0)
+                    {
+                        MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
+                    if (FocusGroup[5] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
+                    if (FocusGroup[5] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[5] = 0;
+                        FocusGroup[5] = 0;
+                    }
+                }
+                FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
+            }
+
+
             /*
             if ((checkBox8.Checked == true) & (checkBox17.Checked == true))
                 MessageBox.Show("Confirm refocus after filter change AND " + numericUpDown38.Value.ToString() + " subs?"
@@ -12370,139 +12770,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void numericUpDown38_Leave(object sender, EventArgs e)
         {
-            if (numericUpDown38.Value == 0)
-                MessageBox.Show("Value cannot be zero", "scopefoucs");
-            if (numericUpDown38.Value < 4)
-                MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
-            FocusPerSub = (int)numericUpDown38.Value;
-            if (checkBox1.Checked == true)
-            {
-                if (numericUpDown12.Value == 0)
-                {
-                    MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
-                if (FocusGroup[0] != Math.Round(FocusGroup[0]))
-                {
-                    MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
-                if (FocusGroup[0] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[0] = 0;
-                    FocusGroup[0] = 0;
-                }
-            }
-            if (checkBox2.Checked == true)
-            {
-                if (numericUpDown13.Value == 0)
-                {
-                    MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
-                if (FocusGroup[1] != Math.Round(FocusGroup[1]))
-                {
-                    MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
-                if (FocusGroup[1] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[1] = 0;
-                    FocusGroup[1] = 0;
-                }
-            }
-            if (checkBox3.Checked == true)
-            {
-                if (numericUpDown14.Value == 0)
-                {
-                    MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
-                if (FocusGroup[2] != Math.Round(FocusGroup[2]))
-                {
-                    MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
-                if (FocusGroup[2] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[2] = 0;
-                    FocusGroup[2] = 0;
-                }
-            }
-            if (checkBox4.Checked == true)
-            {
-                if (numericUpDown15.Value == 0)
-                {
-                    MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
-                if (FocusGroup[3] != Math.Round(FocusGroup[3]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
-                if (FocusGroup[3] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[3] = 0;
-                    FocusGroup[3] = 0;
-                }
-            }
-            if (checkBox5.Checked == true)
-            {
-                if (numericUpDown20.Value == 0)
-                {
-                    MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
-                if (FocusGroup[4] != Math.Round(FocusGroup[4]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
-                if (FocusGroup[4] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[4] = 0;
-                    FocusGroup[4] = 0;
-                }
-            }
-            if (checkBox9.Checked == true)
-            {
-                if (numericUpDown29.Value == 0)
-                {
-                    MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
-                if (FocusGroup[5] != Math.Round(FocusGroup[3]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
-                if (FocusGroup[5] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[5] = 0;
-                    FocusGroup[5] = 0;
-                }
-            }
-            FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
-
+           // 10-24-16 moved to value changed method at end
         }
         //  doflathere
         private void DoFlat()
@@ -12797,7 +13065,7 @@ namespace Pololu.Usc.ScopeFocus
                 SendKeys.Flush();
                 //*********
 
-                NebListenOn = false;
+             //   NebListenOn = false;
                 if (clientSocket2.Connected == false)
                     Log("Slave Disconnected");
                 else
@@ -14518,7 +14786,7 @@ namespace Pololu.Usc.ScopeFocus
                             Thread.Sleep(1000);
                             PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                             Thread.Sleep(2000);
-                            NebListenOn = false;
+                      //      NebListenOn = false;
                             // clientSocket.GetStream().Close();//added 5-17-12
                             //  clientSocket.Client.Disconnect(true);//added 5-17-12
                             clientSocket.Close();
@@ -14568,7 +14836,7 @@ namespace Pololu.Usc.ScopeFocus
                         Thread.Sleep(1000);
                         PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                         Thread.Sleep(2000);
-                        NebListenOn = false;
+                   //     NebListenOn = false;
                         // clientSocket.GetStream().Close();//added 5-17-12
                         //  clientSocket.Client.Disconnect(true);//added 5-17-12
                         clientSocket.Close();
@@ -14858,7 +15126,7 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(1000);
                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                 Thread.Sleep(2000);
-                NebListenOn = false;
+            //    NebListenOn = false;
                 // clientSocket.GetStream().Close();//added 5-17-12
                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
                 clientSocket.Close();
@@ -16486,7 +16754,232 @@ namespace Pololu.Usc.ScopeFocus
             }
         }
 
+        private void numericUpDown38_ValueChanged(object sender, EventArgs e)
+        {
+            if (checkBox17.Checked)
+            {
+                //if (numericUpDown38.Value == 0) // remd 10-24-16
+                //    MessageBox.Show("Value cannot be zero", "scopefoucs");
+                //if (numericUpDown38.Value < 4) // remd 10-24-16
+                //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
+                FocusPerSub = (int)numericUpDown38.Value;
+                if (checkBox1.Checked == true)
+                {
+                    if (numericUpDown12.Value == 0)
+                    {
+                        MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
+                    if (FocusGroup[0] != Math.Round(FocusGroup[0]))
+                    {
+                        MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
+                    if (FocusGroup[0] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[0] = 0;
+                        FocusGroup[0] = 0;
+                    }
+                }
+                if (checkBox2.Checked == true)
+                {
+                    if (numericUpDown13.Value == 0)
+                    {
+                        MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
+                    if (FocusGroup[1] != Math.Round(FocusGroup[1]))
+                    {
+                        MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
+                    if (FocusGroup[1] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[1] = 0;
+                        FocusGroup[1] = 0;
+                    }
+                }
+                if (checkBox3.Checked == true)
+                {
+                    if (numericUpDown14.Value == 0)
+                    {
+                        MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
+                    if (FocusGroup[2] != Math.Round(FocusGroup[2]))
+                    {
+                        MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
+                    if (FocusGroup[2] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[2] = 0;
+                        FocusGroup[2] = 0;
+                    }
+                }
+                if (checkBox4.Checked == true)
+                {
+                    if (numericUpDown15.Value == 0)
+                    {
+                        MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
+                    if (FocusGroup[3] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
+                    if (FocusGroup[3] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[3] = 0;
+                        FocusGroup[3] = 0;
+                    }
+                }
+                if (checkBox5.Checked == true)
+                {
+                    if (numericUpDown20.Value == 0)
+                    {
+                        MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
+                    if (FocusGroup[4] != Math.Round(FocusGroup[4]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
+                    if (FocusGroup[4] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[4] = 0;
+                        FocusGroup[4] = 0;
+                    }
+                }
+                if (checkBox9.Checked == true)
+                {
+                    if (numericUpDown29.Value == 0)
+                    {
+                        MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
+                    if (FocusGroup[5] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
+                    if (FocusGroup[5] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[5] = 0;
+                        FocusGroup[5] = 0;
+                    }
+                }
+                FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
+            }
+        }
+
+        private void button51_Click_1(object sender, EventArgs e)
+        {
+            Handles H = new Handles();
+            Callback myCallBack = new Callback(H.EnumChildGetValue);
+
+            H.FindHandles();
+            //   int hWnd;
+
+
+            if (Handles.PHDhwnd == 0)//this can really just serve as reminded that PHD is needed for some functions...not necessary for focusing.  
+            {
+                DialogResult result1;
+                result1 = MessageBox.Show("PHD Not Found - Open and 'Retry', 'Ignore' or 'Abort' to Close", "scopefocus",
+                     MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);
+
+                if (result1 == DialogResult.Ignore)
+                    this.Refresh();
+                if (result1 == DialogResult.Retry)
+                {
+                    H.FindHandles();
+                    this.Refresh();
+                }
+                if (result1 == DialogResult.Abort)
+                    System.Environment.Exit(0);
+            }
+            else
+                Log("PHD version " + Handles.PHDVNumber.ToString());
+
+
+            if (Handles.NebhWnd == 0)
+            {
+                DialogResult result;
+                result = MessageBox.Show("Nebulosity Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
+                   "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
+                if (result == DialogResult.Ignore)
+                    this.Refresh();
+                if (result == DialogResult.Retry)
+                {
+                    H.FindHandles();
+                    this.Refresh();
+                }
+                if (result == DialogResult.Abort)
+                    System.Environment.Exit(0);
+
+            }
+            else
+            {
+
+                EnumChildWindows(Handles.NebhWnd, myCallBack, 0);
+                Log("Nebulosity Version " + Handles.NebVNumber.ToString());
+            }
+        }
+
+        private void button52_Click(object sender, EventArgs e)
+        {
+            // this works 
+            serverStream = clientSocket.GetStream();
+            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+
+            Thread.Sleep(3000);
+            serverStream.Close();
+            clientSocket.Close();
+            
+        }
         
+        private void button53_Click_1(object sender, EventArgs e)
+        {
+         //   Thread.Sleep(3000);
+          //  serverStream.Close();
+            SetForegroundWindow(Handles.NebhWnd);
+            Thread.Sleep(1000);
+            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+            Thread.Sleep(1000);
+       //     NebListenOn = false;
+            clientSocket.Close();
+
+            //  clientSocket.GetStream().Close();//added 5-17-12
+            //   clientSocket.Client.Disconnect(true);//added 5-17-12
+            //clientSocket.Close(); // 10-25-16 try rem this....doesn't matter
+        }
+
+        private void button54_Click(object sender, EventArgs e)
+        {
+            NebListenStart(Handles.NebhWnd, SocketPort);
+        }
 
         private void button50_Click(object sender, EventArgs e)
         {
