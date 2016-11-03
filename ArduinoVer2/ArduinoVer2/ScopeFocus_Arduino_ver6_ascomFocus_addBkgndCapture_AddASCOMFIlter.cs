@@ -89,6 +89,13 @@
 // 10-11-16 many changes for new FF metric works w/ CDCSimulator
 
 
+// *******for v-curve simulator.   Use known v-curve data, make sure step size and focus point are set the same/  
+//                                   open SimGen, select a focus .bmp file.  start the fine v-curve.  enter the desired hfr (with decimal eg 3.45) hit save.  a new point will be generated
+//                                     make sure to unrem lines in fileSystemWatcher2_Changed.  
+//                                     make sure to not use the file name originally opened. (change by .01 when get to that one) 
+//                                     rem filesystemwatcher2_delete lines 4254 down   // not sure if necessary.  
+
+
 ///  to do:
 /// ver21 see above 
 /// **** ??  able to abort focus move if needed
@@ -705,7 +712,7 @@ namespace Pololu.Usc.ScopeFocus
                         a.Fill(t);
                         dataGridView1.DataSource = t;
                         a.Update(t);
-
+                        dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending); // added 11-3-16 keep most recent on top
 
                         //    FileLog2(GetCreateFromDataTableSQL("table1", t)); //ytry to create the create string from here 7-25-14
 
@@ -977,13 +984,26 @@ namespace Pololu.Usc.ScopeFocus
             }
         }
 
-
+        DateTime lastRead = DateTime.MinValue;
         private void fileSystemWatcher2_Changed(object sender, FileSystemEventArgs e)
         {
-            if (vDone != 1)
-                vcurve();
+            // simulation by writing fake bmp file results in mult FSW triggers.  try to ignore dupluicates
+            // unrem for sim 
 
-        }
+
+        //    delay(1); // add for sim testing only 11-3-16
+         
+        //    DateTime lastWriteTime = File.GetLastWriteTime(e.FullPath);
+       //     if (lastWriteTime != lastRead)
+       //     {
+         //       lastRead = lastWriteTime;
+                if (vDone != 1)
+                    vcurve();
+                
+        //    }
+
+
+            }
         bool FineFocusAbort = false;
        // bool NebListenOn = false; // remd all 10-25-16
         //std dev, avg and gotofocus
@@ -1716,7 +1736,9 @@ namespace Pololu.Usc.ScopeFocus
                                     autoMetricVcurve = true;
                                     HFRtestON = false;
                                     fileSystemWatcher3.EnableRaisingEvents = false;
-                                    button25.PerformClick();
+                                    if (!checkBox22.Checked) // added 11-13-16
+                                        checkBox22.Checked = true;
+                                    button3.PerformClick(); // 11-3-16 was buton 25 "metric V"
                                     return;
                                 }
                                 //
@@ -3936,6 +3958,33 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+
+                if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
+                    currentmetricN = 0;
+                    /*
+                    if (roughvdone == false)//make sure rough v curve done to establish rough focus point
+                    {
+                        DialogResult result2;
+                        result2 = MessageBox.Show("Must perform a rough V-curve first", "scopefocus",
+                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        if (result2 == DialogResult.OK)
+                        {
+                            return;
+                        }
+                        return;
+                    }
+                     */
+                    //  button3.PerformClick();
+                    /*
+                    if (clientSocket.Connected == false)
+                    {
+                        //clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+                        NebListenStart(NebhWnd, SocketPort);
+                    }
+                     */
+                   
+                
+
                 //if (GlobalVariables.Nebcamera == "No camera")
                 //    NoCameraSelected();
                 vcurveenable = 1;//added 1-7-12
@@ -4048,8 +4097,12 @@ namespace Pololu.Usc.ScopeFocus
                 fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR
                 fileSystemWatcher3.EnableRaisingEvents = false;
                 fileSystemWatcher1.EnableRaisingEvents = false;
+
+                if (checkBox22.Checked) // added 11-3-16
+                MetricCapture();
                 //  }
             }
+
             catch (Exception ex)
             {
                 Log("FineV Error - Line 2191" + ex.ToString());
@@ -4232,6 +4285,8 @@ namespace Pololu.Usc.ScopeFocus
         //this works w/ sim.  need one extra file change since using delete
         private void fileSystemWatcher2_Deleted(object sender, FileSystemEventArgs e)
         {
+            //  *** remd 11-3-16   rem for sim
+
             if (ffenable == 1)
             {
 
@@ -8220,37 +8275,43 @@ namespace Pololu.Usc.ScopeFocus
             }
          */
         //  }
-        //metric Go button,  start N captures Fine V
-        private void button25_Click(object sender, EventArgs e)
-        {
-            if (checkBox22.Checked == false)
-                checkBox22.Checked = true;
-            currentmetricN = 0;
-            /*
-            if (roughvdone == false)//make sure rough v curve done to establish rough focus point
-            {
-                DialogResult result2;
-                result2 = MessageBox.Show("Must perform a rough V-curve first", "scopefocus",
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                if (result2 == DialogResult.OK)
-                {
-                    return;
-                }
-                return;
-            }
-             */
-            button3.PerformClick();
-            /*
-            if (clientSocket.Connected == false)
-            {
-                //clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
-                NebListenStart(NebhWnd, SocketPort);
-            }
-             */
-            fileSystemWatcher5.EnableRaisingEvents = true;
-            MetricCapture();
 
-        }
+            // ********removed 11-3-16
+        //metric Go button,  start N captures Fine V
+        //private void button25_Click(object sender, EventArgs e)
+        //{
+        //    if (checkBox22.Checked == false)
+        //        checkBox22.Checked = true;
+        //    currentmetricN = 0;
+        //    /*
+        //    if (roughvdone == false)//make sure rough v curve done to establish rough focus point
+        //    {
+        //        DialogResult result2;
+        //        result2 = MessageBox.Show("Must perform a rough V-curve first", "scopefocus",
+        //            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        //        if (result2 == DialogResult.OK)
+        //        {
+        //            return;
+        //        }
+        //        return;
+        //    }
+        //     */
+        //    button3.PerformClick();
+        //    /*
+        //    if (clientSocket.Connected == false)
+        //    {
+        //        //clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+        //        NebListenStart(NebhWnd, SocketPort);
+        //    }
+        //     */
+        //    fileSystemWatcher5.EnableRaisingEvents = true;
+        //    MetricCapture();
+
+        //}
+
+
+
+
         //metriccapturehere
         private void MetricCapture()
         {
@@ -16980,6 +17041,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             NebListenStart(Handles.NebhWnd, SocketPort);
         }
+       
+       
 
         private void button50_Click(object sender, EventArgs e)
         {
