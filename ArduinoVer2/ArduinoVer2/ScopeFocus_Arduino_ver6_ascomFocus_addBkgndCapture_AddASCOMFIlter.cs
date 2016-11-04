@@ -173,6 +173,7 @@ namespace Pololu.Usc.ScopeFocus
         Focuser focuser;
         FilterWheel filterWheel;
         private ASCOM.DriverAccess.Switch FlatFlap;
+        private ASCOM.DriverAccess.Camera cam;
 
         public MainWindow()
         {
@@ -11719,7 +11720,10 @@ namespace Pololu.Usc.ScopeFocus
             if (result == DialogResult.Retry)
                 FindNebCamera();
             if (result == DialogResult.Cancel)
+            {
+                GlobalVariables.Nebcamera = "none"; // added 11-3-16
                 return;
+            }
         }
         public int MaxADU;
         private void FindADU()
@@ -17041,8 +17045,51 @@ namespace Pololu.Usc.ScopeFocus
         {
             NebListenStart(Handles.NebhWnd, SocketPort);
         }
-       
-       
+        string devId5;
+        private void button25_Click(object sender, EventArgs e)
+        {
+            if (camIsConnected)
+            {
+                cam.Connected = false;
+                Log(devId5 + " disconnected");
+                button25.BackColor = System.Drawing.Color.WhiteSmoke;
+                return;
+            }
+            ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+            chooser.DeviceType = "Camera";
+            devId5 = chooser.Choose();
+            if (!string.IsNullOrEmpty(devId5))
+            {
+                cam = new ASCOM.DriverAccess.Camera(devId5);
+                cam.Connected = true;
+                Thread.Sleep(200);
+                           }
+
+            else
+            {
+                return;
+            }
+            if (SwitchIsConnected)
+                button12.BackColor = System.Drawing.Color.Lime;
+            Log("connected to " + devId5);
+            FileLog2("connected to " + devId5);
+        }
+
+
+
+        private bool camIsConnected
+        {
+            get
+            {
+                return ((this.cam != null) && (cam.Connected == true));
+            }
+
+        }
+
+        private void button56_Click(object sender, EventArgs e)
+        {
+            cam.StartExposure(5, true);
+        }
 
         private void button50_Click(object sender, EventArgs e)
         {
