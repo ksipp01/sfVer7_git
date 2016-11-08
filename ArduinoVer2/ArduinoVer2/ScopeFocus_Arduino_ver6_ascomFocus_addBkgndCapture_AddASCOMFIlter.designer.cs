@@ -338,6 +338,8 @@
             this.textBox28 = new System.Windows.Forms.TextBox();
             this.textBox27 = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.UseClipBoard = new System.Windows.Forms.CheckBox();
+            this.button56 = new System.Windows.Forms.Button();
             this.button25 = new System.Windows.Forms.Button();
             this.button54 = new System.Windows.Forms.Button();
             this.button53 = new System.Windows.Forms.Button();
@@ -432,7 +434,6 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
-            this.button56 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
@@ -3835,6 +3836,7 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.UseClipBoard);
             this.tabPage3.Controls.Add(this.button56);
             this.tabPage3.Controls.Add(this.button25);
             this.tabPage3.Controls.Add(this.button54);
@@ -3849,6 +3851,28 @@
             this.tabPage3.Size = new System.Drawing.Size(738, 222);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "About";
+            // 
+            // UseClipBoard
+            // 
+            this.UseClipBoard.AutoSize = true;
+            this.UseClipBoard.Checked = true;
+            this.UseClipBoard.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.UseClipBoard.Location = new System.Drawing.Point(60, 135);
+            this.UseClipBoard.Name = "UseClipBoard";
+            this.UseClipBoard.Size = new System.Drawing.Size(90, 17);
+            this.UseClipBoard.TabIndex = 9;
+            this.UseClipBoard.Text = "UseClipBoard";
+            this.UseClipBoard.UseVisualStyleBackColor = true;
+            // 
+            // button56
+            // 
+            this.button56.Location = new System.Drawing.Point(566, 102);
+            this.button56.Name = "button56";
+            this.button56.Size = new System.Drawing.Size(75, 23);
+            this.button56.TabIndex = 8;
+            this.button56.Text = "Capture";
+            this.button56.UseVisualStyleBackColor = true;
+            this.button56.Click += new System.EventHandler(this.button56_Click);
             // 
             // button25
             // 
@@ -4720,16 +4744,6 @@
             this.fileSystemWatcher7.SynchronizingObject = this;
             this.fileSystemWatcher7.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher7_Created);
             // 
-            // button56
-            // 
-            this.button56.Location = new System.Drawing.Point(566, 102);
-            this.button56.Name = "button56";
-            this.button56.Size = new System.Drawing.Size(75, 23);
-            this.button56.TabIndex = 8;
-            this.button56.Text = "Capture";
-            this.button56.UseVisualStyleBackColor = true;
-            this.button56.Click += new System.EventHandler(this.button56_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5271,6 +5285,7 @@
         private System.Windows.Forms.Button button54;
         private System.Windows.Forms.Button button25;
         private System.Windows.Forms.Button button56;
+        private System.Windows.Forms.CheckBox UseClipBoard;
     }
 }
 

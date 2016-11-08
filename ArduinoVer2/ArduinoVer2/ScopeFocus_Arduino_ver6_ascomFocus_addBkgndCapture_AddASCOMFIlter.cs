@@ -87,7 +87,8 @@
 //changes dataGridView1 selection ode to "full row select" from "cell select"
 
 // 10-11-16 many changes for new FF metric works w/ CDCSimulator
-
+// 11-8-16  added clipboard use, (works better). removed log timer tick 2 error.  
+//   -- add  a bunch of "&& (devId3 != null))" for dark and flat filter changes that might be done witout filter wheel
 
 // *******for v-curve simulator.   Use known v-curve data, make sure step size and focus point are set the same/  
 //                                   open SimGen, select a focus .bmp file.  start the fine v-curve.  enter the desired hfr (with decimal eg 3.45) hit save.  a new point will be generated
@@ -174,7 +175,7 @@ namespace Pololu.Usc.ScopeFocus
         FilterWheel filterWheel;
         private ASCOM.DriverAccess.Switch FlatFlap;
         private ASCOM.DriverAccess.Camera cam;
-
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -384,7 +385,7 @@ namespace Pololu.Usc.ScopeFocus
         //  int EnteredPID;
         //   double EnteredSlopeUP;
         //   double EnteredSlopeDWN;
-
+      
         private static bool FilterFocusOn = false;
         private static float FocusTime;
         //    private static bool startup = true;//used to ensure tab change only changes populates focuspos on startup
@@ -1139,7 +1140,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
 
                     }
-                    if (vProgress == nn) // calculate focus point from HFR
+               if (vProgress == nn) // calculate focus point from HFR
                     {
                         focusSampleComplete = true;
                         //?  may need FSW3 enalbing event = false here for std dev use
@@ -1796,21 +1797,32 @@ namespace Pololu.Usc.ScopeFocus
                                 //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                                 textBox4.Text = ((int)BestPos).ToString();
 
-                                serverStream = clientSocket.GetStream();
-                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                                serverStream.Write(outStream, 0, outStream.Length);
-                                serverStream.Flush();
+                                // 11-8-16
+                                if (!UseClipBoard.Checked)
+                                {
 
-                                Thread.Sleep(3000);
-                                serverStream.Close();
-                                SetForegroundWindow(Handles.NebhWnd);
-                                Thread.Sleep(1000);
-                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                                Thread.Sleep(1000);
-                             //   NebListenOn = false;
-                                // clientSocket.GetStream().Close();//added 5-17-12
-                                //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                                clientSocket.Close();
+                                    serverStream = clientSocket.GetStream();
+                                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                    serverStream.Write(outStream, 0, outStream.Length);
+                                    serverStream.Flush();
+
+                                    Thread.Sleep(3000);
+                                    serverStream.Close();
+                                    SetForegroundWindow(Handles.NebhWnd);
+                                    Thread.Sleep(1000);
+                                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                    Thread.Sleep(1000);
+                                    //   NebListenOn = false;
+                                    // clientSocket.GetStream().Close();//added 5-17-12
+                                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                    clientSocket.Close();
+                                }
+
+                                else
+                                {
+                                    Clipboard.SetText("//NEB Listen 0");
+                                    msdelay(500);
+                                }
                             }
                             //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
                             //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
@@ -1847,51 +1859,64 @@ namespace Pololu.Usc.ScopeFocus
                             _gotoFocusOn = false;
                             //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                             textBox4.Text = ((int)BestPos).ToString();
+                            if (!UseClipBoard.Checked)
+                            {
+                                serverStream = clientSocket.GetStream();
+                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                serverStream.Write(outStream, 0, outStream.Length);
+                                serverStream.Flush();
 
-                            serverStream = clientSocket.GetStream();
-                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                            serverStream.Write(outStream, 0, outStream.Length);
-                            serverStream.Flush();
+                                Thread.Sleep(3000);
+                                serverStream.Close();
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(1000);
+                                //  NebListenOn = false;
+                                // clientSocket.GetStream().Close();//added 5-17-12
+                                //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                clientSocket.Close();
+                            }
 
-                            Thread.Sleep(3000);
-                            serverStream.Close();
-                            SetForegroundWindow(Handles.NebhWnd);
-                            Thread.Sleep(1000);
-                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                            Thread.Sleep(1000);
-                          //  NebListenOn = false;
-                            // clientSocket.GetStream().Close();//added 5-17-12
-                            //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                            clientSocket.Close();
+                            else
+                            {
+                                Clipboard.SetText("//NEB Listen 0");
+                                msdelay(500);
+                            }
                         }
-                    }
+                        }
 
 
                 }
             }
             else
             {
-                Log("Simulator -- quality check disabled");
+                if (focusSampleComplete)
+                {
+                    Log("Simulator -- quality check disabled");
 
-                // added 10-24-16 
-
-                HFRtestON = false;
-                focusSampleComplete = true;
-                posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
-                fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
-
-                // try add 10-13-16
-                //FilterFocusOn = false;
-                //if (!IsSlave())
-                //{
-
-                //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
-                //NebCapture();
-
-                //}
-                // end add
+                    // added 10-24-16 
 
 
+                    // ********  11-8-16 seems to do this even if not done 
+
+                    HFRtestON = false;
+                //    focusSampleComplete = false; // 11-8-16 was true
+                    posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
+                    fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
+
+                    // try add 10-13-16
+                    //FilterFocusOn = false;
+                    //if (!IsSlave())
+                    //{
+
+                    //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                    //NebCapture();
+
+                    //}
+                    // end add
+
+                }
 
 
                 if (checkBox22.Checked == true)
@@ -1901,21 +1926,30 @@ namespace Pololu.Usc.ScopeFocus
                     //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                     textBox4.Text = ((int)BestPos).ToString();
 
-                    serverStream = clientSocket.GetStream();
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                    serverStream.Write(outStream, 0, outStream.Length);
-                    serverStream.Flush();
+                    //11-8-16
+                    if (!UseClipBoard.Checked)
+                    {
+                        serverStream = clientSocket.GetStream();
+                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        serverStream.Flush();
 
-                    Thread.Sleep(3000);
-                    serverStream.Close();
-                    SetForegroundWindow(Handles.NebhWnd);
-                    Thread.Sleep(1000);
-                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                    Thread.Sleep(1000);
-                //    NebListenOn = false;
-                    // clientSocket.GetStream().Close();//added 5-17-12
-                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                    clientSocket.Close();
+                        Thread.Sleep(3000);
+                        serverStream.Close();
+                        SetForegroundWindow(Handles.NebhWnd);
+                        Thread.Sleep(1000);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        Thread.Sleep(1000);
+                        //    NebListenOn = false;
+                        // clientSocket.GetStream().Close();//added 5-17-12
+                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        clientSocket.Close();
+                    }
+                    else
+                    {
+                        Clipboard.SetText("//NEB Listen 0");
+                        msdelay(500);
+                    }
                 }
             }
 
@@ -2072,10 +2106,11 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (!IsSlave() && (checkBox22.Checked == false))
                 {
-
-                    clientSocket.GetStream().Close();
-                    clientSocket.Close();// rem'd 5-17-12                                    
-
+                    if (!UseClipBoard.Checked)
+                    {
+                        clientSocket.GetStream().Close();
+                        clientSocket.Close();// rem'd 5-17-12                                    
+                    }
                 }
 
                 if (IsSlave())
@@ -2366,6 +2401,7 @@ namespace Pololu.Usc.ScopeFocus
         //vcurvehere
         void vcurve()
         {
+            
             //  Data d = new Data();
             //  try
             //  {
@@ -2948,27 +2984,35 @@ namespace Pololu.Usc.ScopeFocus
                             serverStream.Close();
                             Thread.Sleep(3000);
                              */
+                            //11-8-16
+                            if (!UseClipBoard.Checked)
+                            {
 
-                            //10-11-16  
-                            serverStream = clientSocket.GetStream();
-                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                            serverStream.Write(outStream, 0, outStream.Length);
-                            serverStream.Flush();
+                                //10-11-16  
+                                serverStream = clientSocket.GetStream();
+                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                serverStream.Write(outStream, 0, outStream.Length);
+                                serverStream.Flush();
 
-                            Thread.Sleep(3000);
-                            serverStream.Close();
-                            SetForegroundWindow(Handles.NebhWnd);
-                            Thread.Sleep(1000);
-                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                            Thread.Sleep(1000);
-                        //    NebListenOn = false;
-                            // clientSocket.GetStream().Close();//added 5-17-12
-                            //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                            clientSocket.Close();
-                            //  Thread.Sleep(500);
-                            //   SendKeys.SendWait("~");
-                            //   SendKeys.Flush();
-
+                                Thread.Sleep(3000);
+                                serverStream.Close();
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(1000);
+                                //    NebListenOn = false;
+                                // clientSocket.GetStream().Close();//added 5-17-12
+                                //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                clientSocket.Close();
+                                //  Thread.Sleep(500);
+                                //   SendKeys.SendWait("~");
+                                //   SendKeys.Flush();
+                            }
+                            else
+                            {
+                                Clipboard.SetText("//NEB Listen 0");
+                                msdelay(500);
+                            }
                             if (metricpath != null)
                                 File.Delete(metricpath[0]);
                             //  currentmetricN = 0;
@@ -5054,7 +5098,7 @@ namespace Pololu.Usc.ScopeFocus
         int intFilterPos = 1; //Neb indexes 1 more than the ASCOM position 
         private void filteradvance()
         {
-
+            // 11-8-16   TODO for clipboard and external filter
             if (checkBox31.Checked)
             {
                 intFilterPos++;
@@ -5418,30 +5462,49 @@ namespace Pololu.Usc.ScopeFocus
                 //adioButton7.Checked = false;
                 fileSystemWatcher4.EnableRaisingEvents = false;
                 //NetworkStream serverStream = clientSocket.GetStream();
-                serverStream = clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                serverStream.Write(outStream, 0, outStream.Length);
-                serverStream.Flush();
-                toolStripStatusLabel1.Text = "Sequence Done";
-                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
-                this.Refresh();
-                if (DarksOn == true)
-                    DarksOn = false;
-                currentfilter = 1;
-                DisplayCurrentFilter();
-                //      currentfilter = 0;
-                subCountCurrent = 0;
-                filterCountCurrent = 0;
-                Thread.Sleep(3000);//prevent overlapping sounds
-                serverStream.Close();
-                SetForegroundWindow(Handles.NebhWnd);
-                Thread.Sleep(1000);
-                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                Thread.Sleep(3000);
-         //       NebListenOn = false;
-                // clientSocket.GetStream().Close();//added 5-17-12
-                //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                clientSocket.Close();
+                if (!UseClipBoard.Checked)
+                {
+                    serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    toolStripStatusLabel1.Text = "Sequence Done";
+                    toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                    this.Refresh();
+                    if (DarksOn == true)
+                        DarksOn = false;
+                    currentfilter = 1;
+                    DisplayCurrentFilter();
+                    //      currentfilter = 0;
+                    subCountCurrent = 0;
+                    filterCountCurrent = 0;
+                    Thread.Sleep(3000);//prevent overlapping sounds
+                    serverStream.Close();
+                    SetForegroundWindow(Handles.NebhWnd);
+                    Thread.Sleep(1000);
+                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    Thread.Sleep(3000);
+                    //       NebListenOn = false;
+                    // clientSocket.GetStream().Close();//added 5-17-12
+                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                    clientSocket.Close();
+                }
+                else
+                {
+                    msdelay(1000);
+                    Clipboard.SetText("//NEB Listen 0");
+                    msdelay(1000);
+                    toolStripStatusLabel1.Text = "Sequence Done";
+                    toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                    this.Refresh();
+                    if (DarksOn == true)
+                        DarksOn = false;
+                    currentfilter = 1;
+                    DisplayCurrentFilter();
+                    //      currentfilter = 0;
+                    subCountCurrent = 0;
+                    filterCountCurrent = 0;
+                }
                 toolStripStatusLabel4.BackColor = System.Drawing.Color.LightGray;
                 toolStripStatusLabel4.Text = Filtertext.ToString();
                 //  button12.UseVisualStyleBackColor = true;
@@ -6030,7 +6093,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
@@ -6174,7 +6237,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null))
                             filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6228,7 +6291,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null)) // 11-8-16
                             filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6263,7 +6326,7 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;//back to pos 0 
                     DisplayCurrentFilter();
                     //    filteradvance();
@@ -6425,7 +6488,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null))
                             filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6460,7 +6523,7 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     //  filteradvance();
@@ -6536,7 +6599,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null))
                             filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6637,7 +6700,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null))
                             filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6672,7 +6735,7 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
@@ -6746,7 +6809,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if (!checkBox31.Checked)
+                        if ((!checkBox31.Checked) && (devId3 != null))
                             filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
@@ -6782,7 +6845,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
@@ -6832,7 +6895,7 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if (!checkBox31.Checked)
+                    if ((!checkBox31.Checked) && (devId3 != null))
                         filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
@@ -7018,19 +7081,25 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 string prefix = textBox19.Text.ToString();
                 //   NetworkStream serverstream;
+
+                // 11-8-16 clipboard may not work for slave TODO
                 if (IsSlave())
                     serverStream = clientSocket2.GetStream();
                 else
-                    try
+                {
+                    if (!UseClipBoard.Checked) // 11-8-16  just the if
                     {
-                        serverStream = clientSocket.GetStream();
+                        try
+                        {
+                            serverStream = clientSocket.GetStream();
+                        }
+                        catch (IOException e)
+                        {
+                            Log("Neb socket failure " + e.ToString());
+                            NebCapture();
+                        }
                     }
-                    catch (IOException e)
-                    {
-                        Log("Neb socket failure " + e.ToString());
-                        NebCapture();
-                    }
-
+                }
                 if (FlatCalcDone == false)
                 {
 
@@ -7045,6 +7114,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     if (checkBox31.Checked)
                     {
+                        // 11-8-16 TODO fix for clipboard use
                         intFilterPos = currentfilter;
                         byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
                         //use the one above for testing w/ external ASCOM filterwheel
@@ -7063,17 +7133,34 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
+                        if (!UseClipBoard.Checked) // 11-8-15 w/ else below
+                        {
+                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
 
-                        try
-                        {
-                            serverStream.Write(outStream, 0, outStream.Length);
-                            Log(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
+                            try
+                            {
+                                serverStream.Write(outStream, 0, outStream.Length);
+                                Log(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Error sending command", "scopefocus");
+                                return;
+
+                            }
                         }
-                        catch
+                        else
                         {
-                            MessageBox.Show("Error sending command", "scopefocus");
-                            return;
+                            Clipboard.SetText("//NEB SetName " + prefix + Nebname);
+                            msdelay(500);
+                            Clipboard.SetText("//NEB SetBinning " + CaptureBin);
+                            msdelay(500);
+                            Clipboard.SetText("//NEB SetShutter 0");
+                            msdelay(500);
+                            Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
+                            msdelay(500);
+                            Clipboard.SetText("//NEB Capture " + subsperfilter);
+                            msdelay(500);
 
                         }
                     }
@@ -7083,16 +7170,34 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (DarksOn == true)
                 {
-                    byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 1" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
-                    try
+
+                    if (!UseClipBoard.Checked)
                     {
-                        serverStream.Write(outStream2, 0, outStream2.Length);
-                        Log("Darks On  Cap time " + CaptureTime3.ToString());
+                        byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 1" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
+                        try
+                        {
+                            serverStream.Write(outStream2, 0, outStream2.Length);
+                            Log("Darks On  Cap time " + CaptureTime3.ToString());
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Error sending command", "scopefocus");
+                            return;
+
+                        }
                     }
-                    catch
+                    else
                     {
-                        MessageBox.Show("Error sending command", "scopefocus");
-                        return;
+                        Clipboard.SetText("//NEB setname " + prefix + Nebname);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB setbinning " + CaptureBin);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB SetShutter 1");
+                        msdelay(500);
+                        Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB Capture " + subsperfilter);
+                        msdelay(500);
 
                     }
                     // serverStream.Write(outStream2, 0, outStream2.Length);
@@ -7282,7 +7387,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
 
-
+                if (!UseClipBoard.Checked) // 11-8-16
                 serverStream.Flush();
 
                 //   toolStripStatusLabel1.Text = " ";
@@ -7362,28 +7467,35 @@ namespace Pololu.Usc.ScopeFocus
 
         private void Listen0()
         {
-
-            if ((IsSlave()) & clientSocket2.Connected == false)
+            if (!UseClipBoard.Checked) // 11-8-16
             {
-                NebListenStart(Handles.NebhWnd, SocketPort);
-                Log("Socket 2 connected");
+                if ((IsSlave()) & clientSocket2.Connected == false)
+                {
+                    NebListenStart(Handles.NebhWnd, SocketPort);
+                    Log("Socket 2 connected");
+                }
+
+                serverStream = clientSocket2.GetStream();
+
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("Listenport 0" + "\n");
+                try
+                {
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    Log("Listenport 0 sent");
+                }
+                catch
+                {
+                    MessageBox.Show("Error sending command", "scopefocus");
+                    return;
+
+                }
+                serverStream.Flush();
             }
-
-            serverStream = clientSocket2.GetStream();
-
-            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("Listenport 0" + "\n");
-            try
+            else
             {
-                serverStream.Write(outStream, 0, outStream.Length);
-                Log("Listenport 0 sent");
+                Clipboard.SetText("//NEB  Listen 0");
+                msdelay(500);
             }
-            catch
-            {
-                MessageBox.Show("Error sending command", "scopefocus");
-                return;
-
-            }
-            serverStream.Flush();
             // serverStream.Close();
             // clientSocket2.Client.Dispose();
             //  clientSocket2.Client.Close();
@@ -7754,7 +7866,7 @@ namespace Pololu.Usc.ScopeFocus
                                     if (comboBox1.SelectedItem.ToString() != "Dark 1")
                                     {
                                         currentfilter = 5;
-                                        if (!checkBox31.Checked)
+                                        if ((!checkBox31.Checked) && (devId3 != null))
                                             filterWheel.Position = (short)comboBox1.SelectedIndex;
                                         DisplayCurrentFilter();
                                         if (checkBox17.Checked == false)
@@ -8199,26 +8311,33 @@ namespace Pololu.Usc.ScopeFocus
                     */
                     //  SetForegroundWindow(Handles.Aborthwnd);
                     //   PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    if (UseClipBoard.Checked)
+                    {
+                        Clipboard.SetText("//NEB Listen 0");
+                        msdelay(500);
+                    }
+                    else
+                    {
+                        serverStream = clientSocket.GetStream();
+                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        serverStream.Flush();
 
-                    serverStream = clientSocket.GetStream();
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                    serverStream.Write(outStream, 0, outStream.Length);
-                    serverStream.Flush();
+                        Thread.Sleep(3000);
+                        serverStream.Close();
 
-                    Thread.Sleep(3000);
-                    serverStream.Close();
-                    SetForegroundWindow(Handles.NebhWnd);
-                    Thread.Sleep(1000);
-                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                    Thread.Sleep(1000);
-              //      NebListenOn = false;
-                    // clientSocket.GetStream().Close();//added 5-17-12
-                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                    clientSocket.Close();
-                    //  Thread.Sleep(500);
-                    //   SendKeys.SendWait("~");
-                    //   SendKeys.Flush();
-
+                        SetForegroundWindow(Handles.NebhWnd);
+                        Thread.Sleep(1000);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        Thread.Sleep(1000);
+                        //      NebListenOn = false;
+                        // clientSocket.GetStream().Close();//added 5-17-12
+                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        clientSocket.Close();
+                        //  Thread.Sleep(500);
+                        //   SendKeys.SendWait("~");
+                        //   SendKeys.Flush();
+                    }
                     if (metricpath != null)
                         File.Delete(metricpath[0]);
                     currentmetricN = 0;
@@ -8335,11 +8454,20 @@ namespace Pololu.Usc.ScopeFocus
                     // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
                 }
 
-
-                serverStream = clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
-                serverStream.Write(outStream, 0, outStream.Length);
-                serverStream.Flush();
+                if (UseClipBoard.Checked) // 11-8-16
+                {
+                    Clipboard.SetText("//NEB SetDuration " + MetricTime);
+                    msdelay(500);
+                    Clipboard.SetText("//NEB CaptureSingle metric");
+                    msdelay(500);
+                }
+                else
+                {
+                    serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                }
             }
             catch (Exception ex)
             {
@@ -8386,21 +8514,42 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 fileSystemWatcher5.EnableRaisingEvents = true;
                 // NetworkStream serverStream = clientSocket.GetStream();
-                serverStream = clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
-                serverStream.Write(outStream, 0, outStream.Length);
+                if (UseClipBoard.Checked) // 11-8-16
+                {
+                  //  Thread.Sleep(500);
+                    Clipboard.SetText("//NEB SetDuration 5");
+                    //    Thread.Sleep(500);
+                    msdelay(500);
+                    //    Clipboard.Clear();
+                    Clipboard.SetText("//NEB CaptureSingle metric");
+                    msdelay(500);
+                    //    Thread.Sleep(500);
+                    //   delay(1);
+                }
+                else
+                {
+                    serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
+                    serverStream.Write(outStream, 0, outStream.Length);
 
-                serverStream.Flush();
+                    serverStream.Flush();
+                }
+            
+                
             }
+            
             catch (ObjectDisposedException e)
             {
-                MessageBox.Show("Error Communicating with Nebulosity, Make Sure it's open and click Rescan on Setup tab", "scopefocus");
+                // MessageBox.Show("Error Communicating with Nebulosity, Make Sure it's open and click Rescan on Setup tab", "scopefocus");
+                Log("Error Communicating with Nebulosity");
+                Send("Error Communicating with Nebulosity");
                 return;
             }
 
             catch (Exception ex)
             {
                 Log("SampleMetric Error Line 8301" + ex.ToString());
+                Send("Error Communicating with Nebulosity");
                 return;
             }
 
@@ -9112,6 +9261,8 @@ namespace Pololu.Usc.ScopeFocus
             //   string prefix = textBox19.Text.ToString();
             //   NetworkStream serverstream;
             string Solvetime = textBox65.Text;
+            if (!UseClipBoard.Checked) // 11-8-16 and else below
+            {
                 try
                 {
                     serverStream = clientSocket.GetStream();
@@ -9121,18 +9272,34 @@ namespace Pololu.Usc.ScopeFocus
                     Log("Neb socket failure " + e.ToString());
                     NebCapture();
                 }
-                   byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + "Confirm_Solve_Location" + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + Solvetime + "\n" + "Capture " + "1" + "\n");
-                    try
-                    {
-                        serverStream.Write(outStream, 0, outStream.Length);
-                Log("Getting plate solve image confirmation");
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Error sending command", "scopefocus");
-                        return;
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + "Confirm_Solve_Location" + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + Solvetime + "\n" + "Capture " + "1" + "\n");
+                try
+                {
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    Log("Getting plate solve image confirmation");
+                }
+                catch
+                {
+                    MessageBox.Show("Error sending command", "scopefocus");
+                    return;
 
-                    }
+                }
+            }
+            else
+            {
+                   Clipboard.SetText("//NEB SetName " + "Confirm_Solve_Location");
+                    msdelay(500);
+                    Clipboard.SetText("//NEB SetBinning " + CaptureBin);
+                    msdelay(500);
+                    Clipboard.SetText("//NEB SetShutter 0");
+                    msdelay(500);
+                    Clipboard.SetText("//NEB SetDuration " + Solvetime);
+                    msdelay(500);
+                    Clipboard.SetText("//NEB Capture 1");
+                msdelay(500);
+
+
+            }
             // add 4-13-16 try to hold progress until capture is done.  
             //if (backgroundWorker2.IsBusy != true)
             //    backgroundWorker2.RunWorkerAsync();
@@ -9528,67 +9695,74 @@ namespace Pololu.Usc.ScopeFocus
         //try send focus time via script  *****Close****
         private void SendFocusTime(float dur)
         {
-            try
+            if (!UseClipBoard.Checked) // 11-8-16
             {
-                if (IsSlave())
-                    Thread.Sleep(3000);
-
-                if (IsSlave())
-                {
-
-                    if (clientSocket2.Connected == false)
-                    {
-                        Log("Socket 2 was not connected");
-                        NebListenStart(Handles.NebhWnd, SocketPort);
-                    }
-                }
-                else
-                {
-
-                    if (clientSocket.Connected == false)
-                    {
-                        Log("Socket 1 was not connected");
-                        NebListenStart(Handles.NebhWnd, SocketPort);
-                    }
-                }
-
-                // if (NebListenOn == false)
-                //    NebListenStart(NebhWnd, SocketPort); //  this seems to be needed if about is hit too many time on slave
-                // Thread.Sleep(1000);remd 6-3
-                toolStripStatusLabel1.Text = "SendFocusTime";
-                this.Refresh();
-
-                //  int bin = (int)numericUpDown23.Value;
-
-                if (IsSlave())
-                    serverStream = clientSocket2.GetStream();
-                else
-                    serverStream = clientSocket.GetStream();
-
-
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + dur + "\n");
-
-
-                //   byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setbinning " + bin + "\n" + "SetDuration " + dur + "\n");****remd 3_13 to try above
                 try
-                {
-                    serverStream.Write(outStream, 0, outStream.Length);
-                    Log("FocusTime sent " + dur.ToString());
-                }
-                catch
-                {
-                    MessageBox.Show("Error sending command", "scopefocus");
-                    return;
+            {
+                
+                    if (IsSlave())
+                        Thread.Sleep(3000);
 
-                }
-                serverStream.Flush();
-                Thread.Sleep(3000); //**** was 1000 4-22-14
-                //*********************goes farther without this NebListenStop but doesn't hit enter 
-                // for client socket closed message boxes
-                //*************need to eleminiate mult. socket opwn/close  *******************
+                    if (IsSlave())
+                    {
 
-                //   NebListenStop();
-            }
+                        if (clientSocket2.Connected == false)
+                        {
+                            Log("Socket 2 was not connected");
+                            NebListenStart(Handles.NebhWnd, SocketPort);
+                        }
+                    }
+                    else
+                    {
+
+                        if (clientSocket.Connected == false)
+                        {
+                            Log("Socket 1 was not connected");
+                            NebListenStart(Handles.NebhWnd, SocketPort);
+                        }
+
+
+
+
+                    }
+
+                    // if (NebListenOn == false)
+                    //    NebListenStart(NebhWnd, SocketPort); //  this seems to be needed if about is hit too many time on slave
+                    // Thread.Sleep(1000);remd 6-3
+                    toolStripStatusLabel1.Text = "SendFocusTime";
+                    this.Refresh();
+
+                    //  int bin = (int)numericUpDown23.Value;
+
+                    if (IsSlave())
+                        serverStream = clientSocket2.GetStream();
+                    else
+                        serverStream = clientSocket.GetStream();
+
+
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + dur + "\n");
+
+
+                    //   byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setbinning " + bin + "\n" + "SetDuration " + dur + "\n");****remd 3_13 to try above
+                    try
+                    {
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        Log("FocusTime sent " + dur.ToString());
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error sending command", "scopefocus");
+                        return;
+
+                    }
+                    serverStream.Flush();
+                    Thread.Sleep(3000); //**** was 1000 4-22-14
+                                        //*********************goes farther without this NebListenStop but doesn't hit enter 
+                                        // for client socket closed message boxes
+                                        //*************need to eleminiate mult. socket opwn/close  *******************
+
+                    //   NebListenStop();
+                }
             catch (Exception ex)
             {
                 Log("SendFocutTime Error" + ex.ToString());
@@ -9596,6 +9770,17 @@ namespace Pololu.Usc.ScopeFocus
                 FileLog("SendFocutTime Error" + ex.ToString());
 
             }
+        }
+        else // 11-8-16
+            {
+                NebListenStart(Handles.NebhWnd, SocketPort);
+                delay(1);
+                Clipboard.SetText("//NEB SetDuration " + dur.ToString());
+                msdelay(500);
+                Log("FocusTime sent " + dur.ToString());
+
+            }
+
 
         }
 
@@ -10035,182 +10220,236 @@ namespace Pololu.Usc.ScopeFocus
         [DllImport("user32.dll")]
         private static extern bool ShowWindowAsync(int hWnd, int nCmdShow);
         //neblistenstarthere
+        private int retry = 0;
         private void NebListenStart(int hwnd, int port)//was blank
         {
-            try
+
+            if (retry < 3)
             {
-               
-                int hwndChild;
-                int hwndChild1;
-                int hwndChild2;
-                if (IsSlave())
-                    Thread.Sleep(4000);//*****6-17 was 3000
-                ShowWindowAsync(hwnd, SW_SHOW);
-                Thread.Sleep(200);
-                ShowWindowAsync(hwnd, SW_RESTORE);
-                Thread.Sleep(500);
-                //    ShowWindow(hwnd, SW_SHOW);
-                Thread.Sleep(500);
-                SetForegroundWindow(hwnd);//was NebhWnnd;
-                Thread.Sleep(500);
-                SendKeys.SendWait("^r");
-                SendKeys.Flush();
-                Thread.Sleep(1000);
-                Handles.LoadScripthwnd = FindWindow(null, "Load script");
-                //    GetHandles();
-                if (Handles.LoadScripthwnd == 0)
+                try
                 {
-                    ShowWindowAsync(hwnd, SW_SHOW);//was working without this line
-                    ShowWindowAsync(hwnd, SW_RESTORE);
+
+                    int hwndChild;
+                    int hwndChild1;
+                    int hwndChild2;
+                    if (IsSlave())
+                        Thread.Sleep(4000);//*****6-17 was 3000
+                    ShowWindowAsync(hwnd, SW_SHOW);
                     Thread.Sleep(200);
+                    ShowWindowAsync(hwnd, SW_RESTORE);
+                    Thread.Sleep(500);
                     //    ShowWindow(hwnd, SW_SHOW);
-                    Thread.Sleep(250);
+                    Thread.Sleep(500);
                     SetForegroundWindow(hwnd);//was NebhWnnd;
                     Thread.Sleep(500);
                     SendKeys.SendWait("^r");
                     SendKeys.Flush();
                     Thread.Sleep(1000);
                     Handles.LoadScripthwnd = FindWindow(null, "Load script");
-                }
-                //***********  added 6-7 so neblisten doesnt start after flat
-                /*
-                if (LoadScripthwnd == 0)
-                {
-                    Log("Neb Listen failed");
-                    return;
-                }
-*/
-                //******
-                SetForegroundWindow(Handles.LoadScripthwnd);
-                //   int indexhandle = FindWindowByIndex(LoadScripthwnd, 1, "ComboBoxEx32");
-                //   Log("Indexhandle " + indexhandle.ToString());
-                //   EnumChildGetValue(LoadScripthwnd, 0);
-                hwndChild = FindWindowEx(Handles.LoadScripthwnd, 0, "ComboBoxEx32", null);
-                //  Log("cbex32" + hwndChild.ToString());
-                hwndChild1 = FindWindowEx(hwndChild, 0, "ComboBox", null);
-                //   Log("cb" + hwndChild1.ToString());
-                hwndChild2 = FindWindowEx(hwndChild1, 0, "edit", null);
-                //  Log("enterscript name box" + hwndChild2.ToString());
-                if (hwndChild == 0 || hwndChild1 == 0 || hwndChild2 == 0)
-                    return;
-                if (checkBox14.Checked == true)
-                {
-                    port = 4302;
-                    ScriptName = "\\listenPort2.neb";
-                }
-                else
-                {
-                    port = 4301;
-                    ScriptName = "\\listenPort.neb";
-                }
-                //need to get combobox then edit.....
-                //  string send = "";
-                // string send = NebPath + @"\listenPort.neb";
-                //   send = "C:\\Program Files (x86)\\Nebulosity3\\listenPort.neb";
-                //   string ScriptName = "\\listenPort.neb";
-                string send = GlobalVariables.NebPath + ScriptName;
-
-                StringBuilder sb = new StringBuilder(send);
-                //  sb = send;
-                SendMessage(hwndChild2, WM_SETTEXT, 0, sb);
-                Thread.Sleep(1000);//******5-29 was 250
-           //  SendKeys.SendWait("~"); // 10-25-16 changed to  send not sendwait below
-                SendKeys.Send("~");
-                Thread.Sleep(250); // added 10-25-16
-                SendKeys.Flush();
-                Thread.Sleep(1000);
-
-                if (Handles.LoadScripthwnd != 0)
-                {
-                    if ((IsServer()) & (SlaveFlatOn == false))
+                    //    GetHandles();
+                    if (Handles.LoadScripthwnd == 0)
                     {
+                        ShowWindowAsync(hwnd, SW_SHOW);//was working without this line
+                        ShowWindowAsync(hwnd, SW_RESTORE);
+                        Thread.Sleep(200);
+                        //    ShowWindow(hwnd, SW_SHOW);
+                        Thread.Sleep(250);
+                        SetForegroundWindow(hwnd);//was NebhWnnd;
+                        Thread.Sleep(500);
+                        SendKeys.SendWait("^r");
+                        SendKeys.Flush();
+                        Thread.Sleep(1000);
+                        Handles.LoadScripthwnd = FindWindow(null, "Load script");
+                    }
+                    //***********  added 6-7 so neblisten doesnt start after flat
+                    /*
+                    if (LoadScripthwnd == 0)
+                    {
+                        Log("Neb Listen failed");
+                        return;
+                    }
+    */
+                    //******
+                    SetForegroundWindow(Handles.LoadScripthwnd);
+                    //   int indexhandle = FindWindowByIndex(LoadScripthwnd, 1, "ComboBoxEx32");
+                    //   Log("Indexhandle " + indexhandle.ToString());
+                    //   EnumChildGetValue(LoadScripthwnd, 0);
+                    hwndChild = FindWindowEx(Handles.LoadScripthwnd, 0, "ComboBoxEx32", null);
+                    //  Log("cbex32" + hwndChild.ToString());
+                    hwndChild1 = FindWindowEx(hwndChild, 0, "ComboBox", null);
+                    //   Log("cb" + hwndChild1.ToString());
+                    hwndChild2 = FindWindowEx(hwndChild1, 0, "edit", null);
+                    //  Log("enterscript name box" + hwndChild2.ToString());
+                    if (hwndChild == 0 || hwndChild1 == 0 || hwndChild2 == 0)
+                        return;
+                    if (UseClipBoard.Checked)
+                    {
+                        ScriptName = "\\Listen.neb";
+                    }
+                    if ((checkBox14.Checked == true) && (!UseClipBoard.Checked))
+                    {
+                        port = 4302;
+                        ScriptName = "\\listenPort2.neb";
+                    }
 
-                        Log("Waiting for Slave connection");
-                        toolStripStatusLabel1.Text = "Waiting for slave connection";
-                        // this.Refresh();
+                    // else 11-8-16
+                    if ((checkBox14.Checked == false) && (!UseClipBoard.Checked))
+                    {
+                        port = 4301;
+                        ScriptName = "\\listenPort.neb";
+                    }
+
+                    //need to get combobox then edit.....
+                    //  string send = "";
+                    // string send = NebPath + @"\listenPort.neb";
+                    //   send = "C:\\Program Files (x86)\\Nebulosity3\\listenPort.neb";
+                    //   string ScriptName = "\\listenPort.neb";
+                    string send = GlobalVariables.NebPath + ScriptName;
+
+                    StringBuilder sb = new StringBuilder(send);
+                    //  sb = send;
+                    SendMessage(hwndChild2, WM_SETTEXT, 0, sb);
+                    Thread.Sleep(1000);//******5-29 was 250
+                                       //  SendKeys.SendWait("~"); // 10-25-16 changed to  send not sendwait below
+                    SendKeys.Send("~");
+                    Thread.Sleep(250); // added 10-25-16
+                    SendKeys.Flush();
+                    Thread.Sleep(1000);
+
+
+                    // make sure it script filename got sent
+                    // ???
+
+
+
+                    if (Handles.LoadScripthwnd != 0)
+                    {
+                        if ((IsServer()) & (SlaveFlatOn == false))
+                        {
+
+                            Log("Waiting for Slave connection");
+                            toolStripStatusLabel1.Text = "Waiting for slave connection";
+                            // this.Refresh();
+                            while (working == true)
+                            {
+
+                                WaitForSequenceDone("Waiting for connection", GlobalVariables.NebSlavehwnd);
+                                //  Thread.Sleep(50);
+                            }
+
+
+                            working = true;
+                            Log("Slave Connected");
+                        }
+                    }
+
+                    if (FineFocusAbort == true)
+                    {
+                        while (working == true)
+                        {
+                            WaitForSequenceDone("Waiting for connection", Handles.NebhWnd);
+                            // Thread.Sleep(100);
+                            // Log("waiting");
+                        }
+                        working = true;
+                        FineFocusAbort = false;
+                    }
+                    /*//********remd 6-6
+                    //***********************add some while Fcn to wait for neb status to say "Waiting for connection"
+                    bool LoadScript = true;
+                    if (IsServer())
+                    {
+                        Log("Waiting for Slave load script");
+                        while (LoadScript == true)
+                        {
+                            int StatusstripHandle = FindWindowEx(NebSlavehwnd, 0, "msctls_statusbar32", null);
+
+                            //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
+                            IntPtr statusHandle = new IntPtr(StatusstripHandle);
+                            StatusHelper sh = new StatusHelper(statusHandle);
+                            string[] captions = sh.Captions;
+
+                            if (captions[0] == "Waiting for connection")
+                            {
+                                Log("Slave Load Script Complete");
+                                LoadScript = false;
+                            }
+                            Thread.Sleep(50);
+                        }
+                    }
+    */
+                    if ((clientSocket.Connected == false) & (port == 4301))
+                        Connect1(port);
+                    if ((clientSocket2.Connected == false) & (port == 4302))
+                        Connect2(port);
+                    /*
+                                    if (clientSocket.Connected == false)
+                                    {
+                                        Connect1(port);
+                                        Log("connecting to " + port.ToString());
+                                    }
+                    */
+                    /*
+                    if (FineFocusAbort == true)
+                    {
+                        Log("waiting for connection");
                         while (working == true)
                         {
 
-                            WaitForSequenceDone("Waiting for connection", GlobalVariables.NebSlavehwnd);
-                            //  Thread.Sleep(50);
+                            WaitForSequenceDone("New cnxn", NebhWnd);
+                              Thread.Sleep(50);
+
                         }
-
-
                         working = true;
-                        Log("Slave Connected");
                     }
-                }
+                     */
+                    //  NebListenOn = true;
 
-                if (FineFocusAbort == true)
-                {
-                    while (working == true)
+                    // added 11-8-16
+                    if (!UseClipBoard.Checked)
                     {
-                        WaitForSequenceDone("Waiting for connection", Handles.NebhWnd);
-                        // Thread.Sleep(100);
-                        // Log("waiting");
-                    }
-                    working = true;
-                    FineFocusAbort = false;
-                }
-                /*//********remd 6-6
-                //***********************add some while Fcn to wait for neb status to say "Waiting for connection"
-                bool LoadScript = true;
-                if (IsServer())
-                {
-                    Log("Waiting for Slave load script");
-                    while (LoadScript == true)
-                    {
-                        int StatusstripHandle = FindWindowEx(NebSlavehwnd, 0, "msctls_statusbar32", null);
-
-                        //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
-                        IntPtr statusHandle = new IntPtr(StatusstripHandle);
-                        StatusHelper sh = new StatusHelper(statusHandle);
-                        string[] captions = sh.Captions;
-
-                        if (captions[0] == "Waiting for connection")
+                        if (CheckConnection() == "Waiting for connection")
                         {
-                            Log("Slave Load Script Complete");
-                            LoadScript = false;
+                            retry = 0;
+                            return;
                         }
-                        Thread.Sleep(50);
+                        else
+
+                        {
+                            Log("retry NebListenStart");
+                            retry++;
+                            NebListenStart(Handles.NebhWnd, SocketPort);
+                        }
+                        // if the load script windows still up try sending cancel and repeat.  
+                        if (Handles.LoadScripthwnd != 0)
+                        {
+                            SendMessage(hwndChild2, WM_SETTEXT, 0, sb);
+                            Thread.Sleep(1000);//******5-29 was 250
+                                               //  SendKeys.SendWait("~"); // 10-25-16 changed to  send not sendwait below
+                            SendKeys.Send("{ESC}");
+                            Thread.Sleep(250); // added 10-25-16
+                            SendKeys.Flush();
+                            Thread.Sleep(1000);
+                            retry++;
+                            NebListenStart(Handles.NebhWnd, SocketPort);
+                            Log("retry NebListenStart");
+                        }
+
                     }
+
                 }
-*/
-                if ((clientSocket.Connected == false) & (port == 4301))
-                    Connect1(port);
-                if ((clientSocket2.Connected == false) & (port == 4302))
-                    Connect2(port);
-                /*
-                                if (clientSocket.Connected == false)
-                                {
-                                    Connect1(port);
-                                    Log("connecting to " + port.ToString());
-                                }
-                */
-                /*
-                if (FineFocusAbort == true)
+                catch (Exception ex)
                 {
-                    Log("waiting for connection");
-                    while (working == true)
-                    {
+                    Log("NebListenStart Error" + ex.ToString());
+                    Send("NebListenStart Error" + ex.ToString());
+                    FileLog("NebListenStart Error" + ex.ToString());
 
-                        WaitForSequenceDone("New cnxn", NebhWnd);
-                          Thread.Sleep(50);
-
-                    }
-                    working = true;
                 }
-                 */
-              //  NebListenOn = true;
             }
-            catch (Exception ex)
-            {
-                Log("NebListenStart Error" + ex.ToString());
-                Send("NebListenStart Error" + ex.ToString());
-                FileLog("NebListenStart Error" + ex.ToString());
-
-            }
-
+            //else
+            //    Log("NebListenStart Failed");
+            //Send("NebListenStart Failed");
+            //FileLog("NebListenStart failed");
 
         }
         private void Connect2(int port)
@@ -10235,12 +10474,32 @@ namespace Pololu.Usc.ScopeFocus
 
             }
         }
+        // added 11-8-16
+        private string CheckConnection()
+        {
+              int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
+
+                //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
+                IntPtr statusHandle = new IntPtr(StatusstripHandle);
+                StatusHelper sh = new StatusHelper(statusHandle);
+                string[] captions = sh.Captions;
+            if (captions[0] != "")
+            {
+                return captions[0];
+            }
+            else
+                return "0";
+          
+        }
+
+
 
         private void Connect1(int port)
         {
             //bool tryagain = true;
             //while (tryagain)
             //{
+            while(CheckConnection() == "Waiting for connection")
                 try
                 {
                     //  if (clientSocket.Connected == false)//**************try adding 2_29
@@ -10260,8 +10519,9 @@ namespace Pololu.Usc.ScopeFocus
                 FileLog("A connection error occured, rescan for Neb and PHD handles");
                 Send("A connection error occured, rescan for Neb and PHD handles");
 
-                MessageBox.Show("Unable to communicate with Nebulosity, Open Neb and click Rescan on Setup tab", "scopefocus");
-                        return;
+                // remd 11-8-16
+                //MessageBox.Show("Unable to communicate with Nebulosity, Open Neb and click Rescan on Setup tab", "scopefocus");
+                //        return;
 
                     //DialogResult result1;
                     //result1 = MessageBox.Show("A connection error occured, click 'retry' to rescan or 'abort' to quit", "scopefocus",
@@ -10492,11 +10752,17 @@ namespace Pololu.Usc.ScopeFocus
                }
                 */
                 //  NetworkStream serverStream = clientSocket.GetStream();
-                serverStream = clientSocket.GetStream();
-                byte[] outStream3 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                serverStream.Write(outStream3, 0, outStream3.Length);
-                serverStream.Flush();
-                outStream3 = null;
+                if (!UseClipBoard.Checked)
+                {
+                    serverStream = clientSocket.GetStream();
+                    byte[] outStream3 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                    serverStream.Write(outStream3, 0, outStream3.Length);
+                    serverStream.Flush();
+                    outStream3 = null;
+                }
+                else
+                    Clipboard.SetText("//NEB Listen 0");
+                msdelay(500);
             }
             catch (Exception ex)
             {
@@ -11644,6 +11910,9 @@ namespace Pololu.Usc.ScopeFocus
                 ExcelFilename = textBox33.Text;
         }
 
+       
+      
+
 
 
         private void FindNebCamera()
@@ -11651,7 +11920,20 @@ namespace Pololu.Usc.ScopeFocus
             try
             {
 
+                //    try to get from the camera selection combobox...not working.  Captions for this windows is "" fro some reason
+                //int panel = FindWindowByIndexName(Handles.NebhWnd, 3, "panel");
 
+                //int camera = FindWindowByIndex(panel, 1, "combobox");//Finds thrid edit panel under parent panel under main window
+                //IntPtr statusHandle = new IntPtr(camera);
+                //StatusHelper sh = new StatusHelper(statusHandle);
+                //string[] captions = sh.Captions;        
+
+
+
+
+
+
+                // remd 11-8-16
                 int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
 
                 IntPtr statusHandle = new IntPtr(StatusstripHandle);
@@ -11786,6 +12068,7 @@ namespace Pololu.Usc.ScopeFocus
             FlatGoal = Convert.ToInt32(textBox38.Text.ToString()) * 1000;
             //    if (NebListenOn == false)
             NebListenStart(Handles.NebhWnd, SocketPort);
+            msdelay(500); // 11-8-16
             while ((MaxADU > FlatGoal * tol) || (MaxADU < FlatGoal / tol))
             {
                 textBox41.Refresh();
@@ -11794,45 +12077,97 @@ namespace Pololu.Usc.ScopeFocus
                 //   this.Refresh();
                 string prefix = textBox19.Text.ToString();
                 //  NetworkStream serverStream;
-                if (IsSlave())
-                    serverStream = clientSocket2.GetStream();
-                else
-                    serverStream = clientSocket.GetStream();
-                int subs = 1;
-                string name = "FlatCalc";
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + name + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + FlatExp + "\n" + "Capture " + subs + "\n");
-                try
+                if (!UseClipBoard.Checked) // 11-8-16
                 {
-                    Capturing = true;
-                    serverStream.Write(outStream, 0, outStream.Length);
-                    Thread.Sleep(500);//wait to check until after starts capturing 
-                    while (Capturing == true)
-                    {
-                        int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
 
-                        //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
-                        IntPtr statusHandle = new IntPtr(StatusstripHandle);
-                        StatusHelper sh = new StatusHelper(statusHandle);
-                        string[] captions = sh.Captions;
-                        if (captions[0] == "Sequence done")
-                            Capturing = false;
+                    if (IsSlave())
+                        serverStream = clientSocket2.GetStream();
+                    else
+                        serverStream = clientSocket.GetStream();
+
+                    int subs = 1;
+                    string name = "FlatCalc";
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + name + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + FlatExp + "\n" + "Capture " + subs + "\n");
+                    try
+                    {
+                        Capturing = true;
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        Thread.Sleep(500);//wait to check until after starts capturing 
+                        while (Capturing == true)
+                        {
+                            int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
+
+                            //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
+                            IntPtr statusHandle = new IntPtr(StatusstripHandle);
+                            StatusHelper sh = new StatusHelper(statusHandle);
+                            string[] captions = sh.Captions;
+                            if (captions[0] == "Sequence done")
+                                Capturing = false;
+                        }
+
+
+
+
                     }
 
+                    catch
+                    {
+                        MessageBox.Show("Error sending command", "scopefocus");
+                        return;
 
+                    }
 
-
+                    serverStream.Flush();
+                    //  Thread.Sleep(5000);//depends on download time.  may be a way to wait for change of MaxADU
+                    //   Thread.Sleep((int)FlatExp * 1000);
                 }
 
-                catch
+                else
                 {
-                    MessageBox.Show("Error sending command", "scopefocus");
-                    return;
+                    int subs = 1;
+                    string name = "FlatCalc";
+                   // byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + name + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + FlatExp + "\n" + "Capture " + subs + "\n");
+                    try
+                    {
+                        Capturing = true;
+                        //  serverStream.Write(outStream, 0, outStream.Length);
 
+                        Clipboard.SetText("//NEB SetName " + prefix + name);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB SetBinning " + CaptureBin);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB SetShutter 0");
+                        msdelay(500);
+                        Clipboard.SetText("//NEB SetDuration " + FlatExp);
+                        msdelay(500);
+                        Clipboard.SetText("//NEB Capture " + subs);
+                        msdelay(500);
+
+                        //Thread.Sleep(500);//wait to check until after starts capturing 
+                        while (Capturing == true)
+                        {
+                            int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
+
+                            //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
+                            IntPtr statusHandle = new IntPtr(StatusstripHandle);
+                            StatusHelper sh = new StatusHelper(statusHandle);
+                            string[] captions = sh.Captions;
+                            if (captions[0] == "Sequence done")
+                                Capturing = false;
+                        }
+
+
+
+
+                    }
+
+                    catch
+                    {
+                        MessageBox.Show("Error sending command", "scopefocus");
+                        return;
+
+                    }
                 }
-
-                serverStream.Flush();
-                //  Thread.Sleep(5000);//depends on download time.  may be a way to wait for change of MaxADU
-                //   Thread.Sleep((int)FlatExp * 1000);
 
 
                 FindADU();
@@ -11854,7 +12189,7 @@ namespace Pololu.Usc.ScopeFocus
                 FlatExp = FlatExp * ADUratio;
 
 
-            }
+            } // end while
             /*
             if ((IsSlave()) & (checkBox21.Checked == true))
             {
@@ -12492,7 +12827,7 @@ namespace Pololu.Usc.ScopeFocus
                 subCountCurrent = 0;
                 standby();
 
-                MessageBox.Show("Close and restart Nebulosity, then click rescan on setup tab");
+              //  MessageBox.Show("Close and restart Nebulosity, then click rescan on setup tab");
 
                 // 10-25-16 try (doesn't work get socket closed then error on restart seqeunce
 
@@ -12531,6 +12866,7 @@ namespace Pololu.Usc.ScopeFocus
                 //serverStream.Flush();
                 toolStripStatusLabel1.Text = "Sequence Aborted";
                 toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                button26.UseVisualStyleBackColor = true;
                 this.Refresh();
 
 
@@ -14891,22 +15227,23 @@ namespace Pololu.Usc.ScopeFocus
 
                         //  *****   not closing neb socket properly ******   4-12-16
 
-
-                        Thread.Sleep(500);
-                        serverStream.Flush();
-                        Thread.Sleep(1000);
-                        //    serverStream.Close();
-                        //     Thread.Sleep(1000);
-                        SetForegroundWindow(Handles.NebhWnd);
-                        Thread.Sleep(1000);
-                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                        Thread.Sleep(2000);
-                   //     NebListenOn = false;
-                        // clientSocket.GetStream().Close();//added 5-17-12
-                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                        clientSocket.Close();
-                        //   Log("at focus star");
-
+                        if (!UseClipBoard.Checked) // 11-8-16
+                        {
+                            Thread.Sleep(500);
+                            serverStream.Flush();
+                            Thread.Sleep(1000);
+                            //    serverStream.Close();
+                            //     Thread.Sleep(1000);
+                            SetForegroundWindow(Handles.NebhWnd);
+                            Thread.Sleep(1000);
+                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            Thread.Sleep(2000);
+                            //     NebListenOn = false;
+                            // clientSocket.GetStream().Close();//added 5-17-12
+                            //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                            clientSocket.Close();
+                            //   Log("at focus star");
+                        }
                     }
 
                     
@@ -15187,6 +15524,7 @@ namespace Pololu.Usc.ScopeFocus
                 fileSystemWatcher7.EnableRaisingEvents = false;
                 Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
                 Thread.Sleep(500);
+                if (!UseClipBoard.Checked) // 11-8-16  TODO not sure about why this is here
                 serverStream.Flush();
                 Thread.Sleep(1000);
                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
@@ -15542,8 +15880,9 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 catch (Exception ex)
                 {
-                    Log("Timer 2 Tick error");
-                    FileLog("Timer 2 Tick error" + ex.ToString());
+                // remd 11-8-16
+                 //   Log("Timer 2 Tick error");
+                  //  FileLog("Timer 2 Tick error" + ex.ToString());
                 }
 
                
@@ -16372,7 +16711,19 @@ namespace Pololu.Usc.ScopeFocus
                        
 
             }
-            private void delay(int seconds)
+        // 11-8-16
+        private void msdelay(int ms)
+        {
+            DateTime t = DateTime.Now;
+            do
+            {
+                System.Windows.Forms.Application.DoEvents();
+            }
+            while (t.AddMilliseconds(ms) > DateTime.Now);
+            return;
+        }
+
+        private void delay(int seconds)
             {
                 DateTime t = DateTime.Now;
                 do
@@ -17088,7 +17439,10 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button56_Click(object sender, EventArgs e)
         {
-            cam.StartExposure(5, true);
+
+          //  Clipboard.SetText("//NEB CaptureSingle Metric");
+        //    Clipboard.SetText("//NEB Listsen 0");
+            // cam.StartExposure(5, true);
         }
 
         private void button50_Click(object sender, EventArgs e)

@@ -34,6 +34,12 @@ namespace Pololu.Usc.ScopeFocus
         static int _flathwnd;
         static int _pausehwnd;
         static int _slaveStatushwnd;
+        //static int _sim; // 11-8-16
+        //public static int Sim
+        //{
+        //    get { return _sim; }
+        //    set { _sim = value; }
+        //}
    //     static int _serverhwnd;
         public static int NebhWnd
         {
@@ -364,21 +370,24 @@ namespace Pololu.Usc.ScopeFocus
                         _hwndDuration = hWnd;
                     }
                 }
-
+                //if (editText == "Simulator")
+                //{
+                //    int _sim = hWnd;
+                //}
                 if (editText == "Advanced")
                 {
                     int Advancedhwnd = hWnd;
                 }
                 //*****************************need to test after writing auto camera find stuff ***********************************         
-                if (editText == _nebCamera + " Setup")
-                {
-                    if (_setupWindowFound == false)//picks first one
-                    {
-                        int Advhwnd = hWnd;
-                        //   Log("Adv" + Advhwnd.ToString());
-                        _setupWindowFound = true;
-                    }
-                }
+                //if (editText == _nebCamera + " Setup")
+                //{
+                //    if (_setupWindowFound == false)//picks first one
+                //    {
+                //        int Advhwnd = hWnd;
+                //        //   Log("Adv" + Advhwnd.ToString());
+                //        _setupWindowFound = true;
+                //    }
+                //}
                 if (editText == "Capture Series")
                     _captureMainhWnd = hWnd;
                 if (editText == "Abort")
