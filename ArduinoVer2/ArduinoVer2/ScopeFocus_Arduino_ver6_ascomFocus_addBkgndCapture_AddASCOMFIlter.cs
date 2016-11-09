@@ -89,6 +89,13 @@
 // 10-11-16 many changes for new FF metric works w/ CDCSimulator
 // 11-8-16  added clipboard use, (works better). removed log timer tick 2 error.  
 //   -- add  a bunch of "&& (devId3 != null))" for dark and flat filter changes that might be done witout filter wheel
+// -- capture status reads from Nebs statuswindow
+// -- added globalvariable.Capcurrent and CapTotal 
+
+// 11-9-16 mult fixes for focus and target location use image plate solve
+
+// TODO  pause/resume  line 12820......
+
 
 // *******for v-curve simulator.   Use known v-curve data, make sure step size and focus point are set the same/  
 //                                   open SimGen, select a focus .bmp file.  start the fine v-curve.  enter the desired hfr (with decimal eg 3.45) hit save.  a new point will be generated
@@ -7406,6 +7413,7 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
+        //monitornebstatushere
 
         private void MonitorNebStatus()
         {
@@ -7419,13 +7427,25 @@ namespace Pololu.Usc.ScopeFocus
                 string[] captions = sh.Captions;
                 if (captions[0] != "")
                 {
-                    if (captions[0] == "Sequence done")
+                    if (UseClipBoard.Checked)
                     {
-                        Capturing = false;
-                        backgroundWorker2.CancelAsync();
+                        if (captions[0] == "Script done")
+                        {
+                            Capturing = false;
+                            backgroundWorker2.CancelAsync();
+                        }
                     }
-                    if (captions[0].Length > 8)
+                    else
                     {
+                        if (captions[0] == "Sequence done")
+                        {
+                            Capturing = false;
+                            backgroundWorker2.CancelAsync();
+                        }
+                    }
+                // if (captions[0].Length > 8) 11-8-16
+                //if (captions[0] != "")
+                //{
                         if ((captions[0].Substring(0, 10) == "Requesting") || (captions[0].Substring(0, 10) == "DITHER: Wa") && (!flipCheckDone))
                             CheckForFlip();
                         if ((captions[0].Substring(0, 10) == "Requesting") && (flipCheckDone))
@@ -7433,12 +7453,29 @@ namespace Pololu.Usc.ScopeFocus
                             toolStripStatusLabel1.Text = "Waiting for Dither";
                           //toolStripStatusLabel1.BackColor = Color.Yellow;
                         }
-                        if (captions[0].Substring(0, 10) == "Sequence a") // 10-24-16 added the space_a to eliminate "sequence done" triggering.
-                        {
-                           toolStripStatusLabel1.Text = "Capturing"; // remd 10-24-16
-                          //toolStripStatusLabel1.BackColor = Color.Lime;
-                        }
-                    }
+
+                        //11-8-16 try this
+                      
+                        //if (captions[0].Substring(0, 10) == "Sequence a") // 10-24-16 added the space_a to eliminate "sequence done" triggering.
+                        //{
+                        //   toolStripStatusLabel1.Text = "Capturing"; // remd 10-24-16
+                        //  //toolStripStatusLabel1.BackColor = Color.Lime;
+                        //}
+
+                    // TODO  this way capCurrent can be used for pause/resume, knowing it was done.....
+
+                        int markerSlash = captions[0].IndexOf('/');
+                        int markerSpace2 = captions[0].IndexOf(' ', markerSlash-3);
+                        int markerSpace3 = captions[0].IndexOf(' ', markerSlash);
+                        int lengthCurrent = markerSlash - markerSpace2 -1;
+                        int lengthTotal = markerSpace3 - markerSlash - 1;
+                        GlobalVariables.CapCurrent = Convert.ToInt16(captions[0].Substring(markerSlash - lengthCurrent, lengthCurrent));
+                        GlobalVariables.CapTotal = Convert.ToInt16(captions[0].Substring(markerSlash +1, lengthTotal));
+                        //  int capTotal = captions[0].Substring()
+                        toolStripStatusLabel1.Text = captions[3] + " " + GlobalVariables.CapCurrent.ToString() + "/" + GlobalVariables.CapTotal.ToString();
+
+
+                 //   }
                 }
 
             }
@@ -7576,7 +7613,7 @@ namespace Pololu.Usc.ScopeFocus
             toolStripProgressBar1.Increment(1);
 
             toolStripProgressBar1.Value = subCountCurrent;
-            toolStripStatusLabel2.Text = "Sub " + subCountCurrent.ToString() + " of " + TotalSubs().ToString();
+            toolStripStatusLabel2.Text = "Total Sub " + subCountCurrent.ToString() + " of " + TotalSubs().ToString(); // 11-8-16 added "total"
 
         }
         private void EnableAllUpDwn()
@@ -8701,7 +8738,7 @@ namespace Pololu.Usc.ScopeFocus
 
         bool SettingFocusSolve = false;
         bool SettingTargetSolve = false;
-        private void GetFocusLocation() //via scope RA and DEC or prev image or new solve.  
+        private async void GetFocusLocation() //via scope RA and DEC or prev image or new solve.   //11-9-16 changed to async
         {
 
             try
@@ -8715,13 +8752,36 @@ namespace Pololu.Usc.ScopeFocus
                         button32.Text = "Solving";
                         button32.BackColor = System.Drawing.Color.Yellow;
                         //  textBox50.Text = GlobalVariables.SolveImage;
-                        PartialSolve();
-                        FocusDEC = DEC;
-                        FocusRA = RA;
-                        //Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                        //FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                        button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                        button32.BackColor = System.Drawing.Color.Lime;
+                        //  PartialSolve();
+                        SettingFocusSolve = true;
+                        if (GlobalVariables.LocalPlateSolve)
+                            Solve();
+                        else
+                        {
+                            //if (backgroundWorker1.IsBusy != true)
+                            //{
+                            //    // Start the asynchronous operation.
+                            //    backgroundWorker1.RunWorkerAsync();
+                            //}
+                            Log("Attempt Plate Solve: " + GlobalVariables.SolveImage);
+                            FileLog2("Plate Solve: " + GlobalVariables.SolveImage);
+                            solveRequested = true;
+                            AstrometryRunning = true;
+                            // try
+                            // {
+                            AstrometryNet ast = new AstrometryNet();  // remd for onlyinstance
+                                                                      // ast = AstrometryNet.OnlyInstance;
+                                                                      //  AstrometryNet.GetForm.Show();
+                           await ast.OnlineSolve(GlobalVariables.SolveImage);
+                        }
+
+                     // remd 11-9-16
+                        //FocusDEC = DEC;
+                        //FocusRA = RA;
+                        ////Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        ////FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        //button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
+                        //button32.BackColor = System.Drawing.Color.Lime;
                     }
 
                     //manually take neb image w/ FSwatcher 7 on, solve, save FocusRA/DEC
@@ -8735,8 +8795,13 @@ namespace Pololu.Usc.ScopeFocus
                         fileSystemWatcher7.EnableRaisingEvents = true;
                        
                     }
-                    Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                    FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+
+                    //remd 11-9-16
+                    //Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                    //FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+
+
+
                     //button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
                     //button32.BackColor = System.Drawing.Color.Yellow;
                 }
@@ -8838,7 +8903,7 @@ namespace Pololu.Usc.ScopeFocus
       
 
 
-        private void GetTargetLocation()
+        private async void GetTargetLocation()
         {
             try
             {
@@ -8851,13 +8916,37 @@ namespace Pololu.Usc.ScopeFocus
                         button34.Text = "Solving"; // change the set button only...since not necessarily there (could be from prev session) 
                         button34.BackColor = System.Drawing.Color.Yellow;
                         //  textBox50.Text = GlobalVariables.SolveImage;
-                        PartialSolve();
-                        TargetDEC = DEC;
-                        TargetRA = RA;
-                        //Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
-                        //FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
-                        button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                        button34.BackColor = System.Drawing.Color.Lime;
+                        // PartialSolve();  changed to below 11-9-16
+                        SettingTargetSolve = true;
+
+                        if (GlobalVariables.LocalPlateSolve)
+                            Solve();
+                        else
+                        {
+                            //if (backgroundWorker1.IsBusy != true)
+                            //{
+                            //    // Start the asynchronous operation.
+                            //    backgroundWorker1.RunWorkerAsync();
+                            //}
+                            Log("Attempt Plate Solve: " + GlobalVariables.SolveImage);
+                            FileLog2("Plate Solve: " + GlobalVariables.SolveImage);
+                            solveRequested = true;
+                            AstrometryRunning = true;
+                            // try
+                            // {
+                            AstrometryNet ast = new AstrometryNet();  // remd for onlyinstance
+                                                                      // ast = AstrometryNet.OnlyInstance;
+                                                                      //  AstrometryNet.GetForm.Show();
+                            await ast.OnlineSolve(GlobalVariables.SolveImage);
+                        }
+
+                        //remd 11-9-16
+                        //TargetDEC = DEC;
+                        //TargetRA = RA;
+                        ////Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                        ////FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                        //button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
+                        //button34.BackColor = System.Drawing.Color.Lime;
                     }
                     else //if need to take image 
                     {
@@ -8867,6 +8956,8 @@ namespace Pololu.Usc.ScopeFocus
                         fileSystemWatcher7.Path = GlobalVariables.Path2;
                         fileSystemWatcher7.SynchronizingObject = this;
                         fileSystemWatcher7.EnableRaisingEvents = true;
+                        Log("Attemping to plate solve Nebulosity capture");
+                        FileLog2("Plate Solve Start - Nebulosity Capture");
 
                     }
                     //manually take neb image w/ FSwatcher 7 on, solve, save FocusRA/DEC
@@ -8875,9 +8966,13 @@ namespace Pololu.Usc.ScopeFocus
                     //PartialSolve();
                     //TargetDEC = DEC;
                     //TargetRA = RA;
+
+
                     TargetLocObtained = true;
-                    Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
-                    FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+
+                   //remd 11-916
+                    //Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                    //FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
                 }
                 else
                 {
@@ -9368,6 +9463,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                if (SettingFocusSolve)
+                    SettingFocusSolve = false;
                 GotoFocusLocation();
                 //  if (usingASCOM)
                 //    {
@@ -9618,6 +9715,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                if (SettingTargetSolve)
+                    SettingTargetSolve = false;
                 GotoTargetLocation();
                 //   if (usingASCOM)
                 //   {
@@ -12786,6 +12885,15 @@ namespace Pololu.Usc.ScopeFocus
                 // PHDSocketPause(true);
                 PHDcommand(PHD_PAUSE);
                 Log("guiding paused");
+
+                // 11-8-16
+                //TODO 
+                //hit NEb abort button to stop.  
+                // determine howm many done gobal.capcurrent versus global.capTotal
+                // also if fucusing at intervals need to figure remander and when to focus again.  
+                // then put remining in the numericupdown next to the filte selection so hitting resume is just like hitting start again.
+                //focusing interval is biggest problem......
+
             }
 
             else
@@ -14350,6 +14458,7 @@ namespace Pololu.Usc.ScopeFocus
                 while (Capturing == true)
                 {
                     MonitorNebStatus();
+                    msdelay(500);
 
                 }
         }
@@ -14462,11 +14571,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-        private void button53_Click(object sender, EventArgs e)
-        {
-            //  scope = new ASCOM.DriverAccess.Telescope(devId);
-            scope.Unpark();
-        }
+      
 
 
 
@@ -14983,6 +15088,8 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         //partialsolvehere
+        bool atfocus = false;
+        bool attarget = false;
         private void PartialSolve()
         {
             try
@@ -14993,7 +15100,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (GlobalVariables.LocalPlateSolve)
                 {
                     //scope = new ASCOM.DriverAccess.Telescope(devId);
-                  
+
                     if (usingASCOM == false)
                     {
                         MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
@@ -15008,7 +15115,7 @@ namespace Pololu.Usc.ScopeFocus
                     //   var destDir = @"%localappdata%\cygwin_ansvr\bin"; // 10-22-16
 
                     var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\bin"); // 10-22-16
-                   
+
 
 
                     // var pattern = "*.csv";
@@ -15052,9 +15159,9 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-                   // StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
-                                                                                   //  reader = FileInfo.OpenText("filename.txt");
-                //    StreamReader reader = new StreamReader(@"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\text.txt"); // 10-22-16
+                    // StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
+                    //  reader = FileInfo.OpenText("filename.txt");
+                    //    StreamReader reader = new StreamReader(@"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\text.txt"); // 10-22-16
                     StreamReader reader = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\text.txt"); // 10-22-16
 
 
@@ -15093,40 +15200,40 @@ namespace Pololu.Usc.ScopeFocus
                             DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
                             RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
                             Log("Parsed RA = " + RA.ToString());
-                            
+
                         }
                     }
                     reader.Close();
-                }
-
-                if (SettingFocusSolve)
-                {
-                    // ****** need error handling for failed solve
-
-                    FocusDEC = DEC;
-                    FocusRA = RA;
-                    Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                    FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
-                    button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                    button32.BackColor = System.Drawing.Color.Yellow;
-                    fileSystemWatcher7.EnableRaisingEvents = false;
-                    SettingFocusSolve = false;
 
                 }
-                if (SettingTargetSolve)
-                {
-                    // ****** need error handling for failed solve
+                    if (SettingFocusSolve)
+                    {
+                        // ****** need error handling for failed solve
 
-                    TargetDEC = DEC;
-                    TargetRA = RA;
-                    Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
-                    FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
-                    button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                    button34.BackColor = System.Drawing.Color.Yellow;
-                    fileSystemWatcher7.EnableRaisingEvents = false;
-                    SettingTargetSolve = false;
-                }
+                        FocusDEC = DEC;
+                        FocusRA = RA;
+                        Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
+                        button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
+                        button32.BackColor = System.Drawing.Color.Yellow;
+                        fileSystemWatcher7.EnableRaisingEvents = false;
+                     //   SettingFocusSolve = false; // remd 11-9-16 and one below
 
+                    }
+                    if (SettingTargetSolve)
+                    {
+                        // ****** need error handling for failed solve
+
+                        TargetDEC = DEC;
+                        TargetRA = RA;
+                        Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                        FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
+                        button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
+                        button34.BackColor = System.Drawing.Color.Yellow;
+                        fileSystemWatcher7.EnableRaisingEvents = false;
+                     //   SettingTargetSolve = false;
+                    }
+             
                 if (ConfirmingLocation)
                 {
                     CurrentRA = scope.RightAscension;
@@ -15339,83 +15446,129 @@ namespace Pololu.Usc.ScopeFocus
                 //        }
                 //    }
                 //}
-                            string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString();
-                            DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew", "Snyc", "Ignore");
-                        //   if ((result == DialogResult.Yes) & (checkBox25.Checked == false)) //slew
-                             if (result == DialogResult.Yes)  //slew
-                             {
-                                // scope = new ASCOM.DriverAccess.Telescope(devId);
-                                toolStripStatusLabel1.Text = "Slewing to Target";
-                                toolStripStatusLabel1.BackColor = Color.Red;
-                                this.Refresh();
-                                scope.SlewToCoordinates(RA, DEC);
-                                toolStripStatusLabel1.Text = "Ready";
-                                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
-                                Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                                FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
-                                if (checkBox25.Checked == true)//repeat until tolerance met
-                                {
-                        //group rem for new method below   4-12 16
 
-                        //        //  Thread.Sleep(5000);
-                        //        Log("calibrating");
-                        //        //scope.SlewToCoordinates(RA, DEC);
-                        //        CurrentRA = scope.RightAscension;
-                        //        CurrentDEC = scope.Declination;
-                        //        // first attempts at comparing parse solve coords w/ scope coords.
-                        //        //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
-                        //        if (usingASCOM == true)
-                        //        {
-                        //            //  scope = new ASCOM.DriverAccess.Telescope(devId);
-                        //            scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
-                        //                                                           //should be closer after the sync
-                        //        }
-                        //        else
-                        //            MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
+                if ((!SettingFocusSolve) && (!SettingTargetSolve))
+                {
+                    string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString();
+                    DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew/Set", "Snyc", "Ignore");
+                    //   if ((result == DialogResult.Yes) & (checkBox25.Checked == false)) //slew
+                    if (result == DialogResult.Yes)  //slew
+                    {
+                        // scope = new ASCOM.DriverAccess.Telescope(devId);
+                        toolStripStatusLabel1.Text = "Slewing to Target";
+                        toolStripStatusLabel1.BackColor = Color.Red;
+                        this.Refresh();
+                        scope.SlewToCoordinates(RA, DEC);
+                        toolStripStatusLabel1.Text = "Ready";
+                        toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                        Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                        FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
 
-                        //        if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
-                        //        {
-                        //            scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
-                        //            Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
-                        ////     button55.PerformClick();//prob dont need since fsw7 still on
-                        //          if (fileSystemWatcher7.EnableRaisingEvents == false)
-                        //              fileSystemWatcher7.EnableRaisingEvents = true;
-                        //            SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
-                        //            PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
-                        //        }
-                        //        else
-                        //        {
-                        //            scope.SyncToCoordinates(RA, DEC);
-                        //            Log("sync tolerance met");
-                        //            fileSystemWatcher7.EnableRaisingEvents = false;
-                        //            Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                        //        }
-
-                        SolveToleranceCheck();
-
-                                }
+                  
 
 
+                        //remd 11-9-16
+                        //if (SettingFocusSolve)
+                        //{
+                        //    FocusDEC = DEC;
+                        //    FocusRA = RA;
+                        //    button32.Text = "Solved";
+                        //    button32.BackColor = System.Drawing.Color.Lime;
+                        //    button33.Text = "At Focus";  // becuase with online solve the slew/set button was hit.  
+                        //    button33.BackColor = Color.Lime;
+                        //    button35.Text = "Goto";
+                        //    button35.UseVisualStyleBackColor = true;
+                        //    Log("Focus Location set to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                        //    FileLog2("Focus Location set to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                        //    SettingFocusSolve = false;
+                        //}
+
+                        //if (SettingTargetSolve)
+                        //{
+                        //    TargetDEC = DEC;
+                        //    TargetRA = RA;
+                        //    button34.Text = "Solved"; 
+                        //    button34.BackColor = System.Drawing.Color.Lime;
+                        //    button35.Text = "At Target";
+                        //    button35.BackColor = Color.Lime;
+                        //    button33.Text = "Goto";
+                        //    button33.UseVisualStyleBackColor = true;
+
+                        //    Log("Target Location set to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                        //    FileLog2("Target Location set to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
+                        //    SettingTargetSolve = false;
+                        //}
+
+                        if (checkBox25.Checked == true)//repeat until tolerance met
+                        {
+                            //group rem for new method below   4-12 16
+
+                            //        //  Thread.Sleep(5000);
+                            //        Log("calibrating");
+                            //        //scope.SlewToCoordinates(RA, DEC);
+                            //        CurrentRA = scope.RightAscension;
+                            //        CurrentDEC = scope.Declination;
+                            //        // first attempts at comparing parse solve coords w/ scope coords.
+                            //        //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
+                            //        if (usingASCOM == true)
+                            //        {
+                            //            //  scope = new ASCOM.DriverAccess.Telescope(devId);
+                            //            scope.SlewToCoordinates(CurrentRA, CurrentDEC);//go back to where originally though it was supposed to be
+                            //                                                           //should be closer after the sync
+                            //        }
+                            //        else
+                            //            MessageBox.Show("Must use ASCOM mount connection", "scopefocus");
+
+                            //        if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
+                            //        {
+                            //            scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                            //            Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
+                            ////     button55.PerformClick();//prob dont need since fsw7 still on
+                            //          if (fileSystemWatcher7.EnableRaisingEvents == false)
+                            //              fileSystemWatcher7.EnableRaisingEvents = true;
+                            //            SetForegroundWindow(Handles.NebhWnd);  //rem'd to testing 
+                            //            PostMessage(Handles.CaptureMainhWnd, BN_CLICKED, 0, 0);//rem'd for testing
+                            //        }
+                            //        else
+                            //        {
+                            //            scope.SyncToCoordinates(RA, DEC);
+                            //            Log("sync tolerance met");
+                            //            fileSystemWatcher7.EnableRaisingEvents = false;
+                            //            Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                            //        }
+
+                            SolveToleranceCheck();
+
+                        }
+
+                    }
 
 
-                            }
-                           if (result == DialogResult.No) // sync
-                            {
-                                scope.SyncToCoordinates(RA, DEC);
-                                Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
-                                fileSystemWatcher7.EnableRaisingEvents = false;
-                            }
-                         if (result == DialogResult.Ignore) // ignore
-                         {
-                                fileSystemWatcher7.EnableRaisingEvents = false;
-                                button55.BackColor = Color.WhiteSmoke;
-                                toolStripStatusLabel1.Text = "Ready";
-                                toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
-                                ast.Close();  // this may not need to be here
-                                return;
-                          }
 
 
+                    if (result == DialogResult.No) // sync
+                    {
+                        DialogResult result2 = MessageBox.Show("Are you sure you want to sync to this position?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                        if (result2 == DialogResult.OK)
+                        {
+                            scope.SyncToCoordinates(RA, DEC);
+                            Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                            fileSystemWatcher7.EnableRaisingEvents = false;
+                        }
+                        else
+                            return;
+                    }
+                    if (result == DialogResult.Ignore) // ignore
+                    {
+                        fileSystemWatcher7.EnableRaisingEvents = false;
+                        button55.BackColor = Color.WhiteSmoke;
+                        toolStripStatusLabel1.Text = "Ready";
+                        toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                        ast.Close();  // this may not need to be here
+                        return;
+                    }
+
+                }
 
                 button55.BackColor = Color.WhiteSmoke;
                 toolStripStatusLabel1.Text = "Ready";
@@ -17117,6 +17270,33 @@ namespace Pololu.Usc.ScopeFocus
             DialogResult result = openFileDialog2.ShowDialog();
             GlobalVariables.FocusImage = openFileDialog2.FileName.ToString();
             textBox50.Text = GlobalVariables.FocusImage;
+
+            // added 11-9-16
+            if (GlobalVariables.LocalPlateSolve)
+            {
+                // var destDir = @"c:\cygwin\home\astro";
+                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
+                // var pattern = "*.csv";
+                // var file = solveImage;
+                //   var sourceDir = @"c:\cygwin\home\astro";
+                //    var destfile = "solve.fit"; // changed 5-1-16
+                var destfile = Path.GetFileName(GlobalVariables.FocusImage);
+
+                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.FocusImage)))
+                {
+                    // remd 10-22-16
+
+                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    {
+                        if (files.Name != "tablist.exe")
+                            files.Delete();//empty the directory
+                    }
+                    //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                    File.Copy(GlobalVariables.FocusImage, Path.Combine(destDir, destfile));
+                }
+            }
+
+
         }
 
         private void textBox51_Click(object sender, EventArgs e)
@@ -17125,6 +17305,31 @@ namespace Pololu.Usc.ScopeFocus
             GlobalVariables.TargetImage = openFileDialog2.FileName.ToString();
             // GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
             textBox51.Text = GlobalVariables.TargetImage;
+
+            // added 11-9-16
+            if (GlobalVariables.LocalPlateSolve)
+            {
+                // var destDir = @"c:\cygwin\home\astro";
+                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
+                // var pattern = "*.csv";
+                // var file = solveImage;
+                //   var sourceDir = @"c:\cygwin\home\astro";
+                //    var destfile = "solve.fit"; // changed 5-1-16
+                var destfile = Path.GetFileName(GlobalVariables.TargetImage);
+
+                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.TargetImage)))
+                {
+                    // remd 10-22-16
+
+                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    {
+                        if (files.Name != "tablist.exe")
+                            files.Delete();//empty the directory
+                    }
+                    //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                    File.Copy(GlobalVariables.TargetImage, Path.Combine(destDir, destfile));
+                }
+            }
         }
 
         private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
@@ -17361,89 +17566,100 @@ namespace Pololu.Usc.ScopeFocus
                 Log("Nebulosity Version " + Handles.NebVNumber.ToString());
             }
         }
+        // disconnect neb socket
+        //private void button52_Click(object sender, EventArgs e)
+        //{
+        //    // this works 
+        //    serverStream = clientSocket.GetStream();
+        //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+        //    serverStream.Write(outStream, 0, outStream.Length);
+        //    serverStream.Flush();
 
-        private void button52_Click(object sender, EventArgs e)
-        {
-            // this works 
-            serverStream = clientSocket.GetStream();
-            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-            serverStream.Write(outStream, 0, outStream.Length);
-            serverStream.Flush();
-
-            Thread.Sleep(3000);
-            serverStream.Close();
-            clientSocket.Close();
+        //    Thread.Sleep(3000);
+        //    serverStream.Close();
+        //    clientSocket.Close();
             
-        }
-        
-        private void button53_Click_1(object sender, EventArgs e)
-        {
-         //   Thread.Sleep(3000);
-          //  serverStream.Close();
-            SetForegroundWindow(Handles.NebhWnd);
-            Thread.Sleep(1000);
-            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-            Thread.Sleep(1000);
-       //     NebListenOn = false;
-            clientSocket.Close();
+        //}
 
-            //  clientSocket.GetStream().Close();//added 5-17-12
-            //   clientSocket.Client.Disconnect(true);//added 5-17-12
-            //clientSocket.Close(); // 10-25-16 try rem this....doesn't matter
-        }
 
-        private void button54_Click(object sender, EventArgs e)
-        {
-            NebListenStart(Handles.NebhWnd, SocketPort);
-        }
-        string devId5;
-        private void button25_Click(object sender, EventArgs e)
-        {
-            if (camIsConnected)
-            {
-                cam.Connected = false;
-                Log(devId5 + " disconnected");
-                button25.BackColor = System.Drawing.Color.WhiteSmoke;
-                return;
-            }
-            ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
-            chooser.DeviceType = "Camera";
-            devId5 = chooser.Choose();
-            if (!string.IsNullOrEmpty(devId5))
-            {
-                cam = new ASCOM.DriverAccess.Camera(devId5);
-                cam.Connected = true;
-                Thread.Sleep(200);
-                           }
+        //Neb Abort Button
+       // private void button53_Click_1(object sender, EventArgs e)
+       // {
+       //  //   Thread.Sleep(3000);
+       //   //  serverStream.Close();
+       //     SetForegroundWindow(Handles.NebhWnd);
+       //     Thread.Sleep(1000);
+       //     PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+       //     Thread.Sleep(1000);
+       ////     NebListenOn = false;
+       //     clientSocket.Close();
 
-            else
-            {
-                return;
-            }
-            if (SwitchIsConnected)
-                button12.BackColor = System.Drawing.Color.Lime;
-            Log("connected to " + devId5);
-            FileLog2("connected to " + devId5);
-        }
+       //     //  clientSocket.GetStream().Close();//added 5-17-12
+       //     //   clientSocket.Client.Disconnect(true);//added 5-17-12
+       //     //clientSocket.Close(); // 10-25-16 try rem this....doesn't matter
+       // }
 
 
 
-        private bool camIsConnected
-        {
-            get
-            {
-                return ((this.cam != null) && (cam.Connected == true));
-            }
+        //NEb socket listen
+        //private void button54_Click(object sender, EventArgs e)
+        //{
+        //    NebListenStart(Handles.NebhWnd, SocketPort);
+        //}
 
-        }
 
-        private void button56_Click(object sender, EventArgs e)
-        {
 
-          //  Clipboard.SetText("//NEB CaptureSingle Metric");
-        //    Clipboard.SetText("//NEB Listsen 0");
-            // cam.StartExposure(5, true);
-        }
+        //test add ASCOM camera
+        //string devId5;
+        //private void button25_Click(object sender, EventArgs e)
+        //{
+        //    if (camIsConnected)
+        //    {
+        //        cam.Connected = false;
+        //        Log(devId5 + " disconnected");
+        //        button25.BackColor = System.Drawing.Color.WhiteSmoke;
+        //        return;
+        //    }
+        //    ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+        //    chooser.DeviceType = "Camera";
+        //    devId5 = chooser.Choose();
+        //    if (!string.IsNullOrEmpty(devId5))
+        //    {
+        //        cam = new ASCOM.DriverAccess.Camera(devId5);
+        //        cam.Connected = true;
+        //        Thread.Sleep(200);
+        //                   }
+
+        //    else
+        //    {
+        //        return;
+        //    }
+        //    if (SwitchIsConnected)
+        //        button12.BackColor = System.Drawing.Color.Lime;
+        //    Log("connected to " + devId5);
+        //    FileLog2("connected to " + devId5);
+        //}
+
+
+
+        //private bool camIsConnected
+        //{
+        //    get
+        //    {
+        //        return ((this.cam != null) && (cam.Connected == true));
+        //    }
+
+        //}
+
+        //private void button56_Click(object sender, EventArgs e)
+        //{
+
+        //  //  Clipboard.SetText("//NEB CaptureSingle Metric");
+        ////    Clipboard.SetText("//NEB Listsen 0");
+        //    // cam.StartExposure(5, true);
+        //}
+
+
 
         private void button50_Click(object sender, EventArgs e)
         {
@@ -17471,10 +17687,7 @@ namespace Pololu.Usc.ScopeFocus
                 return;
         }
 
-        private void button51_Click(object sender, EventArgs e)
-        {
-            
-        }
+       
     }
 
     //**********this seems to cause error at end of sequence when ? socket close()????

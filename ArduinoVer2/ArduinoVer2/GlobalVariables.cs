@@ -16,6 +16,20 @@ namespace Pololu.Usc.ScopeFocus
             set { _nebpath = value;}           
         }
 
+        private static int _capCurrent; // 11-8-16 added next 2
+        public static int CapCurrent
+        {
+            get { return _capCurrent; }
+            set { _capCurrent = value; }
+        }
+        private static int _capTotal;
+        public static int CapTotal
+        {
+            get { return _capTotal; }
+            set { _capTotal = value; }
+        }
+
+
         private static int _nebSlavehwnd;
         public static int NebSlavehwnd
         {
