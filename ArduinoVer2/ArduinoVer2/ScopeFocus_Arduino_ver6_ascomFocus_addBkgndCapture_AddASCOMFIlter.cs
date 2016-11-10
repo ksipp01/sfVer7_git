@@ -1080,8 +1080,11 @@ namespace Pololu.Usc.ScopeFocus
                                 Thread.Sleep(2000);
                                 checkBox22.Checked = true;
                                 fileSystemWatcher3.EnableRaisingEvents = false;
-                                if (clientSocket.Client.Connected == true)
-                                    clientSocket.Client.Disconnect(true);
+                                if (!UseClipBoard.Checked)
+                                {
+                                    if (clientSocket.Client.Connected == true)
+                                        clientSocket.Client.Disconnect(true);
+                                }
                                 // gotoFocus();
                                 //  return;
                                 /*
@@ -1752,8 +1755,11 @@ namespace Pololu.Usc.ScopeFocus
                                 }
                                 //
                                 fileSystemWatcher3.EnableRaisingEvents = false;
-                                if (clientSocket.Client.Connected == true)
-                                    clientSocket.Client.Disconnect(true);
+                                if (!UseClipBoard.Checked)
+                                {
+                                    if (clientSocket.Client.Connected == true)
+                                        clientSocket.Client.Disconnect(true);
+                                }
                                 checkBox22.Checked = true;
                                 Log("Repeat Focus did not improve - Attemping full frame metric");
                                 FileLog2("Repeat Focus did not improve - Attemped full frame metric");
@@ -5113,6 +5119,7 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(1000);
                 try
                 {
+                    if(!UseClipBoard.Checked)
                     serverStream = clientSocket.GetStream();
                 }
                 catch (IOException e)
@@ -5134,30 +5141,32 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //  serverStream = clientSocket.GetStream();
-                byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                serverStream.Write(outStream2, 0, outStream2.Length);
-                serverStream.Flush();
-                //toolStripStatusLabel1.Text = "Sequence Done";
-                //this.Refresh();
-                //if (DarksOn == true)
-                //    DarksOn = false;
-                //currentfilter = 1;
-                //DisplayCurrentFilter();
-                ////      currentfilter = 0;
-                //subCountCurrent = 0;
-                //filterCountCurrent = 0;
-                Thread.Sleep(3000);//prevent overlapping sounds
-                serverStream.Close();
-                SetForegroundWindow(Handles.NebhWnd);
-                Thread.Sleep(1000);
-                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                Thread.Sleep(3000);
-             //   NebListenOn = false;
-                // clientSocket.GetStream().Close();//added 5-17-12
-                //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                clientSocket.Close();
+                if (!UseClipBoard.Checked)
+                {
+                    byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                    serverStream.Write(outStream2, 0, outStream2.Length);
+                    serverStream.Flush();
+                    //toolStripStatusLabel1.Text = "Sequence Done";
+                    //this.Refresh();
+                    //if (DarksOn == true)
+                    //    DarksOn = false;
+                    //currentfilter = 1;
+                    //DisplayCurrentFilter();
+                    ////      currentfilter = 0;
+                    //subCountCurrent = 0;
+                    //filterCountCurrent = 0;
+                    Thread.Sleep(3000);//prevent overlapping sounds
+                    serverStream.Close();
+                    SetForegroundWindow(Handles.NebhWnd);
+                    Thread.Sleep(1000);
+                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    Thread.Sleep(3000);
+                    //   NebListenOn = false;
+                    // clientSocket.GetStream().Close();//added 5-17-12
+                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                    clientSocket.Close();
 
-
+                }
 
                 return;
             }
@@ -8485,11 +8494,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 // added 10-11-16
-                if (clientSocket.Connected == false)
-                {
-                    NebListenStart(Handles.NebhWnd, SocketPort);
-                    // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
-                }
+               
 
                 if (UseClipBoard.Checked) // 11-8-16
                 {
@@ -8500,6 +8505,11 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
+                    if (clientSocket.Connected == false)
+                    {
+                        NebListenStart(Handles.NebhWnd, SocketPort);
+                        // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+                    }
                     serverStream = clientSocket.GetStream();
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
                     serverStream.Write(outStream, 0, outStream.Length);
@@ -8544,11 +8554,7 @@ namespace Pololu.Usc.ScopeFocus
                 MetricTime = Convert.ToDouble(textBox43.Text);
                 currentmetricN = 1;
                 MetricSample = true;
-                if (clientSocket.Connected == false)
-                {
-                    NebListenStart(Handles.NebhWnd, SocketPort);
-                    // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
-                }
+               
                 fileSystemWatcher5.EnableRaisingEvents = true;
                 // NetworkStream serverStream = clientSocket.GetStream();
                 if (UseClipBoard.Checked) // 11-8-16
@@ -8565,6 +8571,11 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
+                    if (clientSocket.Connected == false) // moved 11-9-16
+                    {
+                        NebListenStart(Handles.NebhWnd, SocketPort);
+                        // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+                    }
                     serverStream = clientSocket.GetStream();
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
                     serverStream.Write(outStream, 0, outStream.Length);
@@ -10477,10 +10488,13 @@ namespace Pololu.Usc.ScopeFocus
                         }
                     }
     */
-                    if ((clientSocket.Connected == false) & (port == 4301))
-                        Connect1(port);
-                    if ((clientSocket2.Connected == false) & (port == 4302))
-                        Connect2(port);
+                    if (!UseClipBoard.Checked)
+                    {
+                        if ((clientSocket.Connected == false) & (port == 4301))
+                            Connect1(port);
+                        if ((clientSocket2.Connected == false) & (port == 4302))
+                            Connect2(port);
+                    }
                     /*
                                     if (clientSocket.Connected == false)
                                     {
@@ -13566,20 +13580,23 @@ namespace Pololu.Usc.ScopeFocus
                 //  clientSocket2.GetStream().Dispose();
                 //  clientSocket2.GetStream().Close();
 
+                if (!UseClipBoard.Checked)
+                {
 
 
-                clientSocket2.Close();
-                Thread.Sleep(250);
-                SendKeys.SendWait("~");
-                SendKeys.Flush();
-                //*********
 
-             //   NebListenOn = false;
-                if (clientSocket2.Connected == false)
-                    Log("Slave Disconnected");
-                else
-                    Log("slave still connected");
+                    clientSocket2.Close();
+                    Thread.Sleep(250);
+                    SendKeys.SendWait("~");
+                    SendKeys.Flush();
+                    //*********
 
+                    //   NebListenOn = false;
+                    if (clientSocket2.Connected == false)
+                        Log("Slave Disconnected");
+                    else
+                        Log("slave still connected");
+                }
             }
 
         }
@@ -15284,22 +15301,23 @@ namespace Pololu.Usc.ScopeFocus
 
                             //  *****   not closing neb socket properly ******   4-12-16
 
-
-                            Thread.Sleep(500);
-                            serverStream.Flush();
-                            Thread.Sleep(1000);
-                            //    serverStream.Close();
-                            //     Thread.Sleep(1000);
-                            SetForegroundWindow(Handles.NebhWnd);
-                            Thread.Sleep(1000);
-                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                            Thread.Sleep(2000);
-                      //      NebListenOn = false;
-                            // clientSocket.GetStream().Close();//added 5-17-12
-                            //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                            clientSocket.Close();
-                            //   Log("at focus star");
-
+                            if (!UseClipBoard.Checked)
+                            {
+                                Thread.Sleep(500);
+                                serverStream.Flush();
+                                Thread.Sleep(1000);
+                                //    serverStream.Close();
+                                //     Thread.Sleep(1000);
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(2000);
+                                //      NebListenOn = false;
+                                // clientSocket.GetStream().Close();//added 5-17-12
+                                //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                clientSocket.Close();
+                                //   Log("at focus star");
+                            }
 
 
 
@@ -15685,6 +15703,7 @@ namespace Pololu.Usc.ScopeFocus
             //    NebListenOn = false;
                 // clientSocket.GetStream().Close();//added 5-17-12
                 //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                if (!UseClipBoard.Checked)
                 clientSocket.Close();
             }
         }
@@ -16593,12 +16612,13 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-
+                if (!UseClipBoard.Checked)
+                {
                     clientSocket2.Close();
                     Thread.Sleep(250);
                     SendKeys.SendWait("~");
                     SendKeys.Flush();
-
+                }
                     // ************ end 11-23-13 addt
 
                 }
