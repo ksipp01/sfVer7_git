@@ -7524,7 +7524,7 @@ namespace Pololu.Usc.ScopeFocus
                     // if (captions[0].Length > 8) 11-8-16
                     //if (captions[0] != "")
                     //{
-                    if (captions[0].Length > 8)
+                    if (captions[0].Length > 6)
                     {
 
                         if (UseClipBoard.Checked)
