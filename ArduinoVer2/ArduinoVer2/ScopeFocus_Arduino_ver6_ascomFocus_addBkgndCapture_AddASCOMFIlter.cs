@@ -1833,6 +1833,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                 else
                                 {
+                                    delay(1);
                                     Clipboard.SetText("//NEB Listen 0");
                                     msdelay(750);
                                 }
@@ -1893,6 +1894,7 @@ namespace Pololu.Usc.ScopeFocus
 
                             else
                             {
+                                delay(1);
                                 Clipboard.SetText("//NEB Listen 0");
                                 msdelay(750);
                             }
@@ -1960,6 +1962,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
+                        delay(1);
                         Clipboard.SetText("//NEB Listen 0");
                         msdelay(750);
                     }
@@ -3023,6 +3026,7 @@ namespace Pololu.Usc.ScopeFocus
                             }
                             else
                             {
+                                delay(1);
                                 Clipboard.SetText("//NEB Listen 0");
                                 msdelay(750);
                             }
@@ -7167,6 +7171,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
                         else
                         {
+                            msdelay(750);
                             Clipboard.SetText("//NEB SetName " + prefix + Nebname);
                             msdelay(750);
                             Clipboard.SetText("//NEB SetBinning " + CaptureBin);
@@ -7204,6 +7209,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
+                        msdelay(750);
                         Clipboard.SetText("//NEB setname " + prefix + Nebname);
                         msdelay(750);
                         Clipboard.SetText("//NEB setbinning " + CaptureBin);
@@ -7552,6 +7558,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
+                msdelay(750);
                 Clipboard.SetText("//NEB  Listen 0");
                 msdelay(750);
             }
@@ -8372,6 +8379,7 @@ namespace Pololu.Usc.ScopeFocus
                     //   PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                     if (UseClipBoard.Checked)
                     {
+                        msdelay(750);
                         Clipboard.SetText("//NEB Listen 0");
                         msdelay(750);
                     }
@@ -8512,6 +8520,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (UseClipBoard.Checked) // 11-8-16
                 {
                     NebListenStart(Handles.NebhWnd, SocketPort);
+                    delay(1);
                     Clipboard.SetText("//NEB SetDuration " + MetricTime);
                     msdelay(750);
                     Clipboard.SetText("//NEB CaptureSingle metric");
@@ -8574,7 +8583,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (UseClipBoard.Checked) // 11-8-16
                 {
                     NebListenStart(Handles.NebhWnd, SocketPort);
-                    //  Thread.Sleep(500);
+                    delay(1);
                     Clipboard.SetText("//NEB SetDuration 5");
                     //    Thread.Sleep(500);
                     msdelay(750);
@@ -9376,7 +9385,8 @@ namespace Pololu.Usc.ScopeFocus
             NebListenStart(Handles.NebhWnd, SocketPort);
 
             //   }
-            Thread.Sleep(1000);//was 3000 5-29
+            // Thread.Sleep(1000);//was 3000 5-29
+            delay(1);
             if (FlatsOn == true)
             toolStripStatusLabel1.Text = "Capturing";
             //   string prefix = textBox19.Text.ToString();
@@ -9408,6 +9418,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
+                delay(1);
                    Clipboard.SetText("//NEB SetName " + "Confirm_Solve_Location");
                     msdelay(750);
                     Clipboard.SetText("//NEB SetBinning " + CaptureBin);
@@ -10889,8 +10900,11 @@ namespace Pololu.Usc.ScopeFocus
                     outStream3 = null;
                 }
                 else
+                {
+                    msdelay(750);
                     Clipboard.SetText("//NEB Listen 0");
-                msdelay(750);
+                    msdelay(750);
+                }
             }
             catch (Exception ex)
             {
@@ -12259,7 +12273,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         Capturing = true;
                         //  serverStream.Write(outStream, 0, outStream.Length);
-
+                        msdelay(750);
                         Clipboard.SetText("//NEB SetName " + prefix + name);
                         msdelay(750);
                         Clipboard.SetText("//NEB SetBinning " + CaptureBin);
