@@ -6170,14 +6170,17 @@ namespace Pololu.Usc.ScopeFocus
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
 
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true))
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //11-10-16 changed all similar to this to only doflat();
 
-                    else
-                        NebCapture();
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true))
+                    //{
+                    //    //CalculateFlatExp(); //11-10-16 chenged all to doflat();
+                        DoFlat();
+            //            return;
+                //    }
+
+               //     else
+                  //      NebCapture();
 
                     return;
 
@@ -6403,14 +6406,15 @@ namespace Pololu.Usc.ScopeFocus
                     CaptureBin = (int)numericUpDown36.Value;
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true)) //15 is flat autoexp calc
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true)) //15 is flat autoexp calc
+                    //{
+                    //    // CalculateFlatExp();
+                        DoFlat();
+                    //    return;
+                    //}
 
-                    else
-                        NebCapture();
+                    //else
+                    //    NebCapture();
                     return;
                 }
 
@@ -6600,14 +6604,15 @@ namespace Pololu.Usc.ScopeFocus
                     CaptureBin = (int)numericUpDown36.Value;
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true))
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true))
+                    //{
+                        DoFlat();
+                    //   // CalculateFlatExp();
+                    //    return;
+                    //}
 
-                    else
-                        NebCapture();
+                    //else
+                    //    NebCapture();
                     return;
                 }
 
@@ -6811,14 +6816,15 @@ namespace Pololu.Usc.ScopeFocus
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
 
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true))
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true))
+                    //{
+                        DoFlat();
+                    //    //CalculateFlatExp();
+                    //    return;
+                    //}
 
-                    else
-                        NebCapture();
+                    //else
+                    //    NebCapture();
                     return;
                 }
 
@@ -6920,14 +6926,15 @@ namespace Pololu.Usc.ScopeFocus
                     CaptureBin = (int)numericUpDown36.Value;
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true))
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true))
+                    //{
+                        DoFlat();
+                    //    //CalculateFlatExp();
+                    //    return;
+                    //}
 
-                    else
-                        NebCapture();
+                    //else
+                    //    NebCapture();
                     return;
                 }
 
@@ -6970,14 +6977,15 @@ namespace Pololu.Usc.ScopeFocus
                     CaptureBin = (int)numericUpDown36.Value;
                     FilterFocusOn = false;
                     //  fileSystemWatcher4.EnableRaisingEvents = true;
-                    if ((FlatCalcDone == false) & (checkBox15.Checked == true))
-                    {
-                        CalculateFlatExp();
-                        return;
-                    }
+                    //if ((FlatCalcDone == false) & (checkBox15.Checked == true))
+                    //{
+                        DoFlat();
+                    //   // CalculateFlatExp();
+                    //    return;
+                    //}
 
-                    else
-                        NebCapture();
+                    //else
+                    //    NebCapture();
                     return;
                 }
 
