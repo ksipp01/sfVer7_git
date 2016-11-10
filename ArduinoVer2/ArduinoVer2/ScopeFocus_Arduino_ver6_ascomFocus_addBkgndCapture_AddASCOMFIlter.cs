@@ -8498,6 +8498,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (UseClipBoard.Checked) // 11-8-16
                 {
+                    NebListenStart(Handles.NebhWnd, SocketPort);
                     Clipboard.SetText("//NEB SetDuration " + MetricTime);
                     msdelay(500);
                     Clipboard.SetText("//NEB CaptureSingle metric");
@@ -8559,7 +8560,8 @@ namespace Pololu.Usc.ScopeFocus
                 // NetworkStream serverStream = clientSocket.GetStream();
                 if (UseClipBoard.Checked) // 11-8-16
                 {
-                  //  Thread.Sleep(500);
+                    NebListenStart(Handles.NebhWnd, SocketPort);
+                    //  Thread.Sleep(500);
                     Clipboard.SetText("//NEB SetDuration 5");
                     //    Thread.Sleep(500);
                     msdelay(500);
