@@ -100,7 +100,9 @@ namespace Pololu.Usc.ScopeFocus
         internal string apikey = "ckylhfaafccqhumf";  // ? to settings
         internal string session = "";
         private string URI = "http://nova.astrometry.net";
-     //   private string URI = "http://127.0.0.1:8081"; // 10-21-16
+        //   private string URI = "http://127.0.0.1:8081"; // 10-21-16
+
+      //  private string path = "test";
         private string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         System.Timers.Timer timer = new System.Timers.Timer();
         internal string jobid = "";
