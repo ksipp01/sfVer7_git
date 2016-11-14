@@ -7570,6 +7570,7 @@ namespace Pololu.Usc.ScopeFocus
                     number = 0; 
 
                 int StatusstripHandle = FindWindowEx(Handles.NebhWnd, 0, "msctls_statusbar32", null);
+              
 
                 //    from   http://www.pinvoke.net/default.aspx/user32/SB_GETTEXT.html 
                 IntPtr statusHandle = new IntPtr(StatusstripHandle);

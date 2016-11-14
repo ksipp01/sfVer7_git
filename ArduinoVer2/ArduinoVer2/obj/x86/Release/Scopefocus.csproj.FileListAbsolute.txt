@@ -135,3 +135,5 @@ C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Release\scopefocus_Ve
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Release\scopefocus_Version6_beta.application
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Release\scopefocus_Version6_beta.exe
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Release\scopefocus_Version6_beta.pdb
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Release\System.dll
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Release\System.xml
