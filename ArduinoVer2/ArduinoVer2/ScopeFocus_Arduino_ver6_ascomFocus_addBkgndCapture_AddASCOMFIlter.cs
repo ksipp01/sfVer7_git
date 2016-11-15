@@ -7186,7 +7186,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
                         else
                         {
-                            int i = 0;
+                         //   int i = 0;
                          //   msdelay(750);
                             Clipboard.Clear();
                             msdelay(500);
@@ -7194,62 +7194,66 @@ namespace Pololu.Usc.ScopeFocus
                             // Clipboard.SetText("//NEB SetName " + prefix + Nebname);
                             msdelay(750);
                             // 11-12 16 added nebcommandconfirms below 
-                            while (!NebCommandConfirm("SetName " + prefix + Nebname, 0))
-                            {
-                                i++;
-                                msdelay(100);
-                                if (i == 30)
-                                {
-                                    Log("NebCapture Failed");
-                                    Send("NebCapture Failed");
-                                    return;
-                                }
-                            }
-                            i = 0;
+
+
+                            //while (!NebCommandConfirm("SetName " + prefix + Nebname, 0))
+                            //{
+                            //    i++;
+                            //    msdelay(100);
+                            //    if (i == 30)
+                            //    {
+                            //        Log("NebCapture Failed");
+                            //        Send("NebCapture Failed");
+                            //        return;
+                            //    }
+                            //}
+                            //i = 0;
+
+
                             //  Clipboard.SetText("//NEB SetBinning " + CaptureBin);
                             Clipboard.SetDataObject("//NEB SetBinning " + CaptureBin, false, 3, 500);
                             msdelay(750);
-                            while (!NebCommandConfirm("SetBinning "+ CaptureBin, 0))
-                            {
-                                i++;
-                                msdelay(100);
-                                if (i == 30)
-                                {
-                                    Log("NebCapture Failed");
-                                    Send("NebCapture Failed");
-                                    return;
-                                }
-                            }
-                            i = 0;
-                            //    Clipboard.SetText("//NEB SetShutter 0");
+                            //while (!NebCommandConfirm("SetBinning "+ CaptureBin, 0))
+                            //{
+                            //    i++;
+                            //    msdelay(100);
+                            //    if (i == 30)
+                            //    {
+                            //        Log("NebCapture Failed");
+                            //        Send("NebCapture Failed");
+                            //        return;
+                            //    }
+                            //}
+                            //i = 0;
+                            ////    Clipboard.SetText("//NEB SetShutter 0");
                             Clipboard.SetDataObject("//NEB SetShutter 0", false, 3, 500);
                             msdelay(750);
-                            while (!NebCommandConfirm("SetShutter 0", 0))
-                            {
-                                i++;
-                                msdelay(100);
-                                if (i == 30)
-                                {
-                                    Log("NebCapture Failed");
-                                    Send("NebCapture Failed");
-                                    return;
-                                }
-                            }
-                            i = 0;
+                            //while (!NebCommandConfirm("SetShutter 0", 0))
+                            //{
+                            //    i++;
+                            //    msdelay(100);
+                            //    if (i == 30)
+                            //    {
+                            //        Log("NebCapture Failed");
+                            //        Send("NebCapture Failed");
+                            //        return;
+                            //    }
+                            //}
+                            //i = 0;
                             //  Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
                             Clipboard.SetDataObject("//NEB SetDuration " + CaptureTime3, false, 3, 500);
                             msdelay(750);
-                            while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                            {
-                                i++;
-                                msdelay(100);
-                                if (i == 30)
-                                {
-                                    Log("NebCapture Failed");
-                                    Send("NebCapture Failed");
-                                    return;
-                                }
-                            }
+                            //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                            //{
+                            //    i++;
+                            //    msdelay(100);
+                            //    if (i == 30)
+                            //    {
+                            //        Log("NebCapture Failed");
+                            //        Send("NebCapture Failed");
+                            //        return;
+                            //    }
+                            //}
                           
                             //  Clipboard.SetText("//NEB Capture " + subsperfilter);
                             Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
@@ -7281,70 +7285,70 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        int i= 0;
+                      //  int i= 0;
                       //  msdelay(750);
                         Clipboard.Clear();
                         msdelay(500);
                         //  Clipboard.SetText("//NEB setname " + prefix + Nebname);
                         Clipboard.SetDataObject("//NEB setname " + prefix + Nebname, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("NebCapture Failed");
-                                Send("NebCapture Failed");
-                                return;
-                            }
-                        }
-                        i = 0;
+                        //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
                         //    Clipboard.SetText("//NEB setbinning " + CaptureBin);
                         Clipboard.SetDataObject("//NEB setbinning " + CaptureBin, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("NebCapture Failed");
-                                Send("NebCapture Failed");
-                                return;
-                            }
-                        }
-                        i = 0;
+                        //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
                         //  Clipboard.SetText("//NEB SetShutter 1");
                         Clipboard.SetDataObject("//NEB SetShutter 1", false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("NebCapture Failed");
-                                Send("NebCapture Failed");
-                                return;
-                            }
-                        }
-                        i = 0;
+                        //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
                         //  Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
                         Clipboard.SetDataObject("//NEB SetDuration " + CaptureTime3, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("NebCapture Failed");
-                                Send("NebCapture Failed");
-                                return;
-                            }
-                        }
-                        i = 0;
+                        //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
                         //     Clipboard.SetText("//NEB Capture " + subsperfilter);
                         Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
                         msdelay(750);
@@ -8704,7 +8708,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (UseClipBoard.Checked) // 11-8-16
                 {
-                    int i = 0;
+                  //  int i = 0;
                     NebListenStart(Handles.NebhWnd, SocketPort);
                     delay(1);
                     Clipboard.Clear();
@@ -8713,33 +8717,33 @@ namespace Pololu.Usc.ScopeFocus
                     Clipboard.SetDataObject("//NEB SetDuration " + MetricTime, false, 3, 500);
                   //  msdelay(500);
                   //  NebCommandConfirm("SetDuration " + MetricTime, 0);
-                    while (!NebCommandConfirm("SetDuration " + MetricTime, 0))
-                    {
-                        i++;
-                        msdelay(100);
-                        if (i == 30)
-                        {
-                            Log("Metric Failed");
-                            Send("Metric Failed");
-                            return;
-                        }
-                    }
-                    i = 0;
+                    //while (!NebCommandConfirm("SetDuration " + MetricTime, 0))
+                    //{
+                    //    i++;
+                    //    msdelay(100);
+                    //    if (i == 30)
+                    //    {
+                    //        Log("Metric Failed");
+                    //        Send("Metric Failed");
+                    //        return;
+                    //    }
+                    //}
+                    //i = 0;
                     //   Clipboard.SetText("//NEB CaptureSingle metric");
                     Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
                     msdelay(500);
                     //   NebCommandConfirm("//NEB CaptureSingle metric");  //***this doesn't happend until the exposure is done.
-                    while (!NebCommandConfirm("Exposure done",1))
-                    {
-                        i++;
-                        msdelay(100);
-                        if (i == 30)
-                        {
-                            Log("Metric Capture Failed");
-                            Send("Metric Capture Failed");
-                            return;
-                        }
-                    }
+                    //while (!NebCommandConfirm("Exposure done",1))
+                    //{
+                    //    i++;
+                    //    msdelay(100);
+                    //    if (i == 30)
+                    //    {
+                    //        Log("Metric Capture Failed");
+                    //        Send("Metric Capture Failed");
+                    //        return;
+                    //    }
+                    //}
 
                 }
                 else
@@ -8798,7 +8802,7 @@ namespace Pololu.Usc.ScopeFocus
                 // NetworkStream serverStream = clientSocket.GetStream();
                 if (UseClipBoard.Checked) // 11-8-16
                 {
-                    int i = 0;
+                  //  int i = 0;
                     NebListenStart(Handles.NebhWnd, SocketPort);
                     delay(1);
                     Clipboard.Clear();
@@ -8807,33 +8811,33 @@ namespace Pololu.Usc.ScopeFocus
                     Clipboard.SetDataObject("//NEB SetDuration " + MetricTime, false, 3, 500);
                     //    Thread.Sleep(500);
                     msdelay(750);
-                    while (!NebCommandConfirm("SetDuration " + MetricTime, 0))
-                    {
-                        i++;
-                        msdelay(100);
-                        if (i == 30)
-                        {
-                            Log("Metric Capture Failed");
-                            Send("Metric Capture Failed");
-                            return;
-                        }
-                    }
-                    i = 0;
+                    //while (!NebCommandConfirm("SetDuration " + MetricTime, 0))
+                    //{
+                    //    i++;
+                    //    msdelay(100);
+                    //    if (i == 30)
+                    //    {
+                    //        Log("Metric Capture Failed");
+                    //        Send("Metric Capture Failed");
+                    //        return;
+                    //    }
+                    //}
+                    //i = 0;
                     //    Clipboard.Clear();
                     //   Clipboard.SetText("//NEB CaptureSingle metric");
                     Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
                     msdelay(750);
-                    while (!NebCommandConfirm("Exposure done", 1)) // **** remove this if don't want UI unaccessible. 
-                    {
-                        i++;
-                        msdelay(100);
-                        if (i == 30)
-                        {
-                            Log("Metric Capture Failed");
-                            Send("Metric Capture Failed");
-                            return;
-                        }
-                    }
+                    //while (!NebCommandConfirm("Exposure done", 1)) // **** remove this if don't want UI unaccessible. 
+                    //{
+                    //    i++;
+                    //    msdelay(100);
+                    //    if (i == 30)
+                    //    {
+                    //        Log("Metric Capture Failed");
+                    //        Send("Metric Capture Failed");
+                    //        return;
+                    //    }
+                    //}
 
                     //    Thread.Sleep(500);
                     //   delay(1);
@@ -9663,85 +9667,85 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
-                int i = 0;
+               // int i = 0;
                 delay(1);
                 Clipboard.Clear();
                 msdelay(500);
                 // Clipboard.SetText("//NEB SetName " + "Confirm_Solve_Location");
                 Clipboard.SetDataObject("//NEB SetName " + "Confirm_Solve_Location", false, 3, 500);
                 msdelay(750);
-                while (!NebCommandConfirm("SetName " + "Confirm_Solve_Location", 0))
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
-                i = 0;
+                //while (!NebCommandConfirm("SetName " + "Confirm_Solve_Location", 0))
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
+                //i = 0;
                 //   Clipboard.SetText("//NEB SetBinning " + CaptureBin);
                 Clipboard.SetDataObject("//NEB SetBinning " + CaptureBin, false, 3, 500);
                 msdelay(750);
-                while (!NebCommandConfirm("SetBinning " + CaptureBin , 0))
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
-                i = 0;
+                //while (!NebCommandConfirm("SetBinning " + CaptureBin , 0))
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
+                //i = 0;
                 Clipboard.SetDataObject("//NEB SetShutter 0", false, 3, 500);
                 //    Clipboard.SetText("//NEB SetShutter 0");
                 msdelay(750);
-                while (!NebCommandConfirm("SetShutter 0", 0))
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
-                i = 0;
+                //while (!NebCommandConfirm("SetShutter 0", 0))
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
+                //i = 0;
                 Clipboard.SetDataObject("//NEB SetDuration " + Solvetime, false, 3, 500);
                 // Clipboard.SetText("//NEB SetDuration " + Solvetime);
                 msdelay(750);
-                while (!NebCommandConfirm("SetDuration " + Solvetime, 0))
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
-                i = 0;
+                //while (!NebCommandConfirm("SetDuration " + Solvetime, 0))
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
+                //i = 0;
                 // Clipboard.SetText("//NEB Capture 1");
                 Clipboard.SetDataObject("//NEB Capture 1", false, 3, 500);
                 msdelay(750);
-                while (!NebCommandConfirm("Exposure done", 1)) //holds UI until done. 
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
-                i = 0;
+                //while (!NebCommandConfirm("Exposure done", 1)) //holds UI until done. 
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
+                //i = 0;
 
             }
             // add 4-13-16 try to hold progress until capture is done.  
@@ -10228,18 +10232,18 @@ namespace Pololu.Usc.ScopeFocus
                 Clipboard.SetDataObject("//NEB SetDuration " + dur.ToString(), false, 3, 500);
                 //   Clipboard.SetText("//NEB SetDuration " + dur.ToString());
                 msdelay(750);
-                int i = 0;
-                while (!NebCommandConfirm("SetDuration " + dur.ToString(), 0))
-                {
-                    i++;
-                    msdelay(100);
-                    if (i == 30)
-                    {
-                        Log("Solve Capture Failed");
-                        Send("Solve Caputre Failed");
-                        return;
-                    }
-                }
+                //int i = 0;
+                //while (!NebCommandConfirm("SetDuration " + dur.ToString(), 0))
+                //{
+                //    i++;
+                //    msdelay(100);
+                //    if (i == 30)
+                //    {
+                //        Log("Solve Capture Failed");
+                //        Send("Solve Caputre Failed");
+                //        return;
+                //    }
+                //}
                 
                 Log("FocusTime sent " + dur.ToString());
 
@@ -10904,21 +10908,21 @@ namespace Pololu.Usc.ScopeFocus
                         }
 
                     }
-                    if (UseClipBoard.Checked) // 11-12-16
-                    {
-                        int i = 0;
-                        while (!NebCommandConfirm("Listen 1", 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("NebListen failed");
-                                Send("NebListen Failed");
-                                return;
-                            }
-                        }
-                    }
+                    //if (UseClipBoard.Checked) // 11-12-16
+                    //{
+                    //    int i = 0;
+                    //    while (!NebCommandConfirm("Listen 1", 0))
+                    //    {
+                    //        i++;
+                    //        msdelay(100);
+                    //        if (i == 30)
+                    //        {
+                    //            Log("NebListen failed");
+                    //            Send("NebListen Failed");
+                    //            return;
+                    //        }
+                    //    }
+                    //}
 
                 }
                 catch (Exception ex)
@@ -12632,7 +12636,7 @@ namespace Pololu.Usc.ScopeFocus
                     try
                     {
                         Capturing = true;  // remd 11-13-16 with rem below.  
-                        int i = 0;
+                    //    int i = 0;
                         //  serverStream.Write(outStream, 0, outStream.Length);
                         msdelay(750);
                         Clipboard.Clear();
@@ -12640,80 +12644,80 @@ namespace Pololu.Usc.ScopeFocus
                         //   Clipboard.SetText("//NEB SetName " + prefix + name);
                         Clipboard.SetDataObject("//NEB SetName " + prefix + name, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetName " + prefix + name, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("FlatCalc Capture Failed");
-                                Send("FlatCalc Caputre Failed");
-                                return;
-                            }
-                        }
+                        //while (!NebCommandConfirm("SetName " + prefix + name, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("FlatCalc Capture Failed");
+                        //        Send("FlatCalc Caputre Failed");
+                        //        return;
+                        //    }
+                        //}
 
                         //   Clipboard.SetText("//NEB SetBinning " + CaptureBin);
                         Clipboard.SetDataObject("//NEB SetBinning " + CaptureBin, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetBinning " + CaptureBin, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("FlatCalc Capture Failed");
-                                Send("FlatCalc Caputre Failed");
-                                return;
-                            }
-                        }
+                        //while (!NebCommandConfirm("SetBinning " + CaptureBin, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("FlatCalc Capture Failed");
+                        //        Send("FlatCalc Caputre Failed");
+                        //        return;
+                        //    }
+                        //}
 
                         //   Clipboard.SetText("//NEB SetShutter 0");
                         Clipboard.SetDataObject("//NEB SetShutter 0", false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetShutter 0", 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("FlatCalc Capture Failed");
-                                Send("FlatCalc Caputre Failed");
-                                return;
-                            }
-                        }
+                        //while (!NebCommandConfirm("SetShutter 0", 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("FlatCalc Capture Failed");
+                        //        Send("FlatCalc Caputre Failed");
+                        //        return;
+                        //    }
+                        //}
 
                         //     Clipboard.SetText("//NEB SetDuration " + FlatExp);
                         Clipboard.SetDataObject("//NEB SetDuration " + FlatExp, false, 3, 500);
                         msdelay(750);
-                        while (!NebCommandConfirm("SetDuration " + FlatExp, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("FlatCalc Capture Failed");
-                                Send("FlatCalc Caputre Failed");
-                                return;
-                            }
-                        }
-                        i = 0;
+                        //while (!NebCommandConfirm("SetDuration " + FlatExp, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("FlatCalc Capture Failed");
+                        //        Send("FlatCalc Caputre Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
                         //  Clipboard.SetText("//NEB Capture " + subs);
                         Clipboard.SetDataObject("//NEB Capture " + subs, false, 3, 500);
                         msdelay(750);
 
 
                         // 11-13-16 try this instead of below.  
-                        while (!NebCommandConfirm("Capture " + subs, 0))
-                        {
-                            i++;
-                            msdelay(100);
-                            if (i == 30)
-                            {
-                                Log("FlatCalc Capture Failed");
-                                Send("FlatCalc Caputre Failed");
-                                return;
-                            }
-                        }
+                        //while (!NebCommandConfirm("Capture " + subs, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("FlatCalc Capture Failed");
+                        //        Send("FlatCalc Caputre Failed");
+                        //        return;
+                        //    }
+                        //}
 
 
 
