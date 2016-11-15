@@ -976,7 +976,7 @@ namespace Pololu.Usc.ScopeFocus
         private void fileSystemWatcher3_Changed(object sender, FileSystemEventArgs e)
         {
             // int nn;
-
+            Log("fileSystemWatcher3 changed");
             textBox41.Refresh();//dual scope status textbox
             textBox41.Clear();
 
@@ -2137,7 +2137,10 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     focusSampleComplete = false; // added 11-12-16
                     fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
-                    NebCapture();//*************un remd 3_4
+                    NebCapture();
+                    Log("FSW4 - enabled, NebCapture started from FSW3");
+                   
+                    //*************un remd 3_4
                                  /*
                                  if (backgroundWorker2.IsBusy != true)
                                  {
@@ -5273,6 +5276,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                Log("display current filter");
                 //  if (SequenceRunning == true)
                 //  DisableUpDwn();
                 //    }
@@ -5626,7 +5630,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             //if (FlatDone == false)
             //  {
-            //   Log("systemFilewatcher 4 changed");
+               Log("systemFilewatcher 4 changed");
             textBox41.Refresh();
             textBox41.Clear();
             if (!IsSlave())
@@ -5848,10 +5852,13 @@ namespace Pololu.Usc.ScopeFocus
         //filtersequencehere
         private void FilterSequence()
         {
+            Log("filtersequcene called");
             //   System.Object lockThis = new System.Object();
             // try
             // {
             DisplayCurrentFilter(); //try *****  added 5-23  
+           
+
             //   textBox38.Text = currentfilter.ToString();
             if (currentfilter == 1)// was 1 prior to ascom   ***really is current sequence position***
             {
@@ -5918,6 +5925,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         if ((checkBox8.Checked == false) & (checkBox17.Checked == false))//refocus after filter change check box
                             NebCapture();
+
                     }
                     return;
 
@@ -7054,7 +7062,7 @@ namespace Pololu.Usc.ScopeFocus
             try
             {
 
-
+                Log("NebCapture called");
                 if (IsServer())
                     SendtoSlave((subsperfilter * CaptureTime / 1000).ToString());
                 if (IsSlave())
@@ -7186,6 +7194,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
                         else
                         {
+                            Log("NebCapture line 7192");
                          //   int i = 0;
                          //   msdelay(750);
                             Clipboard.Clear();
@@ -7258,6 +7267,7 @@ namespace Pololu.Usc.ScopeFocus
                             //  Clipboard.SetText("//NEB Capture " + subsperfilter);
                             Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
                             msdelay(750);
+                            Clipboard.Clear();
                             Capturing = true; // added 11-9-16 
                         }
                     }
@@ -7285,8 +7295,9 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                      //  int i= 0;
-                      //  msdelay(750);
+                        //  int i= 0;
+                        //  msdelay(750);
+                        Log("nebCapture line 7294 Darks on = true");
                         Clipboard.Clear();
                         msdelay(500);
                         //  Clipboard.SetText("//NEB setname " + prefix + Nebname);
@@ -7353,6 +7364,7 @@ namespace Pololu.Usc.ScopeFocus
                         Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
                         msdelay(750);
                         Capturing = true;
+                        Clipboard.Clear();
                     }
                     // serverStream.Write(outStream2, 0, outStream2.Length);
                     DarksOn = false;
@@ -7739,6 +7751,7 @@ namespace Pololu.Usc.ScopeFocus
                 msdelay(500);
                 Clipboard.SetDataObject("//NEB  Listen 0", false, 3, 500);
                 msdelay(750);
+                Clipboard.Clear();
             }
             // serverStream.Close();
             // clientSocket2.Client.Dispose();
@@ -8715,7 +8728,7 @@ namespace Pololu.Usc.ScopeFocus
                     msdelay(500);
                     //   Clipboard.SetText("//NEB SetDuration " + MetricTime);
                     Clipboard.SetDataObject("//NEB SetDuration " + MetricTime, false, 3, 500);
-                  //  msdelay(500);
+                  msdelay(750);
                   //  NebCommandConfirm("SetDuration " + MetricTime, 0);
                     //while (!NebCommandConfirm("SetDuration " + MetricTime, 0))
                     //{
@@ -8731,7 +8744,7 @@ namespace Pololu.Usc.ScopeFocus
                     //i = 0;
                     //   Clipboard.SetText("//NEB CaptureSingle metric");
                     Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
-                    msdelay(500);
+                    msdelay(750);
                     //   NebCommandConfirm("//NEB CaptureSingle metric");  //***this doesn't happend until the exposure is done.
                     //while (!NebCommandConfirm("Exposure done",1))
                     //{
@@ -8744,7 +8757,7 @@ namespace Pololu.Usc.ScopeFocus
                     //        return;
                     //    }
                     //}
-
+                    Clipboard.Clear();
                 }
                 else
                 {
@@ -8841,6 +8854,7 @@ namespace Pololu.Usc.ScopeFocus
 
                     //    Thread.Sleep(500);
                     //   delay(1);
+                    Clipboard.Clear();
                 }
                 else
                 {
@@ -9746,7 +9760,7 @@ namespace Pololu.Usc.ScopeFocus
                 //    }
                 //}
                 //i = 0;
-
+                Clipboard.Clear();
             }
             // add 4-13-16 try to hold progress until capture is done.  
             //if (backgroundWorker2.IsBusy != true)
@@ -10246,7 +10260,7 @@ namespace Pololu.Usc.ScopeFocus
                 //}
                 
                 Log("FocusTime sent " + dur.ToString());
-
+                Clipboard.Clear();
             }
 
 
@@ -10316,7 +10330,7 @@ namespace Pololu.Usc.ScopeFocus
 
             try
             {
-
+                Log("filterfocus called");
                 if ((IsServer()) & (checkBox8.Checked == true))
                     SlaveFocus();
 
@@ -10327,6 +10341,7 @@ namespace Pololu.Usc.ScopeFocus
                 //}
                 FilterFocusOn = true;
                 fileSystemWatcher4.EnableRaisingEvents = false;//**************added2_29
+                Log("FilterFocus On, FSW4 off");
                 /*  NebListenStop();   **************remd 2_29  next 1 rem as well
                   Thread.Sleep(500);
                   SetForegroundWindow(NebhWnd);
@@ -12704,7 +12719,7 @@ namespace Pololu.Usc.ScopeFocus
                         //  Clipboard.SetText("//NEB Capture " + subs);
                         Clipboard.SetDataObject("//NEB Capture " + subs, false, 3, 500);
                         msdelay(750);
-
+                        Clipboard.Clear();
 
                         // 11-13-16 try this instead of below.  
                         //while (!NebCommandConfirm("Capture " + subs, 0))
