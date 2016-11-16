@@ -1027,6 +1027,7 @@ namespace Pololu.Usc.ScopeFocus
                                 FineFocusAbort = true;
                                 Array.Clear(list, 0, arraysize1);
                                 Log("Focus star lost, using full frame metric");
+                               FileLog2("Focus star lost, using full frame metric");
                                 SetForegroundWindow(Handles.NebhWnd);
                                 Thread.Sleep(1000);
                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
@@ -1123,10 +1124,12 @@ namespace Pololu.Usc.ScopeFocus
 
                                 //3-2-16
                                 Log("Calculated focus point = " + Math.Round(BestPos).ToString());
+                                FileLog2("Calculated focus point = " + Math.Round(BestPos).ToString());
                                 if ((int)BestPos < 0 || (int)BestPos > travel)
                                 {
                                     calcRedo++;
                                     Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+                                    FileLog2("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
 
                                     posMin = count; //reset to prev focus point
                                     BestPos = count;
@@ -1151,6 +1154,7 @@ namespace Pololu.Usc.ScopeFocus
                                     {
                                         redo++;
                                         Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                        FileLog2("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
 
                                         posMin = count; //reset to prev focus point
                                         BestPos = count;
@@ -1214,6 +1218,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                 _gotoFocusOn = false;
                                 Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                                FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
                                 textBox4.Text = ((int)BestPos).ToString();
 
                                 toolStripStatusLabel1.Text = "Focus Moving";
@@ -1244,11 +1249,13 @@ namespace Pololu.Usc.ScopeFocus
                                 // textBox14.Text = avg.ToString();
                                 BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
                                 Log("Calculated focus point = " + BestPos.ToString());
+                               FileLog2("Calculated focus point = " + BestPos.ToString());
                                 //3-2-16
                                 if ((int)BestPos < 0 || (int)BestPos > travel)
                                 {
                                     calcRedo++;
                                     Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+                                    FileLog2("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
 
                                     posMin = count; //reset to prev focus point
                                     BestPos = count;
@@ -1275,6 +1282,7 @@ namespace Pololu.Usc.ScopeFocus
                                     {
                                         calcRedo++;
                                         Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                        FileLog2("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
 
                                         posMin = count;
                                         BestPos = count;
@@ -1315,6 +1323,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                 _gotoFocusOn = false;
                                 Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                                FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
                                 textBox4.Text = ((int)BestPos).ToString();
                                 // end addt
 
@@ -1569,7 +1578,8 @@ namespace Pololu.Usc.ScopeFocus
                             }
                             //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
                             //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
-                            Log("Using previous focus position - " + posMin.ToString());  //may not be right
+                            Log("Using previous focus position - " + posMin.ToString());
+                            FileLog2("Using previous focus position - " + posMin.ToString()); //may not be right
                             textBox4.Text = posMin.ToString();  // 10-13-16
                             gotoFocus();
                             return;
@@ -1646,6 +1656,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (focusSampleComplete)
                 {
                     Log("Simulator -- quality check disabled");
+                   FileLog2("Simulator -- quality check disabled");
 
                     // added 10-24-16 
 
@@ -1766,6 +1777,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (checkBox10.Checked == false)//cb10 is focus in image frame, if not needs to slew back
                 {
+                    FileLog2("Slew to target");
                     toolStripStatusLabel1.Text = "Slewing to Target";
                     this.Refresh();
 
@@ -1862,7 +1874,7 @@ namespace Pololu.Usc.ScopeFocus
                     focusSampleComplete = false; // added 11-12-16
                     fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
                     NebCapture();
-                    Log("FSW4 - enabled, NebCapture started from FSW3");
+                    FileLog2("FSW4 - enabled, NebCapture started from FSW3");
                    
                     //*************un remd 3_4
                                  /*
@@ -3157,7 +3169,8 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(100);
                     count = focuser.Position;
                     textBox1.Text = focuser.Position.ToString();
-                    Log(focuser.Position.ToString());
+                    Log("Taking up backlash");
+                    FileLog2("Move to " + focuser.Position.ToString());
                     if (!ContinuousHoldOn)
                         focuser.Halt();
                     Thread.Sleep(1000);//was 3000
@@ -3169,7 +3182,7 @@ namespace Pololu.Usc.ScopeFocus
                     if (!ContinuousHoldOn)
                         focuser.Halt();
                     Thread.Sleep(2000);
-                    Log(focuser.Position.ToString());
+                    FileLog2("Move to: " + focuser.Position.ToString());
                 }
                 if (radioButton3.Checked == true)//using downslope added 11-21
                 {
@@ -3182,7 +3195,8 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(100);
                     count = focuser.Position;
                     textBox1.Text = focuser.Position.ToString();
-                    Log(focuser.Position.ToString());
+                    Log("Taking up backlash");
+                    FileLog2("Move to: " + focuser.Position.ToString());
                     if (!ContinuousHoldOn)
                         focuser.Halt();
                     Thread.Sleep(1000);
@@ -3195,7 +3209,7 @@ namespace Pololu.Usc.ScopeFocus
                     if (!ContinuousHoldOn)
                         focuser.Halt();
                     Thread.Sleep(2000);
-                    Log(focuser.Position.ToString());
+                    FileLog2("Move to: " +focuser.Position.ToString());
 
 
                     /*
@@ -3610,6 +3624,7 @@ namespace Pololu.Usc.ScopeFocus
                 textBox49.Text = WindowsFormsApplication1.Properties.Settings.Default.DwnSz.ToString();
                 textBox61.Text = WindowsFormsApplication1.Properties.Settings.Default.Low.ToString();
                 textBox62.Text = WindowsFormsApplication1.Properties.Settings.Default.High.ToString();
+                textBox38.Text = WindowsFormsApplication1.Properties.Settings.Default.GoalADU;
                 //   camera = WindowsFormsApplication1.Properties.Settings.Default.camera;
                 //   textBox22.Text = camera;
                 posMin = WindowsFormsApplication1.Properties.Settings.Default.focuspos;
@@ -4254,6 +4269,7 @@ namespace Pololu.Usc.ScopeFocus
             WindowsFormsApplication1.Properties.Settings.Default.None = radioButton8.Checked;
             WindowsFormsApplication1.Properties.Settings.Default.Reducer = radioButton10.Checked;
             WindowsFormsApplication1.Properties.Settings.Default.focuspos = posMin;
+            WindowsFormsApplication1.Properties.Settings.Default.GoalADU = textBox38.Text;
             //   WindowsFormsApplication1.Properties.Settings.Default.camera = camera;
             int i = comboBox7.SelectedIndex;
             if (i == 0)
@@ -4919,7 +4935,7 @@ namespace Pololu.Usc.ScopeFocus
                 //     DisplayCurrentFilter();//***need to account for 5 position versus prev 4  ****  2-28-14
                 // }
 
-
+                FileLog2("Filter moved to position: " + filterWheel.Position.ToString());
             }
             //focuser.Move(1);
             //     focuser.Action("FilterAdvance", "");
@@ -5028,6 +5044,7 @@ namespace Pololu.Usc.ScopeFocus
                     //  currentfilter = Convert.ToInt16(filterWheel.Position);
                     //   Log(filterWheel.Names[currentfilter].ToString());
                     Filtertext = filterWheel.Names[filterWheel.Position];
+                    FileLog2("Current Filter: " + Filtertext);
                 }
                 else
                     Filtertext = comboBox2.Text;
@@ -5218,6 +5235,7 @@ namespace Pololu.Usc.ScopeFocus
                     serverStream.Flush();
                     toolStripStatusLabel1.Text = "Sequence Done";
                     toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                    FileLog2("Sequence Done");
                     this.Refresh();
                     if (DarksOn == true)
                         DarksOn = false;
@@ -5253,6 +5271,7 @@ namespace Pololu.Usc.ScopeFocus
                     //msdelay(1000);
                     toolStripStatusLabel1.Text = "Sequence Done";
                     toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
+                    FileLog2("Sequence Done");
                     this.Refresh();
                     if (DarksOn == true)
                         DarksOn = false;
@@ -5356,7 +5375,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             //if (FlatDone == false)
             //  {
-               FileLog2("systemFilewatcher 4 changed");
+               FileLog2("SystemFileWatcher 4 changed");
             textBox41.Refresh();
             textBox41.Clear();
             if (!IsSlave())
@@ -5578,7 +5597,7 @@ namespace Pololu.Usc.ScopeFocus
         //filtersequencehere
         private void FilterSequence()
         {
-            Log("filtersequcene called");
+            FileLog2("filtersequcene called");
             //   System.Object lockThis = new System.Object();
             // try
             // {
@@ -6788,7 +6807,7 @@ namespace Pololu.Usc.ScopeFocus
             try
             {
 
-                Log("NebCapture called");
+                FileLog2("NebCapture called");
                 if (IsServer())
                     SendtoSlave((subsperfilter * CaptureTime / 1000).ToString());
                 if (IsSlave())
@@ -7059,6 +7078,7 @@ namespace Pololu.Usc.ScopeFocus
                         {
                             serverStream.Write(outStream2, 0, outStream2.Length);
                             Log("Darks On  Cap time " + CaptureTime3.ToString());
+                            FileLog2("Darks On  Cap time " + CaptureTime3.ToString());
                         }
                         catch
                         {
@@ -12723,7 +12743,7 @@ namespace Pololu.Usc.ScopeFocus
                         while (!NebCommandConfirm("Saving:", 1))
                         {
                             msdelay(200);
-                            Log("Waiting for exposure");
+                          //  Log("Waiting for exposure");
                         }
 
                         //   msdelay(750);
@@ -13092,7 +13112,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 //  log.WriteLine(DateTime.Now);
                 //  log.WriteLine("scopefocus - Error");
-                log.WriteLine(textlog);
+                log.WriteLine("[DEBUG}" + textlog);
                 log.Close();
             }
             return;
@@ -13586,7 +13606,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (comboBox1.SelectedItem.ToString() != "Dark 1")
                     checkboxs++;
             if (checkBox9.Checked == true)//*** 4-8-14 was 6 ****
-                if ((comboBox8.SelectedItem.ToString() != "Dark 1") && (comboBox1.SelectedItem.ToString() != "Dark 2"))
+                if ((comboBox8.SelectedItem.ToString() != "Dark 1") || (comboBox1.SelectedItem.ToString() != "Dark 2")) // changed to 'or' 11-16-16
                     checkboxs++;
             if (checkBox18.Checked == true)
                 totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + ((int)numericUpDown32.Value * checkboxs);
@@ -17017,7 +17037,7 @@ namespace Pololu.Usc.ScopeFocus
             comboBox4.Items.Clear();
             comboBox5.Items.Clear();
             comboBox8.Items.Clear();
-
+           
             foreach (string filter in filterWheel.Names)
             {
                 comboBox2.Items.Add(filter);
@@ -17028,6 +17048,7 @@ namespace Pololu.Usc.ScopeFocus
                 comboBox8.Items.Add(filter);
 
             }
+        
             comboBox8.Items.Add("Dark 1");
             comboBox8.Items.Add("Dark 2");
             comboBox1.Items.Add("Dark 1");
@@ -17068,30 +17089,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button19_Click_2(object sender, EventArgs e)
         {
-            if (paused == false)
-            {
-                fileSystemWatcher4.EnableRaisingEvents = false;
-                button22.BackColor = System.Drawing.Color.Lime;
-                paused = true;
-                button22.Text = "Resume";
-                PHDcommand(PHD_PAUSE);
-                Log("guiding puased");
-            }
-            else
-            {
-                fileSystemWatcher4.EnableRaisingEvents = true;
-                button22.UseVisualStyleBackColor = true;
-                paused = false;
-                button22.Text = "Pause";
-                if (Handles.PHDVNumber == 2)
-                    resumePHD2();
-                else
-                    PHDcommand(PHD_RESUME);
-            }
-        }
 
-        private void button15_Click(object sender, EventArgs e)
-        {
 
             DialogResult result;
             result = MessageBox.Show("Abort the current sequence?", "scopefocus",
@@ -17129,6 +17127,76 @@ namespace Pololu.Usc.ScopeFocus
             }
             if (result == DialogResult.Cancel)
                 return;
+            //if (paused == false)
+            //{
+            //    fileSystemWatcher4.EnableRaisingEvents = false;
+            //    button22.BackColor = System.Drawing.Color.Lime;
+            //    paused = true;
+            //    button22.Text = "Resume";
+            //    PHDcommand(PHD_PAUSE);
+            //    Log("guiding puased");
+            //}
+            //else
+            //{
+            //    fileSystemWatcher4.EnableRaisingEvents = true;
+            //    button22.UseVisualStyleBackColor = true;
+            //    paused = false;
+            //    button22.Text = "Pause";
+            //    if (Handles.PHDVNumber == 2)
+            //        resumePHD2();
+            //    else
+            //        PHDcommand(PHD_RESUME);
+            //}
+        }
+
+        // restet sequence
+        private void button15_Click(object sender, EventArgs e)
+        {
+            if (devId3 != null)
+                ComboBoxFill();
+            checkBox1.Checked = true;
+            checkBox2.Checked = false;
+            checkBox3.Checked = false;
+            checkBox4.Checked = false;
+            checkBox5.Checked = false;
+            checkBox6.Checked = false;
+            checkBox9.Checked = false;
+            checkBox13.Checked = false;
+            comboBox1.SelectedIndex = -1;
+            comboBox2.SelectedIndex = -1;
+            comboBox3.SelectedIndex = -1;
+            comboBox4.SelectedIndex = -1;
+            comboBox5.SelectedIndex = -1;
+            comboBox8.SelectedIndex = -1;
+           
+            numericUpDown12.Value = 0;
+            numericUpDown13.Value = 0;
+            numericUpDown14.Value = 0;
+            numericUpDown15.Value = 0;
+            numericUpDown20.Value = 0;
+            numericUpDown29.Value = 0;
+            numericUpDown32.Value = 0;
+            numericUpDown11.Value = 0;
+            numericUpDown16.Value = 0;
+            numericUpDown17.Value = 0;
+            numericUpDown18.Value = 0;
+            numericUpDown19.Value = 0;
+            numericUpDown30.Value = 0;
+            numericUpDown34.Value = 0;
+            numericUpDown24.Value = 0;
+            numericUpDown25.Value = 0;
+            numericUpDown26.Value = 0;
+            numericUpDown27.Value = 0;
+            numericUpDown28.Value = 0;
+            numericUpDown31.Value = 0;
+            numericUpDown36.Value = 0;
+            checkBox19.Checked = false;
+            checkBox18.Checked = false;
+            checkBox15.Checked = false;
+            checkBox17.Checked = false;
+            checkBox8.Checked = false;
+
+
         }
 
         private void radioButton8_CheckedChanged(object sender, EventArgs e)
