@@ -98,6 +98,8 @@
 // 11-14-16 ver 32  added clear clipboard after all final //NEB commands
  // TODO revisit confrim commands sent with statusbar monitor.  Maybe just check it once after each clipboard.setdata instead of using while loop.....
 
+ // 11-18-16 changed focusgroupset() to only happen at sequencego...not w/ numUD or checkbox change
+
 // TODO  pause/resume  line 12820......
 
 
@@ -13668,155 +13670,163 @@ namespace Pololu.Usc.ScopeFocus
         //this likely needs to be removed  *****  4-8-14  ******
         private void checkBox17_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox17.Checked)
-            {
-                //if (numericUpDown38.Value == 0) // remd 10-24-16
-                //    MessageBox.Show("Value cannot be zero", "scopefoucs");
-                //if (numericUpDown38.Value < 4) // remd 10-24-16
-                //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
-                FocusPerSub = (int)numericUpDown38.Value;
-                if (checkBox1.Checked == true)
-                {
-                    if (numericUpDown12.Value == 0)
-                    {
-                        MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
-                    if (FocusGroup[0] != Math.Round(FocusGroup[0]))
-                    {
-                        MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
-                    if (FocusGroup[0] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[0] = 0;
-                        FocusGroup[0] = 0;
-                    }
-                }
-                if (checkBox2.Checked == true)
-                {
-                    if (numericUpDown13.Value == 0)
-                    {
-                        MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
-                    if (FocusGroup[1] != Math.Round(FocusGroup[1]))
-                    {
-                        MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
-                    if (FocusGroup[1] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[1] = 0;
-                        FocusGroup[1] = 0;
-                    }
-                }
-                if (checkBox3.Checked == true)
-                {
-                    if (numericUpDown14.Value == 0)
-                    {
-                        MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
-                    if (FocusGroup[2] != Math.Round(FocusGroup[2]))
-                    {
-                        MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
-                    if (FocusGroup[2] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[2] = 0;
-                        FocusGroup[2] = 0;
-                    }
-                }
-                if (checkBox4.Checked == true)
-                {
-                    if (numericUpDown15.Value == 0)
-                    {
-                        MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
-                    if (FocusGroup[3] != Math.Round(FocusGroup[3]))
-                    {
-                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
-                    if (FocusGroup[3] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[3] = 0;
-                        FocusGroup[3] = 0;
-                    }
-                }
-                if (checkBox5.Checked == true)
-                {
-                    if (numericUpDown20.Value == 0)
-                    {
-                        MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
-                    if (FocusGroup[4] != Math.Round(FocusGroup[4]))
-                    {
-                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
-                    if (FocusGroup[4] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[4] = 0;
-                        FocusGroup[4] = 0;
-                    }
-                }
-                if (checkBox9.Checked == true)
-                {
-                    if (numericUpDown29.Value == 0)
-                    {
-                        MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
-                    if (FocusGroup[5] != Math.Round(FocusGroup[3]))
-                    {
-                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                        numericUpDown38.Value = 1;
-                    }
-                    else
-                        SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
-                    if (FocusGroup[5] == 1)//then just use the filter change to refocus
-                    {
-                        SubsPerFocus[5] = 0;
-                        FocusGroup[5] = 0;
-                    }
-                }
-                FileLog2("FocusSubsPerGroup: " + FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
-                FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
-            }
+           // if (checkBox17.Checked)
+           //     FocusGroupCalc(); //shouel do it either way that way gets reset if unchecked
+           // 11-18-16 try just doing at sequence go.....
+
+            
+            // 11-18-16 rem'd all of this.  does it when numericupdown38.value changed
+
+            //if (checkBox17.Checked)
+            //{
+            //    //if (numericUpDown38.Value == 0) // remd 10-24-16
+            //    //    MessageBox.Show("Value cannot be zero", "scopefoucs");
+            //    //if (numericUpDown38.Value < 4) // remd 10-24-16
+            //    //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
+            //    FocusPerSub = (int)numericUpDown38.Value;
+            //    if (checkBox1.Checked == true)
+            //    {
+            //        if (numericUpDown12.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
+            //        if (FocusGroup[0] != Math.Round(FocusGroup[0]))
+            //        {
+            //            MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
+            //        if (FocusGroup[0] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[0] = 0;
+            //            FocusGroup[0] = 0;
+            //        }
+            //    }
+            //    if (checkBox2.Checked == true)
+            //    {
+            //        if (numericUpDown13.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
+            //        if (FocusGroup[1] != Math.Round(FocusGroup[1]))
+            //        {
+            //            MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
+            //        if (FocusGroup[1] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[1] = 0;
+            //            FocusGroup[1] = 0;
+            //        }
+            //    }
+            //    if (checkBox3.Checked == true)
+            //    {
+            //        if (numericUpDown14.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
+            //        if (FocusGroup[2] != Math.Round(FocusGroup[2]))
+            //        {
+            //            MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
+            //        if (FocusGroup[2] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[2] = 0;
+            //            FocusGroup[2] = 0;
+            //        }
+            //    }
+            //    if (checkBox4.Checked == true)
+            //    {
+            //        if (numericUpDown15.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
+            //        if (FocusGroup[3] != Math.Round(FocusGroup[3]))
+            //        {
+            //            MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
+            //        if (FocusGroup[3] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[3] = 0;
+            //            FocusGroup[3] = 0;
+            //        }
+            //    }
+            //    if (checkBox5.Checked == true)
+            //    {
+            //        if (numericUpDown20.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
+            //        if (FocusGroup[4] != Math.Round(FocusGroup[4]))
+            //        {
+            //            MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
+            //        if (FocusGroup[4] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[4] = 0;
+            //            FocusGroup[4] = 0;
+            //        }
+            //    }
+            //    if (checkBox9.Checked == true)
+            //    {
+            //        if (numericUpDown29.Value == 0)
+            //        {
+            //            MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return;
+            //        }
+            //        FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
+            //        if (FocusGroup[5] != Math.Round(FocusGroup[3]))
+            //        {
+            //            MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+            //            numericUpDown38.Value = 1;
+            //        }
+            //        else
+            //            SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
+            //        if (FocusGroup[5] == 1)//then just use the filter change to refocus
+            //        {
+            //            SubsPerFocus[5] = 0;
+            //            FocusGroup[5] = 0;
+            //        }
+            //    }
+            //    FileLog2("FocusSubsPerGroup: " + FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
+            //    FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
+            //}
 
 
-            /*
-            if ((checkBox8.Checked == true) & (checkBox17.Checked == true))
-                MessageBox.Show("Confirm refocus after filter change AND " + numericUpDown38.Value.ToString() + " subs?"
-                    , "scopefocus");
-            */
-            if (checkBox17.Checked == true)
-                checkBox8.Checked = true;
+            ///*
+            //if ((checkBox8.Checked == true) & (checkBox17.Checked == true))
+            //    MessageBox.Show("Confirm refocus after filter change AND " + numericUpDown38.Value.ToString() + " subs?"
+            //        , "scopefocus");
+            //*/
+            //if (checkBox17.Checked == true)
+            //    checkBox8.Checked = true;
         }
 
         private void numericUpDown38_Leave(object sender, EventArgs e)
         {
+         //   FocusGroupCalc();  // 11-18-16 try just doing at sequence go
             // 10-24-16 moved to value changed method at end
         }
         //  doflathere
@@ -17985,138 +17995,146 @@ namespace Pololu.Usc.ScopeFocus
             //    MessageBox.Show("Value cannot be zero", "scopefoucs");
             //if (numericUpDown38.Value < 4) // remd 10-24-16
             //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
-            if (!checkBox17.Checked)
+            if (!checkBox17.Checked) // rest if unchecked.  
             {
                 FocusPerSubGroupCount = 0;
-                return;
+                for (int i=0; i<6; i++)
+                {
+                    FocusGroup[i] = 0;
+                }
+
             }
-            FocusPerSub = (int)numericUpDown38.Value;
-            if (checkBox1.Checked == true)
+            else
             {
-                if (numericUpDown12.Value == 0)
+                FocusPerSub = (int)numericUpDown38.Value;
+                if (checkBox1.Checked == true)
                 {
-                    MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    if (numericUpDown12.Value == 0)
+                    {
+                        MessageBox.Show("Position 1 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
+                    if (FocusGroup[0] != Math.Round(FocusGroup[0]))
+                    {
+                        MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
+                    if (FocusGroup[0] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[0] = 0;
+                        FocusGroup[0] = 0;
+                    }
                 }
-                FocusGroup[0] = (double)numericUpDown12.Value / FocusPerSub;
-                if (FocusGroup[0] != Math.Round(FocusGroup[0]))
+                if (checkBox2.Checked == true)
                 {
-                    MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
+                    if (numericUpDown13.Value == 0)
+                    {
+                        MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
+                    if (FocusGroup[1] != Math.Round(FocusGroup[1]))
+                    {
+                        MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
+                    if (FocusGroup[1] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[1] = 0;
+                        FocusGroup[1] = 0;
+                    }
                 }
-                else
-                    SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
-                if (FocusGroup[0] == 1)//then just use the filter change to refocus
+                if (checkBox3.Checked == true)
                 {
-                    SubsPerFocus[0] = 0;
-                    FocusGroup[0] = 0;
+                    if (numericUpDown14.Value == 0)
+                    {
+                        MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
+                    if (FocusGroup[2] != Math.Round(FocusGroup[2]))
+                    {
+                        MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
+                    if (FocusGroup[2] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[2] = 0;
+                        FocusGroup[2] = 0;
+                    }
+                }
+                if (checkBox4.Checked == true)
+                {
+                    if (numericUpDown15.Value == 0)
+                    {
+                        MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
+                    if (FocusGroup[3] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
+                    if (FocusGroup[3] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[3] = 0;
+                        FocusGroup[3] = 0;
+                    }
+                }
+                if (checkBox5.Checked == true)
+                {
+                    if (numericUpDown20.Value == 0)
+                    {
+                        MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
+                    if (FocusGroup[4] != Math.Round(FocusGroup[4]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
+                    if (FocusGroup[4] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[4] = 0;
+                        FocusGroup[4] = 0;
+                    }
+                }
+                if (checkBox9.Checked == true)
+                {
+                    if (numericUpDown29.Value == 0)
+                    {
+                        MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
+                    if (FocusGroup[5] != Math.Round(FocusGroup[3]))
+                    {
+                        MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
+                        numericUpDown38.Value = 1;
+                    }
+                    else
+                        SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
+                    if (FocusGroup[5] == 1)//then just use the filter change to refocus
+                    {
+                        SubsPerFocus[5] = 0;
+                        FocusGroup[5] = 0;
+                    }
                 }
             }
-            if (checkBox2.Checked == true)
-            {
-                if (numericUpDown13.Value == 0)
-                {
-                    MessageBox.Show("Position 2 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[1] = (double)numericUpDown13.Value / FocusPerSub;
-                if (FocusGroup[1] != Math.Round(FocusGroup[1]))
-                {
-                    MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
-                if (FocusGroup[1] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[1] = 0;
-                    FocusGroup[1] = 0;
-                }
-            }
-            if (checkBox3.Checked == true)
-            {
-                if (numericUpDown14.Value == 0)
-                {
-                    MessageBox.Show("Position 3 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[2] = (double)numericUpDown14.Value / FocusPerSub;
-                if (FocusGroup[2] != Math.Round(FocusGroup[2]))
-                {
-                    MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
-                if (FocusGroup[2] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[2] = 0;
-                    FocusGroup[2] = 0;
-                }
-            }
-            if (checkBox4.Checked == true)
-            {
-                if (numericUpDown15.Value == 0)
-                {
-                    MessageBox.Show("Position 4 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[3] = (double)numericUpDown15.Value / FocusPerSub;
-                if (FocusGroup[3] != Math.Round(FocusGroup[3]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
-                if (FocusGroup[3] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[3] = 0;
-                    FocusGroup[3] = 0;
-                }
-            }
-            if (checkBox5.Checked == true)
-            {
-                if (numericUpDown20.Value == 0)
-                {
-                    MessageBox.Show("Position 5 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[4] = (double)numericUpDown20.Value / FocusPerSub;
-                if (FocusGroup[4] != Math.Round(FocusGroup[4]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
-                if (FocusGroup[4] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[4] = 0;
-                    FocusGroup[4] = 0;
-                }
-            }
-            if (checkBox9.Checked == true)
-            {
-                if (numericUpDown29.Value == 0)
-                {
-                    MessageBox.Show("Position 6 is selected but has 0 subs", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                FocusGroup[5] = (double)numericUpDown29.Value / FocusPerSub;
-                if (FocusGroup[5] != Math.Round(FocusGroup[3]))
-                {
-                    MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
-                    numericUpDown38.Value = 1;
-                }
-                else
-                    SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
-                if (FocusGroup[5] == 1)//then just use the filter change to refocus
-                {
-                    SubsPerFocus[5] = 0;
-                    FocusGroup[5] = 0;
-                }
-            }
+            Log("Focus groups set: " + FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
             FileLog2("FocusGroupCount: " + FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
             FocusPerSubGroupCount = (int)(FocusGroup[0] + FocusGroup[1] + FocusGroup[2] + FocusGroup[3] + FocusGroup[4] + FocusGroup[5]);
         }
@@ -18125,15 +18143,17 @@ namespace Pololu.Usc.ScopeFocus
 
         private void numericUpDown38_ValueChanged(object sender, EventArgs e)
         {
-            if (checkBox17.Checked)
-            {
-                //if (numericUpDown38.Value == 0) // remd 10-24-16
-                //    MessageBox.Show("Value cannot be zero", "scopefoucs");
-                //if (numericUpDown38.Value < 4) // remd 10-24-16
+            // 11-18-16  moved to numericupdown28_leave
 
-                //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
-                FocusGroupCalc();  // 11-11-16
-            }
+        //    if (checkBox17.Checked)
+        //    {
+        //        //if (numericUpDown38.Value == 0) // remd 10-24-16
+        //        //    MessageBox.Show("Value cannot be zero", "scopefoucs");
+        //        //if (numericUpDown38.Value < 4) // remd 10-24-16
+
+        //        //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
+        //        FocusGroupCalc();  // 11-11-16
+        //    }
         }
 
        
