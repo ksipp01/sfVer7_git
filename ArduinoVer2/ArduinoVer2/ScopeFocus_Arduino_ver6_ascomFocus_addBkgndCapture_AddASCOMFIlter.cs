@@ -5375,6 +5375,7 @@ namespace Pololu.Usc.ScopeFocus
         // for sequences
         private void fileSystemWatcher4_Changed(object sender, FileSystemEventArgs e)
         {
+            idleCount = 0;
             //if (FlatDone == false)
             //  {
                FileLog2("SystemFileWatcher 4 changed");
@@ -7573,6 +7574,7 @@ namespace Pololu.Usc.ScopeFocus
                             GlobalVariables.CapTotal = Convert.ToInt16(captions[0].Substring(markerSlash + 1, lengthTotal));
                             //  int capTotal = captions[0].Substring()
                             toolStripStatusLabel1.Text = captions[3] + " " + GlobalVariables.CapCurrent.ToString() + "/" + GlobalVariables.CapTotal.ToString();
+                            Capturing = true; // ***  added 11-20-16 for timer2_tick and idle monitor this could screw things up
                         }
 
                     }
@@ -7801,6 +7803,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
                 // TODO ...have filelog2 of all filters, exp number, duration and binning.  and if focus between and flats....
@@ -16510,11 +16513,29 @@ namespace Pololu.Usc.ScopeFocus
         double CurrentRA;
         double CurrentDEC;
         bool FlipNeeded = false;
+        int idleCount = 0;
         private void timer2_Tick(object sender, EventArgs e)
         {
-
+            // inteval set at 1 second
             try
             {
+                //  Log("Idle Count " + idleCount.ToString());
+                //11-20-16  try to add idle monitor
+                if (checkBox34.Checked)
+                {
+                    if ((toolStripStatusLabel1.Text.Substring(0, 10) == "Capturing ") && (sequenceRunning)) // once neb starts an exposure the numbers show up after capturing
+                    { //need to wait a bit before cunting since starting sequence takes a few seconds.  
+                        idleCount++;
+
+                        if (idleCount == CaptureTime3 * 1.5 + 10)  //give it about 1.5 time capttime if nothing happening send message
+                        {
+                            Log("Idle Timnout");
+                            FileLog("Idle Timeout");
+                            Send("****Idle Timeout***");
+                        }
+                    }
+                }
+
                 if (checkBox30.Checked == true)
                     LostStarMonitor();
                 //*********** this results in error when closing ***********
