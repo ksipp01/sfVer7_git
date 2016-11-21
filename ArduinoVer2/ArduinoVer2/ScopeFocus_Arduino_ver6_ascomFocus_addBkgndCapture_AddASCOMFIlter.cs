@@ -99,8 +99,10 @@
  // TODO revisit confrim commands sent with statusbar monitor.  Maybe just check it once after each clipboard.setdata instead of using while loop.....
 
  // 11-18-16 changed focusgroupset() to only happen at sequencego...not w/ numUD or checkbox change
+ // 11-21-16 added resizenebwindow() , fixes status monitor error when small window results in "..." in Nebs status bar
 
-// TODO  pause/resume  line 12820......
+// TODO: -- pause/resume  line 12820......
+//       -- add ability to add comment to v-curve data, maybe in equip cell  
 
 
 // *******for v-curve simulator.   Use known v-curve data, make sure step size and focus point are set the same/  
@@ -3519,6 +3521,11 @@ namespace Pololu.Usc.ScopeFocus
         //}
         //  double CalibrationTol;//may not need this variable...in equation uses textbox value and convert to doulg 
         //Loadhere
+
+      
+
+
+
         private void MainWindow_Load_1(object sender, EventArgs e)
         {
             try
@@ -3607,6 +3614,12 @@ namespace Pololu.Usc.ScopeFocus
                     EnumChildWindows(Handles.NebhWnd, myCallBack, 0);
                     Log("Nebulosity Version " + Handles.NebVNumber.ToString());
                 }
+              
+                ResizeNebWindow();
+              
+                    
+
+
                 if (Handles.NebhWnd != 0)
                     FindNebCamera();
 
@@ -7500,6 +7513,7 @@ namespace Pololu.Usc.ScopeFocus
             }
         }
 
+
         //monitornebstatushere
 
         private void MonitorNebStatus()
@@ -7514,6 +7528,10 @@ namespace Pololu.Usc.ScopeFocus
                 string[] captions = sh.Captions;
                 if (captions[0] != "")
                 {
+                    //if (captions[0].Contains("..."))
+                    //{
+                    //    MessageBox.Show("NebStatusMonitor error - try increasing the width of the Nebulosity window");
+                    //}
                    // FileLog2("Cap[0]: " + captions[0] + "    Cap[1]: " + captions[1]);
                     if (UseClipBoard.Checked)
                     {
@@ -7588,7 +7606,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             catch (Exception e)
             {
-                Log("NebStatusMonitor error " + e.ToString());
+                Log("NebStatusMonitor error - try increasing the width of the Nebulosity window");
             //    FileLog("NebStatusMonitor error " + e.ToString());
                 FileLog2("NebStatusMonitor error " + e.ToString());
             }
@@ -7809,6 +7827,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                ResizeNebWindow();
                 idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
@@ -8644,6 +8663,14 @@ namespace Pololu.Usc.ScopeFocus
                     //        return;
                     //    }
                     //}
+
+                    // 11-21-16 added Bin
+                    
+                    Clipboard.SetDataObject("//NEB SetBinning " + numericUpDown1.Value.ToString() , false, 3, 500);
+                    msdelay(750);
+
+
+
                     //i = 0;
                     //   Clipboard.SetText("//NEB CaptureSingle metric");
                     Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
@@ -8680,7 +8707,7 @@ namespace Pololu.Usc.ScopeFocus
                         // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
                     }
                     serverStream = clientSocket.GetStream();
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "setbinning " + numericUpDown1.Value.ToString() + "\n" + "CaptureSingle metric" + "\n");
                     serverStream.Write(outStream, 0, outStream.Length);
                     serverStream.Flush();
                 }
@@ -8756,6 +8783,11 @@ namespace Pololu.Usc.ScopeFocus
                     //        return;
                     //    }
                     //}
+
+                    // 11-21-16 add binning
+                    Clipboard.SetDataObject("//NEB SetBinning " + numericUpDown1.Value.ToString(), false, 3, 500);
+                    msdelay(750);
+
                     //i = 0;
                     //    Clipboard.Clear();
                     //   Clipboard.SetText("//NEB CaptureSingle metric");
@@ -8797,7 +8829,7 @@ namespace Pololu.Usc.ScopeFocus
                         // clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
                     }
                     serverStream = clientSocket.GetStream();
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "CaptureSingle metric" + "\n");
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetDuration " + MetricTime + "\n" + "setbinning " + numericUpDown1.Value.ToString() + "\n" + "CaptureSingle metric" + "\n");
                     serverStream.Write(outStream, 0, outStream.Length);
 
                     serverStream.Flush();
@@ -11279,7 +11311,10 @@ namespace Pololu.Usc.ScopeFocus
         */
 
 
-
+        //[DllImport("user32.dll", SetLastError = true)]
+        //internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(int hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         //  [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         //   static extern int GetWindowText(int hWnd, StringBuilder lpString, int nMaxCount);
@@ -11300,6 +11335,27 @@ namespace Pololu.Usc.ScopeFocus
             public int top;
             public int right;
             public int bottom;
+        }
+
+        //private int GetNebWindowSize ()
+        //{
+        //    RECT NebRect = new RECT();
+        //    GetWindowRect(Handles.NebhWnd, out NebRect);
+        //    int width = NebRect.right - NebRect.left;
+        //    return width;
+
+        //}
+
+        private void ResizeNebWindow()
+        {
+
+            RECT NebRect = new RECT();
+            if (GetWindowRect(Handles.NebhWnd, out NebRect) < 820)
+            {
+                MoveWindow(Handles.NebhWnd, NebRect.left, NebRect.top, 820, NebRect.bottom - NebRect.top, true);
+                Log("Nebulosity window resized");
+                FileLog2("Neb Window resized from width of " + (NebRect.right - NebRect.left).ToString());
+            }
         }
 
 
@@ -18195,9 +18251,6 @@ namespace Pololu.Usc.ScopeFocus
         //    }
         }
 
-       
-
-      
         private void button51_Click_1(object sender, EventArgs e)
         {
             Handles H = new Handles();
