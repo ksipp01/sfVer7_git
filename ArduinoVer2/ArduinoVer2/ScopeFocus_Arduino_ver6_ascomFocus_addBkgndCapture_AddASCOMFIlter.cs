@@ -7514,7 +7514,7 @@ namespace Pololu.Usc.ScopeFocus
                 string[] captions = sh.Captions;
                 if (captions[0] != "")
                 {
-                    FileLog2("Cap[0]: " + captions[0] + "    Cap[1]: " + captions[1]);
+                   // FileLog2("Cap[0]: " + captions[0] + "    Cap[1]: " + captions[1]);
                     if (UseClipBoard.Checked)
                     {
                         if (captions[0] == "Script done")
@@ -7546,6 +7546,9 @@ namespace Pololu.Usc.ScopeFocus
                             }
                         }
 
+                    }
+                    if (captions[0].Length > 9)
+                    {
                         if ((captions[0].Substring(0, 10) == "Requesting") || (captions[0].Substring(0, 10) == "DITHER: Wa") && (!flipCheckDone))
                             CheckForFlip();
                         if ((captions[0].Substring(0, 10) == "Requesting") && (flipCheckDone))
@@ -7553,16 +7556,18 @@ namespace Pololu.Usc.ScopeFocus
                             toolStripStatusLabel1.Text = "Waiting for Dither";
                             //toolStripStatusLabel1.BackColor = Color.Yellow;
                         }
+                    }
+                    //11-8-16 try this
 
-                        //11-8-16 try this
+                    //if (captions[0].Substring(0, 10) == "Sequence a") // 10-24-16 added the space_a to eliminate "sequence done" triggering.
+                    //{
+                    //   toolStripStatusLabel1.Text = "Capturing"; // remd 10-24-16
+                    //  //toolStripStatusLabel1.BackColor = Color.Lime;
+                    //}
 
-                        //if (captions[0].Substring(0, 10) == "Sequence a") // 10-24-16 added the space_a to eliminate "sequence done" triggering.
-                        //{
-                        //   toolStripStatusLabel1.Text = "Capturing"; // remd 10-24-16
-                        //  //toolStripStatusLabel1.BackColor = Color.Lime;
-                        //}
-
-                        // TODO  this way capCurrent can be used for pause/resume, knowing it was done.....
+                    // TODO  this way capCurrent can be used for pause/resume, knowing it was done.....
+                    if (captions[0].Length > 19)
+                    {
                         if (captions[0].Substring(0, 20) == "Sequence acquisition")
                         {
                             int markerSlash = captions[0].IndexOf('/');
@@ -7576,15 +7581,16 @@ namespace Pololu.Usc.ScopeFocus
                             toolStripStatusLabel1.Text = captions[3] + " " + GlobalVariables.CapCurrent.ToString() + "/" + GlobalVariables.CapTotal.ToString();
                             Capturing = true; // ***  added 11-20-16 for timer2_tick and idle monitor this could screw things up
                         }
-
                     }
+                    
                 }
 
             }
             catch (Exception e)
             {
                 Log("NebStatusMonitor error " + e.ToString());
-                FileLog("NebStatusMonitor error " + e.ToString());
+            //    FileLog("NebStatusMonitor error " + e.ToString());
+                FileLog2("NebStatusMonitor error " + e.ToString());
             }
         }
         //******** add 3-8-13  *****
@@ -11440,7 +11446,7 @@ namespace Pololu.Usc.ScopeFocus
         public string PHDcommand(int command)//phdcommandhere
         {
 
-            FileLog2("PHD Command: " + command.ToString());
+           // FileLog2("PHD Command: " + command.ToString());
             string responseData = String.Empty;
             bool success = false;
             int retry = 0;
@@ -16523,15 +16529,18 @@ namespace Pololu.Usc.ScopeFocus
                 //11-20-16  try to add idle monitor
                 if (checkBox34.Checked)
                 {
-                    if ((toolStripStatusLabel1.Text.Substring(0, 10) == "Capturing ") && (sequenceRunning)) // once neb starts an exposure the numbers show up after capturing
-                    { //need to wait a bit before cunting since starting sequence takes a few seconds.  
-                        idleCount++;
+                    if (toolStripStatusLabel1.Text.Length > 9)
+                    {
+                        if ((toolStripStatusLabel1.Text.Substring(0, 10) == "Capturing ") && (sequenceRunning)) // once neb starts an exposure the numbers show up after capturing
+                        { //need to wait a bit before cunting since starting sequence takes a few seconds.  
+                            idleCount++;
 
-                        if (idleCount == CaptureTime3 * 1.5 + 10)  //give it about 1.5 time capttime if nothing happening send message
-                        {
-                            Log("Idle Timnout");
-                            FileLog("Idle Timeout");
-                            Send("****Idle Timeout***");
+                            if (idleCount == CaptureTime3 * 1.2 + 10)  //give it about 1.5 time capttime if nothing happening send message
+                            {
+                                Log("Idle Timnout");
+                                FileLog("Idle Timeout");
+                                Send("****Idle Timeout***");
+                            }
                         }
                     }
                 }
@@ -16556,9 +16565,18 @@ namespace Pololu.Usc.ScopeFocus
                 if (scope.SideOfPier == scope.DestinationSideOfPier(scope.RightAscension, scope.Declination))
                     FlipNeeded = false;
                 else
+                {
                     FlipNeeded = true;
+                    if (textBox48.Text == "false")
+                    {
+                        //this way on ly logs/send once because the it hasn't been changed yet 
+                        Log("Flip pending in " + TimeToFlip.ToString());
+                        FileLog2("Flip pending in " + TimeToFlip.ToString());
+                        Send("Flip pending in " + TimeToFlip.ToString());
+                    }
+                }
 
-                textBox5.Text = scope.SideOfPier.ToString();
+                    textBox5.Text = scope.SideOfPier.ToString();
                 textBox45.Text = scope.DestinationSideOfPier(scope.RightAscension, scope.Declination).ToString();//see if the slewing to the - 
                                                                                                                  //current location would warrant a flip
 
