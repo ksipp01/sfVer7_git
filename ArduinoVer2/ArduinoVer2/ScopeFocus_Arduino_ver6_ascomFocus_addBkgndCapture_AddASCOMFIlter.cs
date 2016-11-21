@@ -99,7 +99,7 @@
  // TODO revisit confrim commands sent with statusbar monitor.  Maybe just check it once after each clipboard.setdata instead of using while loop.....
 
  // 11-18-16 changed focusgroupset() to only happen at sequencego...not w/ numUD or checkbox change
- // 11-21-16 added resizenebwindow() , fixes status monitor error when small window results in "..." in Nebs status bar
+ // 11-21-16 added resizenebwindow() , fixes status monitor error when small window results in "..." in Nebs status bar.
 
 // TODO: -- pause/resume  line 12820......
 //       -- add ability to add comment to v-curve data, maybe in equip cell  
