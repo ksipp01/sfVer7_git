@@ -433,6 +433,10 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
+            this.button25 = new System.Windows.Forms.Button();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.label97 = new System.Windows.Forms.Label();
+            this.button52 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
@@ -4528,6 +4532,10 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.button52);
+            this.tabPage3.Controls.Add(this.label97);
+            this.tabPage3.Controls.Add(this.textBox9);
+            this.tabPage3.Controls.Add(this.button25);
             this.tabPage3.Controls.Add(this.checkBox34);
             this.tabPage3.Controls.Add(this.checkBox33);
             this.tabPage3.Controls.Add(this.button48);
@@ -4748,6 +4756,42 @@
             this.fileSystemWatcher7.Filter = "*.fit";
             this.fileSystemWatcher7.SynchronizingObject = this;
             this.fileSystemWatcher7.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher7_Created);
+            // 
+            // button25
+            // 
+            this.button25.Location = new System.Drawing.Point(50, 90);
+            this.button25.Name = "button25";
+            this.button25.Size = new System.Drawing.Size(75, 23);
+            this.button25.TabIndex = 6;
+            this.button25.Text = "Send";
+            this.button25.UseVisualStyleBackColor = true;
+            this.button25.Click += new System.EventHandler(this.button25_Click);
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(90, 64);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.TabIndex = 7;
+            // 
+            // label97
+            // 
+            this.label97.AutoSize = true;
+            this.label97.Location = new System.Drawing.Point(5, 67);
+            this.label97.Name = "label97";
+            this.label97.Size = new System.Drawing.Size(79, 13);
+            this.label97.TabIndex = 8;
+            this.label97.Text = "PHD command";
+            // 
+            // button52
+            // 
+            this.button52.Location = new System.Drawing.Point(50, 129);
+            this.button52.Name = "button52";
+            this.button52.Size = new System.Drawing.Size(75, 23);
+            this.button52.TabIndex = 9;
+            this.button52.Text = "button52";
+            this.button52.UseVisualStyleBackColor = true;
+            this.button52.Click += new System.EventHandler(this.button52_Click);
             // 
             // MainWindow
             // 
@@ -5291,6 +5335,10 @@
         private System.Windows.Forms.CheckBox checkBox34;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Button button25;
+        private System.Windows.Forms.Label label97;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.Button button52;
     }
 }
 

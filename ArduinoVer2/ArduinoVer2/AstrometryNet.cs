@@ -82,6 +82,8 @@ namespace Pololu.Usc.ScopeFocus
         //}
         // end addt.  
 
+        
+        
 
         private static double raCenter;
 
@@ -124,6 +126,7 @@ namespace Pololu.Usc.ScopeFocus
 
         public void Log(string text)
         {
+           
             if (LogTextBox.InvokeRequired)
             {
                 Invoke(new Action<string>(Log), new object[] { text });
@@ -322,7 +325,7 @@ namespace Pololu.Usc.ScopeFocus
             String input = "&request-json=" + jsonObject.ToString();
          //   Log("Astrometry.net login started");
          //   FileLog2("Astrometry.net login started - apikey: " + apikey);
-
+         
             string baseAddress = "http://nova.astrometry.net/api/login";
          //   string baseAddress = "http://127.0.0.1:8081/api/login"; // 10-21-16
             try

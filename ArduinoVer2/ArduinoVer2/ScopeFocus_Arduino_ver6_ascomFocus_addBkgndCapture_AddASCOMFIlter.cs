@@ -192,6 +192,12 @@ namespace Pololu.Usc.ScopeFocus
         private ASCOM.DriverAccess.Switch FlatFlap;
         private ASCOM.DriverAccess.Camera cam;
 
+
+        // 12-2-16 test PHD2 event monitoring
+        PHD2comm ph = new PHD2comm();
+        
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -216,6 +222,7 @@ namespace Pololu.Usc.ScopeFocus
 
               }
               */
+              
             fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
@@ -3680,6 +3687,10 @@ namespace Pololu.Usc.ScopeFocus
                 GlobalVariables.LocalPlateSolve = radioButton_local.Checked;
 
                 EquipRefresh();
+
+          
+                
+
             }
             catch (Exception ex)
             {
@@ -7410,7 +7421,7 @@ namespace Pololu.Usc.ScopeFocus
                 //   toolStripStatusLabel1.Text = " ";
 
             }
-
+            
 
             catch (Exception e)
             {
@@ -18249,6 +18260,20 @@ namespace Pololu.Usc.ScopeFocus
         //        //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
         //        FocusGroupCalc();  // 11-11-16
         //    }
+        }
+
+
+
+        // 12-2-16 test PHD2 event monitoring
+        private void button25_Click(object sender, EventArgs e)
+        {
+            //   ph.PHD2connect();
+            MessageBox.Show(ph.show(textBox9.Text));
+        }
+
+        private void button52_Click(object sender, EventArgs e)
+        {
+            ph.StopCapture();
         }
 
         private void button51_Click_1(object sender, EventArgs e)
