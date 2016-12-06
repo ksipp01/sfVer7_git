@@ -16646,7 +16646,7 @@ namespace Pololu.Usc.ScopeFocus
                     textBox5.Text = scope.SideOfPier.ToString();
                 textBox45.Text = scope.DestinationSideOfPier(scope.RightAscension, scope.Declination).ToString();//see if the slewing to the - 
                                                                                                                  //current location would warrant a flip
-
+                textBox64.Text = ph.getAppState();
 
                 // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
                 TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
@@ -17429,15 +17429,17 @@ namespace Pololu.Usc.ScopeFocus
 
             private void button28_Click(object sender, EventArgs e)
             {
+            ph.StopCapture();
               //  PHDSocketPause(true);
-                string pause = PHDcommand(1);
-                Log(pause.ToString());
+                //string pause = PHDcommand(1);
+                //Log(pause.ToString());
 
             }
 
             private void button31_Click(object sender, EventArgs e)
             {
-                resumePHD2();              
+            ph.Guide();
+                //resumePHD2();              
             }
             int resumeAttempts = 0;
             private void resumePHD2()//resumephd2here
@@ -17608,12 +17610,7 @@ namespace Pololu.Usc.ScopeFocus
                 return;
             }
 
-            private void button36_Click_1(object sender, EventArgs e)
-            {
-                string status = PHDcommand(17);
-                Log(status);
-                textBox64.Text = status;
-            }
+            
 
          
             private void button44_Click(object sender, EventArgs e)//Calculate offset
@@ -18267,13 +18264,39 @@ namespace Pololu.Usc.ScopeFocus
         // 12-2-16 test PHD2 event monitoring
         private void button25_Click(object sender, EventArgs e)
         {
-            //   ph.PHD2connect();
-            MessageBox.Show(ph.show(textBox9.Text));
+            textBox9.Text = ph.getAppState();
+           
         }
-
+      //  PHD2comm.AppState state = new PHD2comm.AppState();
         private void button52_Click(object sender, EventArgs e)
         {
             ph.StopCapture();
+
+
+            //ph.getAppState();
+            //if (ph.getAppState().ToString() != null)
+            //    MessageBox.Show(ph.getAppState().ToString());
+
+
+
+
+                //while (ph.getAppState().ToString() != "Stopped")
+                //    Thread.Sleep(100);
+
+                //if (PHD2comm.State != null)
+                //    MessageBox.Show(PHD2comm.State.ToString());
+
+
+
+                //  ph.StartEventMonitor();
+                //   ph.StopCapture();
+                //   ph.Loop();
+                //  ph.PHD2connect();
+        }
+
+        private void button53_Click(object sender, EventArgs e)
+        {
+             ph.Guide();
         }
 
         private void button51_Click_1(object sender, EventArgs e)
