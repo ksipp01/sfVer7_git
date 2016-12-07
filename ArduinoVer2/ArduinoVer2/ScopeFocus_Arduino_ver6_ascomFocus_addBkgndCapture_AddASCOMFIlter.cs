@@ -16646,7 +16646,7 @@ namespace Pololu.Usc.ScopeFocus
                     textBox5.Text = scope.SideOfPier.ToString();
                 textBox45.Text = scope.DestinationSideOfPier(scope.RightAscension, scope.Declination).ToString();//see if the slewing to the - 
                                                                                                                  //current location would warrant a flip
-                textBox64.Text = ph.getAppState();
+                textBoxPHDstatus.Text = ph.getAppState();
 
                 // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
                 TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
@@ -16723,9 +16723,9 @@ namespace Pololu.Usc.ScopeFocus
                 }
 
 
-            textBox64.Text = PHDcommand(PHD_GETSTATUS).ToString();
+            textBoxPHDstatus.Text = PHDcommand(PHD_GETSTATUS).ToString();
 
-            if (textBox64.Text == "4")
+            if (textBoxPHDstatus.Text == "4")
             {
                 lostStarCount++;
                 if (lostStarCount == (int)numericUpDown41.Value)
@@ -16738,7 +16738,7 @@ namespace Pololu.Usc.ScopeFocus
                     //********* added 4-15-15 
                 }
             }
-            if (textBox64.Text == "3" && lostStarCount > 0)  //if recovers on its own.  
+            if (textBoxPHDstatus.Text == "3" && lostStarCount > 0)  //if recovers on its own.  
             {
                 recover++;
                 if ((recover == (int)numericUpDown41.Value) && (starLost))
@@ -18297,6 +18297,27 @@ namespace Pololu.Usc.ScopeFocus
         private void button53_Click(object sender, EventArgs e)
         {
              ph.Guide();
+        }
+
+        private void button36_Click_1(object sender, EventArgs e)
+        {
+            if (button36.Text == "Connect")
+            {
+                textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
+                if (ph.Connect() != "")
+                {
+                    button36.BackColor = Color.Lime;
+                    button36.Text = "DisCnct";
+                }
+            }
+            else
+            {
+                textBoxPHDstatus.Text = "No Connection";
+                button36.BackColor = Color.WhiteSmoke;
+                button36.Text = "Connect";
+            }
+           
+          //  textBoxPHDstatus.Text = ph.show("PHDVersion");
         }
 
         private void button51_Click_1(object sender, EventArgs e)
