@@ -590,15 +590,20 @@ namespace Pololu.Usc.ScopeFocus
 
 
         //****** 8-15-13 Go through and redo all checkbox 14 and 20 w. the method below
-        public bool ServerEnabled()
-        {
-            return checkBox20.Checked;
-        }
-        public bool SlaveModeEnabled()
-        {
-            return checkBox14.Checked;
-            //  set { checkBox14.Checked = value; } // the set is optional
-        }
+
+
+        //public bool ServerEnabled() // moved to global variables. 
+        //{
+        //    return checkBox20.Checked;
+        //}
+
+       
+
+        //public static bool SlaveModeEnabled
+        //{
+        //    return checkBox14.Checked;
+        //    //  set { checkBox14.Checked = value; } // the set is optional
+        //}
         void positionbar()
         {
             progressBar2.Maximum = travel;
@@ -11460,7 +11465,11 @@ namespace Pololu.Usc.ScopeFocus
         private void StopPHD()
         {
 
-            PHDcommand(PHD_PAUSE);
+            // PHDcommand(PHD_PAUSE);
+
+            //12-7-16
+            ph.StopCapture();
+
             Log("guiding paused");
             //            try
             //            {
@@ -11512,6 +11521,13 @@ namespace Pololu.Usc.ScopeFocus
 
         public string PHDcommand(int command)//phdcommandhere
         {
+
+
+
+
+
+
+            // all below remd 12-7-16 with new PHC2Comm class
 
            // FileLog2("PHD Command: " + command.ToString());
             string responseData = String.Empty;
@@ -11774,11 +11790,17 @@ namespace Pololu.Usc.ScopeFocus
 
                 //   if (radioButton15.Checked == true)
                 //  {
-                if (Handles.PHDVNumber == 2)
-                    resumePHD2();
-                else
-                {
-                    PHDcommand(PHD_RESUME);
+
+               ph.Guide();
+// remd 12-7-16  replaced with above. 
+
+                //if (Handles.PHDVNumber == 2)
+                //    resumePHD2();
+                //else
+                //{
+                //    PHDcommand(PHD_RESUME);
+
+
 
                     //*******************untested************** 4-9-12 (see comments above)
                     //Thread.Sleep(4000);//wait 4 seconds then make sure there is a guide star
@@ -11804,7 +11826,7 @@ namespace Pololu.Usc.ScopeFocus
                     //        }
                     //********also there may be new addition to send autostar by socket command*****************    
                     //  ResumePHD();
-                }
+              //  }
                 // }
 
             }
@@ -13490,7 +13512,9 @@ namespace Pololu.Usc.ScopeFocus
                 button22.Text = "Resume";
 
                 // PHDSocketPause(true);
-                PHDcommand(PHD_PAUSE);
+                // 12-7-16 
+                //PHDcommand(PHD_PAUSE);
+                ph.StopCapture();
                 Log("guiding paused");
 
                 // 11-8-16
@@ -13512,7 +13536,9 @@ namespace Pololu.Usc.ScopeFocus
                 if (Handles.PHDVNumber == 2)
                     resumePHD2();
                 else
-                    PHDcommand(PHD_RESUME);
+                    ph.Guide();
+                // 12-7-16
+                  //  PHDcommand(PHD_RESUME);
             }
         }
         //stop filter tab
@@ -14220,139 +14246,145 @@ namespace Pololu.Usc.ScopeFocus
         //enable server
         private void checkBox20_CheckedChanged_1(object sender, EventArgs e)
         {
-            Handles H = new Handles();
-            //  groupBox18.Enabled = false;
-            button45.Text = "S_Capture";
-            button46.Text = "S_Pause";
-            button47.Text = "S_Flat";
-            button39.Text = "S_GotoFocus";
-            numericUpDown37.Enabled = false;
-            // numericUpDown23.Enabled = false;
-            textBox37.Enabled = false;
-            textBox40.Enabled = false;
-            numericUpDown33.Enabled = false;
-            numericUpDown35.Enabled = false;
-
-            /*
-            if (checkBox14.Checked == true)
+            if (checkBox20.Checked)
             {
-                checkBox14.Checked = false;//need to uncheck slave
-                //all this needed only if changing FROM slave mode
-                MainWindowName = "Nebulosity";//change the mainwindow label in neb to signify sencond copy
-                SocketPort = 4301;
-                ScriptName = "\\listenPort.neb";
-                this.Text = "scopefocus";
-                groupBox15.Enabled = true;
-                groupBox13.Enabled = true;
-                groupBox12.Enabled = true;
-                groupBox6.Enabled = true;
-                groupBox5.Enabled = true;
-                checkBox8.Enabled = true;
-                Callback myCallBack = new Callback(EnumChildGetValue);
-                FindHandles();
-                //   int hWnd;
+                Handles H = new Handles();
+                //  groupBox18.Enabled = false;
+                button45.Text = "S_Capture";
+                button46.Text = "S_Pause";
+                button47.Text = "S_Flat";
+                button39.Text = "S_GotoFocus";
+                numericUpDown37.Enabled = false;
+                // numericUpDown23.Enabled = false;
+                textBox37.Enabled = false;
+                textBox40.Enabled = false;
+                numericUpDown33.Enabled = false;
+                numericUpDown35.Enabled = false;
 
-                if (NebhWnd == 0)
+                /*
+                if (checkBox14.Checked == true)
                 {
-                    DialogResult result;
-                    result = MessageBox.Show("Nebulosity Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
-                       "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
-                    if (result == DialogResult.Ignore)
-                        this.Refresh();
-                    if (result == DialogResult.Retry)
+                    checkBox14.Checked = false;//need to uncheck slave
+                    //all this needed only if changing FROM slave mode
+                    MainWindowName = "Nebulosity";//change the mainwindow label in neb to signify sencond copy
+                    SocketPort = 4301;
+                    ScriptName = "\\listenPort.neb";
+                    this.Text = "scopefocus";
+                    groupBox15.Enabled = true;
+                    groupBox13.Enabled = true;
+                    groupBox12.Enabled = true;
+                    groupBox6.Enabled = true;
+                    groupBox5.Enabled = true;
+                    checkBox8.Enabled = true;
+                    Callback myCallBack = new Callback(EnumChildGetValue);
+                    FindHandles();
+                    //   int hWnd;
+
+                    if (NebhWnd == 0)
                     {
-                        FindHandles();
-                        this.Refresh();
+                        DialogResult result;
+                        result = MessageBox.Show("Nebulosity Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
+                           "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
+                        if (result == DialogResult.Ignore)
+                            this.Refresh();
+                        if (result == DialogResult.Retry)
+                        {
+                            FindHandles();
+                            this.Refresh();
+                        }
+                        if (result == DialogResult.Abort)
+                            System.Environment.Exit(0);
+
                     }
-                    if (result == DialogResult.Abort)
-                        System.Environment.Exit(0);
+                    else
+                    {
 
+                        EnumChildWindows(NebhWnd, myCallBack, 0);
+                    }
+
+                    FindNebCamera();
+
+                    this.Refresh();
                 }
-                else
+                 */
+
+
+                //  SearchData sd = new SearchData { Wndclass = "WindowsForms10", Title = "scopefocus" };
+                IntPtr SlavehwndPtr = Handles.SearchForWindow("WindowsForms10", "scopefocus - slave mode");
+                Log("scopefocus-slave handle found --  " + SlavehwndPtr.ToInt32());
+                Slavehwnd = SlavehwndPtr.ToInt32();
+                //full class name   WindowsForms10.Window.8.app.0.201d787_r15_ad1
+                if (Slavehwnd != 0)
                 {
-
-                    EnumChildWindows(NebhWnd, myCallBack, 0);
+                    Callback myCallBack2 = new Callback(H.EnumChildGetValue);
+                    EnumChildWindows(Slavehwnd, myCallBack2, 0);//this gets the slave capture, pause, flat and gotofocus buttons
+                                                                //this sends the server status box handle to the slave textbox
+                    string send = textBox41.Handle.ToString();
+                    StringBuilder sb = new StringBuilder(send);
+                    SendMessage(Handles.SlaveStatushwnd, WM_SETTEXT, 0, sb);
                 }
 
-                FindNebCamera();
 
-                this.Refresh();
+
+                //make sure it's not the spawned copy  
+
+                MainWindowName = "Nebulosity v3.0";//change the mainwindow label in neb to signify sencond copy
+                IntPtr hWnd2 = Handles.SearchForWindow("wxWindow", MainWindowName);//must open file named test.fit to specifiy second copu
+                Log("Ensure not slave handle -- " + hWnd2.ToInt32());
+                Handles.NebhWnd = hWnd2.ToInt32();
+                /*
+                Callback myCallBack3 = new Callback(EnumChildGetValue);
+                EnumChildWindows(NebhWnd2, myCallBack3, 2);
+                Log("Slave Handles-- Abort2: " + Aborthwnd2.ToString() + "Frame" + Framehwnd2.ToString());
+
+
+                SocketPort2 = 4302;
+                    ScriptName = "\\listenPort2.neb";
+
+                    Callback myCallBack = new Callback(EnumChildGetValue);
+                  //  FindHandles();
+                    //   int hWnd;
+
+                    if (NebhWnd2 == 0)
+                    {
+                        DialogResult result;
+                        result = MessageBox.Show("Nebulosity-slave  Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
+                           "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
+                        if (result == DialogResult.Ignore)
+                            this.Refresh();
+                        if (result == DialogResult.Retry)
+                        {
+                            IntPtr hWnd3 = SearchForWindow("wxWindow", MainWindowName);//must open file named test.fit to specifiy second copu
+                            Log("Neb-slave Handle Found -- " + hWnd3.ToInt32());
+                            NebhWnd2 = hWnd2.ToInt32();
+                            this.Refresh();
+                        }
+                        if (result == DialogResult.Abort)
+                            System.Environment.Exit(0);
+
+                    }
+
+                    else
+                    {
+
+                        EnumChildWindows(NebhWnd, myCallBack, 0);
+                    }
+
+                  //  FindNebCamera();
+
+                    this.Refresh();
+                */
+                GlobalVariables.ServerEnabled = true;  // 12-8-16 untested
             }
-             */
-
-
-            //  SearchData sd = new SearchData { Wndclass = "WindowsForms10", Title = "scopefocus" };
-            IntPtr SlavehwndPtr = Handles.SearchForWindow("WindowsForms10", "scopefocus - slave mode");
-            Log("scopefocus-slave handle found --  " + SlavehwndPtr.ToInt32());
-            Slavehwnd = SlavehwndPtr.ToInt32();
-            //full class name   WindowsForms10.Window.8.app.0.201d787_r15_ad1
-            if (Slavehwnd != 0)
-            {
-                Callback myCallBack2 = new Callback(H.EnumChildGetValue);
-                EnumChildWindows(Slavehwnd, myCallBack2, 0);//this gets the slave capture, pause, flat and gotofocus buttons
-                //this sends the server status box handle to the slave textbox
-                string send = textBox41.Handle.ToString();
-                StringBuilder sb = new StringBuilder(send);
-                SendMessage(Handles.SlaveStatushwnd, WM_SETTEXT, 0, sb);
-            }
-
-
-
-            //make sure it's not the spawned copy  
-
-            MainWindowName = "Nebulosity v3.0";//change the mainwindow label in neb to signify sencond copy
-            IntPtr hWnd2 = Handles.SearchForWindow("wxWindow", MainWindowName);//must open file named test.fit to specifiy second copu
-            Log("Ensure not slave handle -- " + hWnd2.ToInt32());
-            Handles.NebhWnd = hWnd2.ToInt32();
-            /*
-            Callback myCallBack3 = new Callback(EnumChildGetValue);
-            EnumChildWindows(NebhWnd2, myCallBack3, 2);
-            Log("Slave Handles-- Abort2: " + Aborthwnd2.ToString() + "Frame" + Framehwnd2.ToString());
+            else
+               GlobalVariables.ServerEnabled = false;   // 12-8-16 untested was a method in main window 
             
-
-            SocketPort2 = 4302;
-                ScriptName = "\\listenPort2.neb";
-               
-                Callback myCallBack = new Callback(EnumChildGetValue);
-              //  FindHandles();
-                //   int hWnd;
-
-                if (NebhWnd2 == 0)
-                {
-                    DialogResult result;
-                    result = MessageBox.Show("Nebulosity-slave  Not Found - Open or Close & Restart and hit 'Retry' or 'Ignore' to continue",
-                       "scopefocus", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Exclamation);//change so ok moves focus
-                    if (result == DialogResult.Ignore)
-                        this.Refresh();
-                    if (result == DialogResult.Retry)
-                    {
-                        IntPtr hWnd3 = SearchForWindow("wxWindow", MainWindowName);//must open file named test.fit to specifiy second copu
-                        Log("Neb-slave Handle Found -- " + hWnd3.ToInt32());
-                        NebhWnd2 = hWnd2.ToInt32();
-                        this.Refresh();
-                    }
-                    if (result == DialogResult.Abort)
-                        System.Environment.Exit(0);
-
-                }
-                    
-                else
-                {
-
-                    EnumChildWindows(NebhWnd, myCallBack, 0);
-                }
-                     
-              //  FindNebCamera();
-
-                this.Refresh();
-            */
-
-
         }
         // public int Serverhwnd;
         //enable slave mode
         private void checkBox14_CheckedChanged_1(object sender, EventArgs e)
         {
+           
             Handles H = new Handles();
             if (checkBox14.Checked == true)
             {
@@ -14407,9 +14439,11 @@ namespace Pololu.Usc.ScopeFocus
                 //Log("scopefocus-server handle found --  " + ServerhwndPtr.ToInt32());
                 //Serverhwnd = ServerhwndPtr.ToInt32();
                 //  this.Refresh();
+                GlobalVariables.SlaveModeEnabled = true; // 12-8-16
             }
             else
             {
+                GlobalVariables.SlaveModeEnabled = false;
                 SocketPort = 4301;
                 ScriptName = "\\listenPort.neb";
             }
@@ -15005,7 +15039,10 @@ namespace Pololu.Usc.ScopeFocus
                 //   Log("Flip Needed = " + FlipNeeded.ToString() + "    Time to flip " + TimeSpan.FromHours((double)TimeToFlip).ToString());
                 if (FlipNeeded == true && FlipDone == false)
                 {
-                    PHDcommand(PHD_PAUSE);
+                    // 12-7-16 
+                    ph.StopCapture();
+                   // PHDcommand(PHD_PAUSE);
+
                     //     Log("guiding paused for flip");
                     GotoTargetLocation();
                     while (scope.Slewing)
@@ -15015,7 +15052,9 @@ namespace Pololu.Usc.ScopeFocus
                     if (Handles.PHDVNumber == 2)
                         resumePHD2();
                     else
-                        PHDcommand(PHD_RESUME);
+                        ph.Guide();
+                    // 12-7-16
+                      //  PHDcommand(PHD_RESUME);
                     //  Log("flip done");
                 }
             }
@@ -16646,7 +16685,9 @@ namespace Pololu.Usc.ScopeFocus
                     textBox5.Text = scope.SideOfPier.ToString();
                 textBox45.Text = scope.DestinationSideOfPier(scope.RightAscension, scope.Declination).ToString();//see if the slewing to the - 
                                                                                                                  //current location would warrant a flip
-                textBoxPHDstatus.Text = ph.getAppState();
+                                                                                                                 //  textBoxPHDstatus.Text = ph.getAppState();
+            //    ph.PHDgetAppState();
+                textBoxPHDstatus.Text = PHD2comm.PHDAppState;
 
                 // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
                 TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
@@ -16710,23 +16751,40 @@ namespace Pololu.Usc.ScopeFocus
         private void LostStarMonitor()
         {
 
+
+
             if (starLost == true)   //  *************** added 4-15-15  *************
-                if (PHDcommand(14) == "1") // try to autoselect new star, if successful, start guiding
+            {
+                //    if (PHDcommand(14) == "1") // try to autoselect new star, if successful, start guiding
+                // if (ph.getAppState() == "LockLost")
+                if (PHD2comm.PHDAppState == "LostLock")
+               // if (textBoxPHDstatus.Text == "LostLock")
                 {
-                    Thread.Sleep(500);
-                    PHDcommand(20);
+                    ph.StopCapture();
+                    Thread.Sleep(1000);
+                    ph.Guide();
+                    //  PHDcommand(20);
+                    //while (ph.getAppState() != "Guiding")
+                    //{
+                    //    Thread.Sleep(1000);
+                    //    ph.Guide();
+                    //}
                     starLost = false;
                     lostStarCount = 0;
                     recover = 0;
                     Log("Guide star AutoSelected - guiding resumed");
                     Send("AutoSelect Success - Guiding resumed");
                 }
+            }
+            // 12-7-16
+            //  textBoxPHDstatus.Text = ph.getAppState();  already done in timer2_tick
+            //  textBoxPHDstatus.Text = PHDcommand(PHD_GETSTATUS).ToString();
 
-
-            textBoxPHDstatus.Text = PHDcommand(PHD_GETSTATUS).ToString();
-
-            if (textBoxPHDstatus.Text == "4")
-            {
+            //if (textBoxPHDstatus.Text == "4")
+            // if (ph.getAppState() == "LockLost")
+    //            if ((textBoxPHDstatus.Text == "LostLock") && (!starLost)) // don't need to count anymore once triggered
+                if ((PHD2comm.PHDAppState == "LostLock") && (!starLost)) // don't need to count anymore once triggered
+                {
                 lostStarCount++;
                 if (lostStarCount == (int)numericUpDown41.Value)
                 {
@@ -16738,8 +16796,10 @@ namespace Pololu.Usc.ScopeFocus
                     //********* added 4-15-15 
                 }
             }
-            if (textBoxPHDstatus.Text == "3" && lostStarCount > 0)  //if recovers on its own.  
-            {
+           // if (textBoxPHDstatus.Text == "3" && lostStarCount > 0)  //if recovers on its own.  
+             //   if ((ph.getAppState() == "Guiding") && (lostStarCount > 0))  //if recovers on its own.  
+                if ((PHD2comm.PHDAppState == "Guiding") && (lostStarCount > 0))  //if recovers on its own.  
+                {
                 recover++;
                 if ((recover == (int)numericUpDown41.Value) && (starLost))
                 {
@@ -17022,11 +17082,7 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private void button62_Click(object sender, EventArgs e)
-        {
-            Log("PHD Status code: " + PHDcommand(PHD_GETSTATUS));
-            // 4 is lost star
-        }
+      
 
         private void tabControl1_Click(object sender, EventArgs e)
         {
@@ -18264,7 +18320,7 @@ namespace Pololu.Usc.ScopeFocus
         // 12-2-16 test PHD2 event monitoring
         private void button25_Click(object sender, EventArgs e)
         {
-            textBox9.Text = ph.getAppState();
+         //   textBox9.Text = ph.getAppState();
            
         }
       //  PHD2comm.AppState state = new PHD2comm.AppState();
@@ -18298,27 +18354,43 @@ namespace Pololu.Usc.ScopeFocus
         {
              ph.Guide();
         }
-
+      
         private void button36_Click_1(object sender, EventArgs e)
         {
+
+
             if (button36.Text == "Connect")
             {
-                textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
-                if (ph.Connect() != "")
+                string result = ph.Connect();
+                if (result != "Failed")
                 {
+                    textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
                     button36.BackColor = Color.Lime;
                     button36.Text = "DisCnct";
+                    Log("Connected to PHD2 version " + result);
+                    FileLog("Connected to PHD2 version " + result);
+                    
+                }
+                else
+                {
+                    textBoxPHDstatus.Text = "No Connection";
+                    button36.BackColor = Color.WhiteSmoke;
+                    button36.Text = "Connect";
+                    Log("PHD2 Connection failed");
                 }
             }
             else
             {
+                ph.DisConnect();
                 textBoxPHDstatus.Text = "No Connection";
                 button36.BackColor = Color.WhiteSmoke;
                 button36.Text = "Connect";
+                Log("PHD2 Disconnected");
+                FileLog("PHD2 Disconnected");
             }
-           
-          //  textBoxPHDstatus.Text = ph.show("PHDVersion");
-        }
+                // if (textBoxPHDstatus.Text == "Connect Ver ")
+                //  textBoxPHDstatus.Text = ph.show("PHDVersion");
+            }
 
         private void button51_Click_1(object sender, EventArgs e)
         {

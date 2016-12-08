@@ -15,7 +15,18 @@ namespace Pololu.Usc.ScopeFocus
             get {return _nebpath;}
             set { _nebpath = value;}           
         }
-
+        private static bool _serverEnabled;
+        public static bool ServerEnabled
+        {
+            get { return _serverEnabled; }
+            set { _serverEnabled = value; }
+        }
+        private static bool _slaveModeEnabled;
+        public static bool SlaveModeEnabled
+        {
+            get { return _slaveModeEnabled; }
+            set { _slaveModeEnabled = value; }
+        }
         private static int _capCurrent; // 11-8-16 added next 2
         public static int CapCurrent
         {

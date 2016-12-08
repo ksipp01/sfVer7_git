@@ -171,9 +171,9 @@ namespace Pololu.Usc.ScopeFocus
 
         public int Serverhwnd()
         {
-            MainWindow L = new MainWindow();
+           // MainWindow L = new MainWindow();
              IntPtr ServerhwndPtr = Handles.SearchForWindow("WindowsForms10", "scopefocus - Main");
-             L.Log("scopefocus-server handle found --  " + ServerhwndPtr.ToInt32());
+          //   L.Log("scopefocus-server handle found --  " + ServerhwndPtr.ToInt32());
              int _serverhwnd = ServerhwndPtr.ToInt32();
             return _serverhwnd;
         }
@@ -279,10 +279,10 @@ namespace Pololu.Usc.ScopeFocus
             //with (spawned)
             try
             {
-                MainWindow L = new MainWindow();
+             //   MainWindow L = new MainWindow();
                 MainWindowName = "Nebulosity";
                 IntPtr hWnd2 = SearchForWindow("wxWindow", MainWindowName);
-               L.Log("Neb Handle Found -- " + hWnd2.ToInt32());
+            //   L.Log("Neb Handle Found -- " + hWnd2.ToInt32());
                 _nebhWnd = hWnd2.ToInt32();
 
                 if (_nebhWnd != 0)
@@ -294,16 +294,18 @@ namespace Pololu.Usc.ScopeFocus
                     SendMessage(_nebhWnd, MainWindow.WM_GETTEXT, 1024, sb);
                     //  GetWindowText(camera, sb, sb.Capacity);
                   //  L.Log("test");
-                    L.Log(sb.ToString());//*****^%%$  None of the L.Log Works  ****$%%^
+                //    L.Log(sb.ToString());//*****^%%$  None of the L.Log Works  ****$%%^
                     NebVersion = sb.ToString();
                     int NebVposNumber = NebVersion.IndexOf("v");
                     string NebVNumberAfter = NebVersion.Substring(NebVposNumber + 1, 1);
                     _nebVNumber = Convert.ToInt16(NebVNumberAfter);
                 }
-                if (!L.SlaveModeEnabled())//don't need for slave mode
+                // remd 12-8-16  dp mpt meed phd handle amymore
+
+                if (!GlobalVariables.SlaveModeEnabled)//don't need for slave mode    // 12-8-16 was L.SlaveModeEnabled()
                 {
                     IntPtr PHDhwnd2 = SearchForWindow("wxWindow", "PHD2 Guiding");
-                    L.Log("PHD Handle Found --  " + PHDhwnd2.ToInt32());
+                  //  L.Log("PHD Handle Found --  " + PHDhwnd2.ToInt32());
                     _pHDhwnd = PHDhwnd2.ToInt32();
 
                     string PHDVersion;
@@ -312,7 +314,7 @@ namespace Pololu.Usc.ScopeFocus
                     SendMessage(_pHDhwnd, MainWindow.WM_GETTEXT, 1024, sb);
                     //  GetWindowText(camera, sb, sb.Capacity);
                     //  L.Log("test");
-                    L.Log(sb.ToString());//*****^%%$  None of the L.Log Works  ****$%%^
+                //    L.Log(sb.ToString());//*****^%%$  None of the L.Log Works  ****$%%^
                     PHDVersion = sb.ToString();
                     int PHDVposNumber = PHDVersion.IndexOf("g");
                     string NebVNumberAfter = PHDVersion.Substring(PHDVposNumber + 2, 1);
@@ -343,7 +345,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             
          
-            MainWindow L = new MainWindow();
+       //     MainWindow L = new MainWindow();
             StringBuilder formDetails = new StringBuilder(256);
             StringBuilder formClass = new StringBuilder(256);
             int txtValue;
@@ -471,7 +473,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
             }
 
-            if (L.ServerEnabled())
+            if (GlobalVariables.ServerEnabled) // 12-8-16 untested
             {
                 if (editText == "GotoFocus")
                 {
