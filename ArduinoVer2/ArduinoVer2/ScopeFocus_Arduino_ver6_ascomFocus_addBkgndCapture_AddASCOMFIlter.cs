@@ -16757,23 +16757,29 @@ namespace Pololu.Usc.ScopeFocus
             {
                 //    if (PHDcommand(14) == "1") // try to autoselect new star, if successful, start guiding
                 // if (ph.getAppState() == "LockLost")
+                if (PHD2comm.PHDAppState == "Stopped")
+                {
+                    ph.Guide();
+                    Thread.Sleep(3000);
+                }
                 if (PHD2comm.PHDAppState == "LostLock")
                // if (textBoxPHDstatus.Text == "LostLock")
                 {
                     ph.StopCapture();
                     Thread.Sleep(1000);
                     ph.Guide();
+                    Thread.Sleep(2000);
                     //  PHDcommand(20);
                     //while (ph.getAppState() != "Guiding")
                     //{
                     //    Thread.Sleep(1000);
                     //    ph.Guide();
                     //}
-                    starLost = false;
-                    lostStarCount = 0;
-                    recover = 0;
-                    Log("Guide star AutoSelected - guiding resumed");
-                    Send("AutoSelect Success - Guiding resumed");
+                    //starLost = false;
+                    //lostStarCount = 0;
+                    //recover = 0;
+                    //Log("Guide star AutoSelected - guiding resumed");
+                    //Send("AutoSelect Success - Guiding resumed");
                 }
             }
             // 12-7-16
@@ -18370,6 +18376,7 @@ namespace Pololu.Usc.ScopeFocus
                     Log("Connected to PHD2 version " + result);
                     FileLog("Connected to PHD2 version " + result);
                     
+                    
                 }
                 else
                 {
@@ -18377,6 +18384,7 @@ namespace Pololu.Usc.ScopeFocus
                     button36.BackColor = Color.WhiteSmoke;
                     button36.Text = "Connect";
                     Log("PHD2 Connection failed");
+                    
                 }
             }
             else
@@ -18386,6 +18394,7 @@ namespace Pololu.Usc.ScopeFocus
                 button36.BackColor = Color.WhiteSmoke;
                 button36.Text = "Connect";
                 Log("PHD2 Disconnected");
+              
                 FileLog("PHD2 Disconnected");
             }
                 // if (textBoxPHDstatus.Text == "Connect Ver ")
