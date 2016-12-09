@@ -4228,6 +4228,9 @@ namespace Pololu.Usc.ScopeFocus
         }
         private void ClosePrep()
         {
+            // PHD2comm.PHD2Connected = false;
+            if (PHD2comm.PHD2Connected)
+                ph.DisConnect();
             if (timer2.Enabled)
                 timer2.Enabled = false;
             if (scope != null)
@@ -4319,6 +4322,8 @@ namespace Pololu.Usc.ScopeFocus
             WindowsFormsApplication1.Properties.Settings.Default.Save();
             closing = 1;
             standby();
+
+          
             //if (port == null)
             //{
             //    System.Environment.Exit(0);
@@ -4333,8 +4338,8 @@ namespace Pololu.Usc.ScopeFocus
 
             //   port.Close();
             //   }
-            if (phdsocket != null)
-                phdsocket.Close();
+            //if (phdsocket != null)
+            //    phdsocket.Close();
             if (clientSocket != null)
             {
                 //clientSocket.GetStream().Close();//added 5-17-12
