@@ -16379,44 +16379,46 @@ namespace Pololu.Usc.ScopeFocus
                 fileSystemWatcher7.SynchronizingObject = this;
                 fileSystemWatcher7.EnableRaisingEvents = true;
                 fileSystemWatcher7.Path = GlobalVariables.Path2;
-                Log("Attemping to plate solve Nebulosity capture");
-                FileLog2("Plate Solve Start - Nebulosity Caputre");
+                Log("Plate Solve, wating for Nebulosity capture");
+                FileLog2("Plate Solve - Nebulosity Caputre");
             }
-            if (GlobalVariables.LocalPlateSolve)
-                Solve();
             else
             {
-                //if (backgroundWorker1.IsBusy != true)
-                //{
-                //    // Start the asynchronous operation.
-                //    backgroundWorker1.RunWorkerAsync();
-                //}
-                Log("Attempt Plate Solve: " + GlobalVariables.SolveImage);
-                FileLog2("Plate Solve: " + GlobalVariables.SolveImage);
-                solveRequested = true;
-                AstrometryRunning = true;
-                // try
-                // {
-                AstrometryNet ast = new AstrometryNet();  // remd for onlyinstance
-                                                          // ast = AstrometryNet.OnlyInstance;
-                                                          //  AstrometryNet.GetForm.Show();
-                await ast.OnlineSolve(GlobalVariables.SolveImage);
-                // }
-                //catch
-                // {
+                if (GlobalVariables.LocalPlateSolve)
+                    Solve();
+                else
+                {
+                    //if (backgroundWorker1.IsBusy != true)
+                    //{
+                    //    // Start the asynchronous operation.
+                    //    backgroundWorker1.RunWorkerAsync();
+                    //}
+                    Log("Attempt Plate Solve: " + GlobalVariables.SolveImage);
+                    FileLog2("Plate Solve: " + GlobalVariables.SolveImage);
+                    solveRequested = true;
+                    AstrometryRunning = true;
+                    // try
+                    // {
+                    AstrometryNet ast = new AstrometryNet();  // remd for onlyinstance
+                                                              // ast = AstrometryNet.OnlyInstance;
+                                                              //  AstrometryNet.GetForm.Show();
+                    await ast.OnlineSolve(GlobalVariables.SolveImage);
+                    // }
+                    //catch
+                    // {
 
-                //     AstrometryNet ast = new AstrometryNet();
-                //     await ast.OnlineSolve(GlobalVariables.SolveImage);
+                    //     AstrometryNet ast = new AstrometryNet();
+                    //     await ast.OnlineSolve(GlobalVariables.SolveImage);
 
-                // }
+                    // }
 
-                //while (astrometryRunning)
-                //    Thread.Sleep(100);
-                //Solve();
+                    //while (astrometryRunning)
+                    //    Thread.Sleep(100);
+                    //Solve();
+                }
+
+
             }
-
-
-
         } // tablisthere
         public void tabList(string file)//start cygwin term, save log, execute tablist command
         {
