@@ -17511,146 +17511,148 @@ namespace Pololu.Usc.ScopeFocus
             int resumeAttempts = 0;
             private void resumePHD2()//resumephd2here
             {
-                if (PHDcommand(2) == "0")//immediate resume...if problems goes further
-                {
-                    if (backgroundWorker2.IsBusy == false)
-                        Log("guiding resumed");
-                    return;
-                }
-                delay(2);
-                bool success = false;
-                while (!success && resumeAttempts < 4)
-                {
-                    string status = PHDcommand(17);
-                    if (backgroundWorker2.IsBusy == false)
-                    Log("waiting to resume guiding");
-                    switch (status)
-                    {
-                        case "3":
-                            success = true;
-                            break;
-                        case "1":
-                            delay(2);
-                            PHDcommand(20);
-                            //delay(2);
-                            //if (PHDcommand(17) == "3")
-                            //{
-                            //    Log("guiding resumed");
-                            //    resumeAttempts = 0;
-                            //}
-                            //else
-                            //{
-                            //    if (resumeAttempts < 3)
-                            //    {
-                            //        resumeAttempts++;
-                            //        resumePHD2();
-                            //    }
-                            //    else
-                            //        Log("resume guiding failed");
-                            //}
-                            break;
-                        case "100":
-                            delay(2);
-                            PHDcommand(2);
-                            break;
-                        case "101":
-                            delay(2);
-                            if (PHDcommand(14) == "1")
-                            {
-                                if (backgroundWorker2.IsBusy == false)
-                                Log("PHD autostar selected");
-                                delay(2);
-                                PHDcommand(20);
-                                // delay(2);
-                                //if (PHDcommand(17) == "3")//checks at end
-                                //    Log("guiding resumed");
-                                //else
-                                //{
-                                //    if (resumeAttempts < 3)
-                                //    {
-                                //        resumeAttempts++;
-                                //        resumePHD2();
-                                //    }
-                                //    else
-                                //        Log("resume guiding failed");
-                                //}
-                            }
-                            else
-                            {
-                                if (backgroundWorker2.IsBusy == false)
-                                Log("PHD autostar select failed");
-                                resumePHD2();
-                            }
+            // remd all below 12-10-16
+            ph.Guide();
+                //if (PHDcommand(2) == "0")//immediate resume...if problems goes further
+                //{
+                //    if (backgroundWorker2.IsBusy == false)
+                //        Log("guiding resumed");
+                //    return;
+                //}
+                //delay(2);
+                //bool success = false;
+                //while (!success && resumeAttempts < 4)
+                //{
+                //    string status = PHDcommand(17);
+                //    if (backgroundWorker2.IsBusy == false)
+                //    Log("waiting to resume guiding");
+                //    switch (status)
+                //    {
+                //        case "3":
+                //            success = true;
+                //            break;
+                //        case "1":
+                //            delay(2);
+                //            PHDcommand(20);
+                //            //delay(2);
+                //            //if (PHDcommand(17) == "3")
+                //            //{
+                //            //    Log("guiding resumed");
+                //            //    resumeAttempts = 0;
+                //            //}
+                //            //else
+                //            //{
+                //            //    if (resumeAttempts < 3)
+                //            //    {
+                //            //        resumeAttempts++;
+                //            //        resumePHD2();
+                //            //    }
+                //            //    else
+                //            //        Log("resume guiding failed");
+                //            //}
+                //            break;
+                //        case "100":
+                //            delay(2);
+                //            PHDcommand(2);
+                //            break;
+                //        case "101":
+                //            delay(2);
+                //            if (PHDcommand(14) == "1")
+                //            {
+                //                if (backgroundWorker2.IsBusy == false)
+                //                Log("PHD autostar selected");
+                //                delay(2);
+                //                PHDcommand(20);
+                //                // delay(2);
+                //                //if (PHDcommand(17) == "3")//checks at end
+                //                //    Log("guiding resumed");
+                //                //else
+                //                //{
+                //                //    if (resumeAttempts < 3)
+                //                //    {
+                //                //        resumeAttempts++;
+                //                //        resumePHD2();
+                //                //    }
+                //                //    else
+                //                //        Log("resume guiding failed");
+                //                //}
+                //            }
+                //            else
+                //            {
+                //                if (backgroundWorker2.IsBusy == false)
+                //                Log("PHD autostar select failed");
+                //                resumePHD2();
+                //            }
 
-                            break;
-                        case "0"://no looping, paused or guiding
-                            delay(2);
-                            PHDcommand(19);//start looping
-                            delay(2);
-                            string status2 = PHDcommand(17);//check status
-                            switch (status2)
-                            {
-                                case "101"://looping no star selected       
-                                    delay(2);
-                                    if (PHDcommand(14) == "1")
-                                    {
-                                        if (backgroundWorker2.IsBusy == false)
-                                        Log("PHD Autostar selected");
-                                        delay(2);
-                                        PHDcommand(20);//start guiding
-                                    }
-                                    else
-                                        break;
-                                    break;
-                                case "1":
-                                    delay(2);
-                                    PHDcommand(20);
-                                    break;
-                                case "100":
-                                    delay(2);
-                                    PHDcommand(2);
-                                    break;
-                                case "3":
-                                    break;
-                            }
-                            //  else
-                            //   resumePHD2();
-                            break;
-                        case "4":
-                            delay(2);
-                            PHDcommand(18);
-                            delay(2);
-                            PHDcommand(19);
-                            delay(2);
-                            PHDcommand(14);
-                            delay(2);
-                            PHDcommand(20);
+                //            break;
+                //        case "0"://no looping, paused or guiding
+                //            delay(2);
+                //            PHDcommand(19);//start looping
+                //            delay(2);
+                //            string status2 = PHDcommand(17);//check status
+                //            switch (status2)
+                //            {
+                //                case "101"://looping no star selected       
+                //                    delay(2);
+                //                    if (PHDcommand(14) == "1")
+                //                    {
+                //                        if (backgroundWorker2.IsBusy == false)
+                //                        Log("PHD Autostar selected");
+                //                        delay(2);
+                //                        PHDcommand(20);//start guiding
+                //                    }
+                //                    else
+                //                        break;
+                //                    break;
+                //                case "1":
+                //                    delay(2);
+                //                    PHDcommand(20);
+                //                    break;
+                //                case "100":
+                //                    delay(2);
+                //                    PHDcommand(2);
+                //                    break;
+                //                case "3":
+                //                    break;
+                //            }
+                //            //  else
+                //            //   resumePHD2();
+                //            break;
+                //        case "4":
+                //            delay(2);
+                //            PHDcommand(18);
+                //            delay(2);
+                //            PHDcommand(19);
+                //            delay(2);
+                //            PHDcommand(14);
+                //            delay(2);
+                //            PHDcommand(20);
 
-                            break;
+                //            break;
 
-                    }
-                    delay(2);
-                    if (PHDcommand(17) == "3")
-                    {
-                        if (backgroundWorker2.IsBusy == false)
-                        Log("resumed guiding");
-                        resumeAttempts = 0;
-                        success = true;
+                //    }
+                //    delay(2);
+                //    if (PHDcommand(17) == "3")
+                //    {
+                //        if (backgroundWorker2.IsBusy == false)
+                //        Log("resumed guiding");
+                //        resumeAttempts = 0;
+                //        success = true;
 
-                    }
+                //    }
 
-                    else
-                    {
-                        if (backgroundWorker2.IsBusy == false)
-                        Log("resume guiding failed - retry");
-                        resumeAttempts++;
-                    }
+                //    else
+                //    {
+                //        if (backgroundWorker2.IsBusy == false)
+                //        Log("resume guiding failed - retry");
+                //        resumeAttempts++;
+                //    }
 
-                }
+                //}
 
-                if (backgroundWorker2.IsBusy == false)
-                Log("resume success");
-                return;
+                //if (backgroundWorker2.IsBusy == false)
+                //Log("resume success");
+                //return;
                        
 
             }
