@@ -1008,8 +1008,8 @@ namespace Pololu.Usc.ScopeFocus
             if (currentfilter == 4)
                 Filtertext = comboBox5.Text;
             //   watchforOpenPort();
-            if ((portopen == 1 || usingASCOMFocus == true))
-            {
+         //   if ((portopen == 1 || usingASCOMFocus == true))
+         //   {
 
                 // int nn = 10;
                 int current;
@@ -1423,7 +1423,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
              
-            } // end if (HFRtestON == false) from way above
+         //   } // end if (HFRtestON == false) from way above
 
 
 
@@ -1929,7 +1929,8 @@ namespace Pololu.Usc.ScopeFocus
             fileSystemWatcher3.EnableRaisingEvents = false;
             fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;//added 3_13
-            fileSystemWatcher5.EnableRaisingEvents = false; //added to test  metricHFR
+            fileSystemWatcher5.EnableRaisingEvents = false;//added to test  metricHFR
+            fileSystemWatcher7.EnableRaisingEvents = false;//added 12-29-16
             if (closing != 1)
             {
                 //      port.DiscardOutBuffer();
@@ -3768,9 +3769,11 @@ namespace Pololu.Usc.ScopeFocus
             tempsum = 0;
             maxMax = 0;
             //  roughvdone = true;
-            fileSystemWatcher2.EnableRaisingEvents = true;
+           
             if (checkBox22.Checked == true)
                 fileSystemWatcher5.EnableRaisingEvents = true;//added to test metricHFR
+            else // added 12-29-16 
+                fileSystemWatcher2.EnableRaisingEvents = true;
             fileSystemWatcher3.EnableRaisingEvents = false;
             fileSystemWatcher1.EnableRaisingEvents = false;
             avgMax = 0;
@@ -3872,21 +3875,23 @@ namespace Pololu.Usc.ScopeFocus
                         return;
                     }
                 }
-                if (checkBox29.Checked == false)
+                if (checkBox29.Checked == false) // not using backlash compensation
                 {
                     Log("Clearing backlash...");//added 1-7-12
                                                 //  gotopos(Convert.ToInt32(finegoto - 3000));//take up backlash     
                                                 //   Thread.Sleep(1000);
 
                     if (textBox8.Text == "")
-                        gotopos(finegoto - ((int)numericUpDown2.Value * 4));
+                        gotopos(finegoto - ((int)numericUpDown2.Value * 2)); // 12-29-16 change from * 4 to *2
                     //   focuser.Move(finegoto - ((int)numericUpDown2.Value * 4));//if no backlash determined move 4* course step size to get beyond backalsh
                     else//if not using backlash compensation....still need to make sure backlash it taken up 
-                        gotopos(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));
-                    //   focuser.Move(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));//ensure well beyond backlash + measure position
 
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
+                        //remd next 4 on 12-29-16  no need to go this far past.....
+                    //    gotopos(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));
+                    ////   focuser.Move(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));//ensure well beyond backlash + measure position
+
+                    //Thread.Sleep(1000);
+                    //gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
                     Thread.Sleep(1000);
                     gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
                     Thread.Sleep(1000);
@@ -3926,14 +3931,20 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     GlobalVariables.FineRepeatDone = 0;
                 }
-                fileSystemWatcher2.EnableRaisingEvents = true;
-                fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR
-                fileSystemWatcher3.EnableRaisingEvents = false;
-                fileSystemWatcher1.EnableRaisingEvents = false;
+               
 
                 if (checkBox22.Checked) // added 11-3-16
+                {
+                    fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR   // moved from above the if 12-29-16
                     MetricCapture();
-                //  }
+                }
+                else // added 12-29-16
+                {
+                    fileSystemWatcher2.EnableRaisingEvents = true;
+
+                    fileSystemWatcher3.EnableRaisingEvents = false;
+                    fileSystemWatcher1.EnableRaisingEvents = false;
+                }
             }
 
             catch (Exception ex)
@@ -4099,7 +4110,17 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-                FocusChooser();
+                if (button8.BackColor != Color.Lime)
+                    FocusChooser();
+                else
+                {
+                   
+                    focuser.Connected = false;
+                    button8.BackColor = Color.WhiteSmoke;
+                    focuser.Dispose();
+                    Log(devId2 + " disconnected");
+                    devId2 = "";
+                }
             }
             catch (Exception ex)
             {
@@ -4233,7 +4254,7 @@ namespace Pololu.Usc.ScopeFocus
                 ph.DisConnect();
             if (timer2.Enabled)
                 timer2.Enabled = false;
-            if (scope != null)
+            if (!string.IsNullOrEmpty(devId))
             {
                 if (scope.Connected == true)
                 {
@@ -4242,7 +4263,7 @@ namespace Pololu.Usc.ScopeFocus
                     scope.Dispose();
                 }
             }
-            if (filterWheel != null)
+            if (!string.IsNullOrEmpty(devId3))
             {
                 if (filterWheel.Connected == true)
                 {
@@ -4251,7 +4272,7 @@ namespace Pololu.Usc.ScopeFocus
                     filterWheel.Dispose();
                 }
             }
-            if (focuser != null)
+            if (!string.IsNullOrEmpty(devId2))
             {
                 if (focuser.Connected == true)
                 {
@@ -4260,7 +4281,7 @@ namespace Pololu.Usc.ScopeFocus
                     focuser.Dispose();
                 }
             }
-            if (FlatFlap != null)
+            if (!string.IsNullOrEmpty(devId4))
             {
                 if (FlatFlap.Connected == true)
                 {
@@ -10804,6 +10825,7 @@ namespace Pololu.Usc.ScopeFocus
                     if (UseClipBoard.Checked)
                     {
                         Clipboard.Clear();
+                        Thread.Sleep(250); // added 12-29-16
                         ScriptName = "\\Listen.neb";
                     }
                     if ((checkBox14.Checked == true) && (!UseClipBoard.Checked))
@@ -12400,7 +12422,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
                                 DateTime d = Convert.ToDateTime(row.ItemArray[0]);
-                                int p = Convert.ToInt16(row.ItemArray[1]);
+                                int p = Convert.ToInt32(row.ItemArray[1]);
                                 //  int num2 = _apexHFR;
                                 //  int num4 = _posminHFR;
                                 float down = Convert.ToSingle(row.ItemArray[2]);//********1-23-15  these looked backwards this line was up and next WAS down
@@ -12437,7 +12459,9 @@ namespace Pololu.Usc.ScopeFocus
                         con.Close();
                     }
 
-
+                  //  MessageBox.Show("Data Import Successful", "scopefocus");
+                    Log(Path.GetFileName(_importPath) + " import success" );
+                    FileLog(Path.GetFileName(_importPath) + " import success");
                 }
                 else
                 {
@@ -12458,12 +12482,14 @@ namespace Pololu.Usc.ScopeFocus
                     }
 
                     OleDbConn.Close();
-                    MessageBox.Show("Data Import Successful", "scopefocus");
+                 //   MessageBox.Show("Data Import Successful", "scopefocus");
                 }
+
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Import Failed", "scopefocus");
+                MessageBox.Show("Import Failed - check file for errors", "scopefocus");
                 FileLog2("Data import failed " + ex.ToString());
                 return;
             }
@@ -13217,7 +13243,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 //  log.WriteLine(DateTime.Now);
                 //  log.WriteLine("scopefocus - Error");
-                log.WriteLine("[DEBUG}" + textlog);
+                log.WriteLine(textlog);
                 log.Close();
             }
             return;
@@ -15158,7 +15184,7 @@ namespace Pololu.Usc.ScopeFocus
             button49.BackColor = System.Drawing.Color.Lime;
             //   button49.Text = "Connected";
         }
-        bool usingASCOMFocus = false;
+      //  bool usingASCOMFocus = false;
         private static string devId2;
 
         public void FocusChooser()
@@ -15195,7 +15221,7 @@ namespace Pololu.Usc.ScopeFocus
             }
              */
             numericUpDown6.Value = focuser.Position;
-            usingASCOMFocus = true;
+        //    usingASCOMFocus = true;
 
             //   focuser.CommandString("C", true);
 
@@ -15206,22 +15232,16 @@ namespace Pololu.Usc.ScopeFocus
         private void button49_Click(object sender, EventArgs e)
         {
 
-            //if (devId == null)
-            //    Chooser();
-            //else
-            //{
-            //    scope.Connected = false;
-            //    button49.BackColor = default(Color);
-            //    Thread.Sleep(100);
-            //    scope.Dispose();
-            //    if (timer2.Enabled)
-            //        timer2.Enabled = false;
-            //    devId = null;
-            //    Log("Telescope Disconnected");
-            //}
-
-            //**** Above throws exception on closing if disconnected first. 
-            Chooser();
+            if (button49.BackColor != Color.Lime)
+                Chooser();
+            else
+            {
+                scope.Connected = false;
+                button49.BackColor = Color.WhiteSmoke;
+                scope.Dispose();
+                Log(devId + " disconnected");
+                devId = "";
+            }
         }
         // added 3-12-16 for online solve  
         private static double _rA;
@@ -17251,9 +17271,16 @@ namespace Pololu.Usc.ScopeFocus
             //  WindowsFormsApplication1.EquipConnect c = new WindowsFormsApplication1.EquipConnect();
             //  c.Show();
 
-
-
-            FilterWheelChooser();
+            if (buttonFilterConnect.BackColor != Color.Lime)
+                FilterWheelChooser();
+            else
+            {
+                filterWheel.Connected = false;
+                buttonFilterConnect.BackColor = Color.WhiteSmoke;
+                filterWheel.Dispose();
+                Log(devId3 + " disconnected");
+                devId3 = "";
+            }
         }
 
         private void comboBox6_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -17428,6 +17455,7 @@ namespace Pololu.Usc.ScopeFocus
                     FlatFlap.Connected = false;
                     Log(devId4 + " disconnected");
                     button12.BackColor = System.Drawing.Color.WhiteSmoke;
+                    devId4 = "";
                     return;
                 }
                 ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
@@ -18410,6 +18438,7 @@ namespace Pololu.Usc.ScopeFocus
                 //  textBoxPHDstatus.Text = ph.show("PHDVersion");
             }
 
+      
         private void button51_Click_1(object sender, EventArgs e)
         {
             Handles H = new Handles();
