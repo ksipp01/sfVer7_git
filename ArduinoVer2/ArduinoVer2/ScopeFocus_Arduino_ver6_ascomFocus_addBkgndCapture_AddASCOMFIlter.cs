@@ -3694,8 +3694,19 @@ namespace Pololu.Usc.ScopeFocus
 
                 EquipRefresh();
 
-          
-                
+                // auto connect to PHD
+                string result2 = ph.Connect();
+                if (result2 != "Failed")
+                {
+                    textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
+                    button36.BackColor = Color.Lime;
+                    button36.Text = "DisCnct";
+                    Log("Connected to PHD2 version " + result2);
+                    FileLog("Connected to PHD2 version " + result2);
+
+
+                }
+
 
             }
             catch (Exception ex)
@@ -18363,8 +18374,9 @@ namespace Pololu.Usc.ScopeFocus
         // 12-2-16 test PHD2 event monitoring
         private void button25_Click(object sender, EventArgs e)
         {
-         //   textBox9.Text = ph.getAppState();
-           
+            textBox9.Text = PHD2comm.PHDAppState;
+
+
         }
       //  PHD2comm.AppState state = new PHD2comm.AppState();
         private void button52_Click(object sender, EventArgs e)
