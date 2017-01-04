@@ -229,7 +229,7 @@ namespace Pololu.Usc.ScopeFocus
             fileSystemWatcher4.EnableRaisingEvents = false;
             fileSystemWatcher5.EnableRaisingEvents = false;//added to test metricHFR
                                                            //       fileSystemWatcher6.EnableRaisingEvents = true;
-            textBox11.Focus();
+       //     textBox11.Focus();
 
 
             //    string devId2 = ASCOM.DriverAccess.Focuser.Choose("");
@@ -450,12 +450,12 @@ namespace Pololu.Usc.ScopeFocus
         //  private static string FocusLoc = "";
         // private static string TargetLoc = "";
 
-        private static string Filtertext;
-        //public static string Filtertext
-        //{
-        //    get { return _filtertext; }
-        //    set { _filtertext = value; }
-        //}
+        private static string _filtertext; //1-4-17
+        public static string Filtertext
+        {
+            get { return _filtertext; }
+            set { _filtertext = value; }
+        }
         //    int metricHFR;
         private static int metricN = 0;
         private static int currentmetricN = 0;
@@ -472,8 +472,16 @@ namespace Pololu.Usc.ScopeFocus
         //  int totalsubs;
         //  int filternumber = 0;
         private static int subsperfilter;
-        private static int subCountCurrent = 0;
-        public static int currentfilter = 0;
+        private static int subCountCurrent = 0; // 1-4-17
+
+       
+            protected static int currentfilter = 0;
+            public static int CurrentFilter
+            {
+                get { return currentfilter; }
+                set { currentfilter = value; }
+            }
+      
         //   int filter1used = 0;
         //   int filter2used = 0;
         //   int filter3used = 0;
@@ -540,7 +548,9 @@ namespace Pololu.Usc.ScopeFocus
         int avg = 0;
         long sumMax = 0;
         long avgMax = 0;
-        int ffenable = 0;
+       // int ffenable = 0; // 1-4-17 changed to bool, moved to GlobalVariables.   
+       // bool ffenable = false;
+       
         int repeatTotal = 0;
         int[] list = null;
         double[] listMax = null;
@@ -550,7 +560,7 @@ namespace Pololu.Usc.ScopeFocus
         int[] minHFRpos = null;
         double[] maxMaxPos = null;
         //    int posminHFR;
-        int tempon = 0;
+     //   bool tempon = false; // 1-4-17 changed to bool and moved to globalVariables. 
         int tempsum = 0;
         int tempavg = 0;
         int vv = 0;//total aquisitions for a given v-curve, N * repeat
@@ -2186,18 +2196,18 @@ namespace Pololu.Usc.ScopeFocus
             int MoveDelay = (int)numericUpDown9.Value;
 
             vcurveenable = 1;
-            if (tempon == 1)
+            if (GlobalVariables.Tempon)
             {
                 fileSystemWatcher1.EnableRaisingEvents = true;
             }
-            if ((vProgress == 0) & (tempon == 1))
+            if ((vProgress == 0) & (GlobalVariables.Tempon))
             {
                 int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
                 //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
                 gotopos(Convert.ToInt32(finegoto));
             }
 
-            if (ffenable == 1)
+            if (GlobalVariables.FFenable)
             {
                 textBox17.Text = (GlobalVariables.FineRepeatDone + 1).ToString();//exposure repeat
                 repeatTotal = (int)numericUpDown7.Value;
@@ -2211,7 +2221,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 repeatDone = 1;
             }
-            if (ffenable == 1)
+            if (GlobalVariables.FFenable)
             {
                 //define Fine-V total sample number (should be twice goto position[line 914 temp cal or 187 fine-v]/step size [line 1135])
                 vN = (int)numericUpDown3.Value;
@@ -2331,7 +2341,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 // try some lost star handling  7-27-14  ver 19
 
-                if ((ffenable == 1) & (tempon == 0) & (repeatDone == 1) & (backlashDetermOn == false)) //check only for fine V-curve
+                if ((GlobalVariables.FFenable) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false)) //check only for fine V-curve
                 {
                     if ((vProgress > 2) && (vProgress < (vN - 2)))//don't use first/last stars
                     {
@@ -2386,11 +2396,11 @@ namespace Pololu.Usc.ScopeFocus
                     string strLogText3 = "Fine-V: N " + (vProgress + 1).ToString() + "-" + (repeatProgress + 1).ToString() + "\t" + count.ToString() + " \t" + avg.ToString() + "\t" + avgMax.ToString();
                     positionbar();
 
-                    if ((tempon != 1) & (ffenable != 1) & (repeatDone == 1))
+                    if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true) & (repeatDone == 1))
                     {
                         chart1.Series[0].Points.AddXY(Convert.ToDouble(count), Convert.ToDouble(avg)); //chart course v curve
                     }
-                    if ((ffenable == 1) & (tempon == 0) & (repeatDone == 1) & (backlashDetermOn == false))
+                    if ((GlobalVariables.FFenable == true) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false))
                     {
                         if ((avg < enteredMinHFR) || (avg > enteredMaxHFR) & (radioButton1.Checked == true))
                         {
@@ -2419,7 +2429,7 @@ namespace Pololu.Usc.ScopeFocus
                     // Write to the file:
                     if (backlashDetermOn == false)
                     {
-                        if ((ffenable == 1) & (vProgress == 0))
+                        if ((GlobalVariables.FFenable) & (vProgress == 0))
                         {
                             //    log.WriteLine(DateTime.Now);
                             //    log.WriteLine("Fine-V" + "\tTemp" + "\t Pos" + "\tN" + "\tHFR" + "\tminHFR" + "\tposmin");
@@ -2427,14 +2437,14 @@ namespace Pololu.Usc.ScopeFocus
                             FileLog2(DateTime.Now.ToString());
                             //   FileLog2("Fine-V" + "\tTemp" + "\t Pos" + "\tN" + "\tHFR" + "\tminHFR" + "\tposmin");
                         }
-                        if ((vProgress == 0) & (tempon == 0))
+                        if ((vProgress == 0) & (!GlobalVariables.Tempon))
                         {
                             //log.WriteLine(DateTime.Now);
                             //log.WriteLine("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
                             FileLog2(DateTime.Now.ToString());
                             FileLog2("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
                         }
-                        if ((tempon == 1) & (vProgress == (vN - 1)))
+                        if ((GlobalVariables.Tempon) & (vProgress == (vN - 1)))
                         {
                             if (templog == 0)
                             {
@@ -2448,11 +2458,11 @@ namespace Pololu.Usc.ScopeFocus
                             FileLog2(strLogText2);//was log.WriteLine and next 2 below
 
                         }
-                        if ((tempon == 0) & (ffenable != 1))
+                        if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true))
                         {
                             FileLog2(strLogTextA);
                         }
-                        if ((tempon == 0) & (ffenable == 1))
+                        if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable == true))
                         {
                             FileLog2(strLogText3);
                         }
@@ -2466,7 +2476,7 @@ namespace Pololu.Usc.ScopeFocus
                     if (vProgress < (vN - 1))
                     {
                         int step = (int)numericUpDown2.Value;
-                        if (ffenable == 1)
+                        if (GlobalVariables.FFenable)
                         {
                             //defines Fine-V step size
                             step = (int)numericUpDown8.Value;
@@ -2560,7 +2570,7 @@ namespace Pololu.Usc.ScopeFocus
                 //                                                                                   
                 if (radioButton1.Checked == true)
                 {                                //below was vN/2 +4 and -4 changed to +/- vN/4 11-24
-                    if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (ffenable == 1) & (backlashDetermOn == false))
+                    if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable) & (backlashDetermOn == false))
                     {
                         fileSystemWatcher2.EnableRaisingEvents = false;
                         fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
@@ -2572,7 +2582,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
                     }
                 }
-                if ((ffenable == 1) & (radioButton1.Checked == true)) // save data on
+                if ((GlobalVariables.FFenable) & (radioButton1.Checked == true)) // save data on
                 {
                     try
                     {
@@ -2693,7 +2703,7 @@ namespace Pololu.Usc.ScopeFocus
                 // Log("Posmin: " + posMin.ToString() + "\tminHFR " + min.ToString() + "\tminHFRpos " + _posminHFR.ToString());
                 FileLog2("Posmin: " + posMin.ToString() + "\tminHFR " + min.ToString() + "\tminHFRpos " + _posminHFR.ToString() + "\tmaxMAx " + maxarrayMax.ToString() + "\tmaxMaxPos " + posmaxMax.ToString());
                 //removed & radiobutton1,checked from below
-                if (ffenable == 1)
+                if (GlobalVariables.FFenable)
                 {
                     for (int xx = 0; xx < vN; xx++)
                     {
@@ -2715,7 +2725,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 //  log.Close();
                 //   logData.Close();
-                if ((vDone == 1) & (ffenable == 1))
+                if ((vDone == 1) & (GlobalVariables.FFenable))
                 {
 
                     fileSystemWatcher1.EnableRaisingEvents = false;
@@ -2812,7 +2822,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //end coarse v-curve and goes to rough focus point
-                if ((vDone == 1) & (tempon == 0) & (backlashDetermOn == false) & (ffenable != 1))
+                if ((vDone == 1) & (!GlobalVariables.Tempon) & (backlashDetermOn == false) & (GlobalVariables.FFenable != true))
                 {
                     fileSystemWatcher1.EnableRaisingEvents = false;
                     fileSystemWatcher2.EnableRaisingEvents = false;
@@ -2832,14 +2842,14 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //reset for more v -curves for tempcal
-                if ((tempon == 1) & (vDone != 1))
+                if ((GlobalVariables.Tempon) & (vDone != 1))
                 {
                     repeatDone = 0;
                     repeatTotal = 0;
                     fileSystemWatcher1.EnableRaisingEvents = true;
                 }
                 //tempcal done
-                if ((tempon == 1) & (vDone == 1))
+                if ((GlobalVariables.Tempon) & (vDone == 1))
                 {
                     tempsum = 0;
                     vDone = 0;
@@ -3095,7 +3105,7 @@ namespace Pololu.Usc.ScopeFocus
         //tempcal, backlash and mult v-curve
         private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
         {
-            if (tempon == 1)
+            if (GlobalVariables.Tempon)
             {
                 tempcal();
             }
@@ -3111,8 +3121,8 @@ namespace Pololu.Usc.ScopeFocus
             backlashDetermOn = true;
             fileSystemWatcher1.EnableRaisingEvents = true;
             //   port.DiscardInBuffer();
-            ffenable = 1;
-            tempon = 0;
+            GlobalVariables.FFenable = true;
+            GlobalVariables.Tempon = false;
             vcurve();
         }
 
@@ -3121,8 +3131,8 @@ namespace Pololu.Usc.ScopeFocus
 
             fileSystemWatcher1.EnableRaisingEvents = true;
             //    port.DiscardInBuffer();
-            ffenable = 1;
-            tempon = 1;
+            GlobalVariables.FFenable = true;
+            GlobalVariables.Tempon = true;
             vcurve();
         }
 
@@ -3773,8 +3783,8 @@ namespace Pololu.Usc.ScopeFocus
             chart1.Series[0].Points.Clear();
             chart1.Series[1].Points.Clear();
             chart1.Series[2].Points.Clear();
-            tempon = 0;
-            ffenable = 0;
+            GlobalVariables.Tempon = false;
+            GlobalVariables.FFenable = false;
             posMin = count;
             vv = 0;
             tempsum = 0;
@@ -3911,7 +3921,7 @@ namespace Pololu.Usc.ScopeFocus
                 Thread.Sleep(1000);
                 gotopos(Convert.ToInt32(finegoto));
                 Thread.Sleep(1000);
-                ffenable = 1;
+                GlobalVariables.FFenable = true;
                 repeatProgress = 0;
                 repeatDone = 0;
                 vProgress = 0;
@@ -3921,7 +3931,7 @@ namespace Pololu.Usc.ScopeFocus
                 sum = 0;
                 min = 500;
                 _hFRarraymin = 999;
-                tempon = 0;
+                GlobalVariables.Tempon = false;
                 sumMax = 0;
                 avgMax = 0;
                 maxMax = 0;
@@ -4153,7 +4163,7 @@ namespace Pololu.Usc.ScopeFocus
 
             //  *** remd 11-3-16   rem for sim
 
-            if (ffenable == 1)
+            if (GlobalVariables.FFenable)
             {
 
                 if (vProgress == numericUpDown3.Value)
@@ -4752,13 +4762,13 @@ namespace Pololu.Usc.ScopeFocus
                 avg = 0;
                 vDone = 0;
                 vProgress = 0;
-                tempon = 0;
+                GlobalVariables.Tempon = false;
                 tempsum = 0;
                 vv = 0;
                 templog = 0;
                 backlashDetermOn = true;
                 radioButton1.Checked = false;//calculations off
-                ffenable = 1;
+                GlobalVariables.FFenable = true;
                 int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
                 //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
                 if ((finegoto - 100) < 0)
@@ -4810,7 +4820,7 @@ namespace Pololu.Usc.ScopeFocus
                 avg = 0;
                 vDone = 0;
                 vProgress = 0;
-                tempon = 1;
+                GlobalVariables.Tempon = true;
                 tempsum = 0;
                 vv = 0;
                 templog = 0;
@@ -14698,6 +14708,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
+           
             GlobalVariables.Path2 = textBox11.Text.ToString();
             Log("Path set to " + GlobalVariables.Path2.ToString());
             fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();

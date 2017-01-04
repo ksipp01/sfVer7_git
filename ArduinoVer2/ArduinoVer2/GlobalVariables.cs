@@ -126,7 +126,18 @@ namespace Pololu.Usc.ScopeFocus
             get { return _corrFileLines; }
             set { _corrFileLines = value; }
         }
-       
+        private static bool ffenable = false;
+        public static bool FFenable
+        {
+            get { return ffenable; }
+            set { ffenable = value; }
+        }
+        private static bool tempon = false;
+        public static bool Tempon
+        {
+            get { return tempon; }
+            set { tempon = value; }
+        }
         //public static int Serverhwnd
         //{
         //    get { return _serverhwnd; }
