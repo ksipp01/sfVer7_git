@@ -724,7 +724,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                // Log("Downloading " + file);
                 string newurl = URI + suburl + jid;
-                Uri resultUrl = new Uri(newurl, false);
+                Uri resultUrl = new Uri(newurl);
                 Log("Downloading " + newurl);
                 FileLog2("Downloaded : " + newurl);
 

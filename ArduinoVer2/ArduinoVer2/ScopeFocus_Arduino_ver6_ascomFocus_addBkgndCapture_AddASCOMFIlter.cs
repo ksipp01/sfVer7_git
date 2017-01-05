@@ -96,10 +96,10 @@
 
 // 11-13-16  added Clipboard confirmation for almost all //NEB commands  Search for !NebCommandConfirm(  if need to correct
 // 11-14-16 ver 32  added clear clipboard after all final //NEB commands
- // TODO revisit confrim commands sent with statusbar monitor.  Maybe just check it once after each clipboard.setdata instead of using while loop.....
+// TODO revisit confrim commands sent with statusbar monitor.  Maybe just check it once after each clipboard.setdata instead of using while loop.....
 
- // 11-18-16 changed focusgroupset() to only happen at sequencego...not w/ numUD or checkbox change
- // 11-21-16 added resizenebwindow() , fixes status monitor error when small window results in "..." in Nebs status bar.
+// 11-18-16 changed focusgroupset() to only happen at sequencego...not w/ numUD or checkbox change
+// 11-21-16 added resizenebwindow() , fixes status monitor error when small window results in "..." in Nebs status bar.
 
 // TODO: -- pause/resume  line 12820......
 //       -- add ability to add comment to v-curve data, maybe in equip cell  
@@ -110,7 +110,7 @@
 //                                     make sure to unrem lines in fileSystemWatcher2_Changed.  
 //                                     make sure to not use the file name originally opened. (change by .01 when get to that one) 
 //                                     rem filesystemwatcher2_delete lines 4254 down   // not sure if necessary.  
-
+// 1-7-17 remd all checkboxChanged. maMax, vcurveenable, TargetGotoOn, SlavePaused
 
 ///  to do:
 /// ver21 see above 
@@ -187,10 +187,10 @@ namespace Pololu.Usc.ScopeFocus
         //   SerialPort port;
         //   SerialPort port2;
 
-        Focuser focuser;
+      //  Focuser focuser;
       //  FilterWheel filterWheel;
-        private ASCOM.DriverAccess.Switch FlatFlap;
-        private ASCOM.DriverAccess.Camera cam;
+     //   private ASCOM.DriverAccess.Switch FlatFlap;
+    //    private ASCOM.DriverAccess.Camera cam;
 
 
         // 12-2-16 test PHD2 event monitoring
@@ -444,7 +444,7 @@ namespace Pololu.Usc.ScopeFocus
         private static bool FocusLocObtained = false;
         private static bool TargetLocObtained = false;
 
-        string NebCamera;
+      //  string NebCamera;
         //  private static bool MountMoving = false;
         //  string GotoDoneCommand;
         //  private static string FocusLoc = "";
@@ -531,7 +531,7 @@ namespace Pololu.Usc.ScopeFocus
         int backlashPosOUT;
         //   float backlash = 0;
         int backlash;
-        double maxMax = 1;
+     //   double maxMax = 1;
         int posmaxMax;
         //abitrarily set min = 999 to start with
         int total = 0;
@@ -568,8 +568,8 @@ namespace Pololu.Usc.ScopeFocus
                    //   int connect = 0;
                    //  int connect2 = 0;
         int temp = 100;
-        int portopen = 0;
-        int vcurveenable = 0;
+     //   int portopen = 0;
+      //  int vcurveenable = 0;
 
         int closing = 0;
         //  int syncval;
@@ -1200,19 +1200,19 @@ namespace Pololu.Usc.ScopeFocus
                                         return;
                                     }
 
-
+                                  
 
                                     else //if calculation seems ok...move to focus point then check w/ another exposure 
                                     {
                                         if (calcRedo > 0)
                                             calcRedo = 0;
-                                        focuser.Move((int)BestPos);
+                                        Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
                                         fileSystemWatcher3.EnableRaisingEvents = false;
                                     }
                                 }
                                 else // added 10-24-16
                                 {
-                                    focuser.Move((int)BestPos);
+                                    Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
                                     fileSystemWatcher3.EnableRaisingEvents = false;
                                 }
                                 ////9-9-15
@@ -1251,14 +1251,14 @@ namespace Pololu.Usc.ScopeFocus
                                 toolStripStatusLabel1.Text = "Focus Moving";
                                 toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
                                 //3-2-16 
-                                while (focuser.IsMoving)
+                                while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
                                 {
                                     delay(1); // 10-11-16 moved from space below on all similar x 3
-                                    count = focuser.Position;
+                                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                                     textBox1.Text = count.ToString();
 
                                     positionbar();
-                                    //  Log(focuser.IsMoving.ToString());
+                                    //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
                                 }
                                 toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
                                 toolStripStatusLabel1.Text = "Ready";
@@ -1356,14 +1356,14 @@ namespace Pololu.Usc.ScopeFocus
 
                                 toolStripStatusLabel1.Text = "Focus Moving";
                                 toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
-                                while (focuser.IsMoving)
+                                while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
                                 {
                                     delay(1);
-                                    count = focuser.Position;
+                                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                                     textBox1.Text = count.ToString();
 
                                     positionbar();
-                                    //  Log(focuser.IsMoving.ToString());
+                                    //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
                                 }
                                 toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
                                 toolStripStatusLabel1.Text = "Ready";
@@ -1970,7 +1970,7 @@ namespace Pololu.Usc.ScopeFocus
 
             try
             {
-                if (devId2 == null)
+                if (Pololu.Usc.ScopeFocus.Focus.DevId2 == null)
                 {
                     MessageBox.Show("Not connected to focuser", "scopefocus");
                     return;
@@ -2000,7 +2000,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
                 //{
-                //   if (numericUpDown6.Value == focuser.Position)//don't move if already there.  *****this inhibits moves from fwd/rev buttons  *******
+                //   if (numericUpDown6.Value == Pololu.Usc.ScopeFocus.Focus.focuser.Position)//don't move if already there.  *****this inhibits moves from fwd/rev buttons  *******
                 //        return;
 
                 //focus moving here for toolstrip rest see 1877
@@ -2008,28 +2008,28 @@ namespace Pololu.Usc.ScopeFocus
                 toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
                 this.Refresh(); // added 10-24-16
 
-                focuser.Move(value);
+                Pololu.Usc.ScopeFocus.Focus.focuser.Move(value);
 
 
                 //************added 11-3-13 may not be needed  ************
                 //     BUT     *************seems like ascom focusers need some delay while moving  
                 //*****  4-22-14 if IsMoving causes problems add a checkbox to allow disable. 
-                while (focuser.IsMoving)
+                while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
                 {
                     delay(1);
-                    count = focuser.Position;
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = count.ToString();
 
                     positionbar();   //**** remd 11-20-14
-                                     //  Log(focuser.IsMoving.ToString());
+                                     //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
                 }
                 // end add
                 delay(1);
-                count = focuser.Position;
+                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                 textBox1.Text = count.ToString();
                 //   textBox1.Text = focuser.Position.ToString();
                 if (!ContinuousHoldOn)
-                    focuser.Halt();
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                 toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
                 toolStripStatusLabel1.Text = "Ready";
                 this.Refresh();
@@ -2196,7 +2196,7 @@ namespace Pololu.Usc.ScopeFocus
             roundto = 1;  // 10-25-16
             int MoveDelay = (int)numericUpDown9.Value;
 
-            vcurveenable = 1;
+            //vcurveenable = 1;
             if (GlobalVariables.Tempon)
             {
                 fileSystemWatcher1.EnableRaisingEvents = true;
@@ -2316,7 +2316,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 if (checkBox22.Checked == true)//added for metricHFR
                 {
-                    maxMax = 1;//added for metricHFR
+                    //maxMax = 1;//added for metricHFR
 
                 }
                 //determine minHFR and build array
@@ -2681,7 +2681,7 @@ namespace Pololu.Usc.ScopeFocus
                     posMin = _posminHFR;
                 }
                 textBox4.Text = posMin.ToString();
-                textBox1.Text = focuser.Position.ToString();
+                textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
 
                 //string path = textBox11.Text.ToString();  // 7-25-14
                 //string fullpath = path + @"\log.txt";
@@ -2884,7 +2884,7 @@ namespace Pololu.Usc.ScopeFocus
                     gotopos(Convert.ToInt32(posMin));
 
                     repeatProgress = 0;
-                    vcurveenable = 0;
+                    //vcurveenable = 0;
                     Array.Clear(list, 0, arraysize2);
                     Array.Clear(listMax, 0, arraysize2);
                     _hFRarraymin = 999;
@@ -2892,7 +2892,7 @@ namespace Pololu.Usc.ScopeFocus
                     tempcal();
 
                 }
-                vcurveenable = 0;//added 9-12
+              //  vcurveenable = 0;//added 9-12
                                  //   return;  //added 11-20-14
             }
 
@@ -2964,7 +2964,7 @@ namespace Pololu.Usc.ScopeFocus
                 vv = 0;
                 min = 500;
 
-                maxMax = 1;
+                //maxMax = 1;
                 fileSystemWatcher1.EnableRaisingEvents = true;
 
                 vProgress = 0;
@@ -3009,8 +3009,8 @@ namespace Pololu.Usc.ScopeFocus
             {
 
 
-                textBox1.Text = focuser.Position.ToString();
-                count = focuser.Position;
+                textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
+                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
 
 
                 /*
@@ -3195,22 +3195,22 @@ namespace Pololu.Usc.ScopeFocus
                         gotopos(posMin + Convert.ToInt32(textBox8.Text) + (int)numericUpDown39.Value * 2);
                     //   focuser.Move(posMin + Convert.ToInt32(textBox8.Text) + (int)numericUpDown39.Value * 2);//ensure well beyond backlash + measure position
                     Thread.Sleep(100);
-                    count = focuser.Position;
-                    textBox1.Text = focuser.Position.ToString();
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     Log("Taking up backlash");
-                    FileLog2("Move to " + focuser.Position.ToString());
+                    FileLog2("Move to " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                     if (!ContinuousHoldOn)
-                        focuser.Halt();
+                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(1000);//was 3000
                     gotopos(posMin + (int)numericUpDown39.Value);
                     //   focuser.Move(posMin + (int)numericUpDown39.Value);//goto measure position
                     Thread.Sleep(100);
-                    count = focuser.Position;
-                    textBox1.Text = focuser.Position.ToString();
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     if (!ContinuousHoldOn)
-                        focuser.Halt();
+                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(2000);
-                    FileLog2("Move to: " + focuser.Position.ToString());
+                    FileLog2("Move to: " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                 }
                 if (radioButton3.Checked == true)//using downslope added 11-21
                 {
@@ -3221,23 +3221,23 @@ namespace Pololu.Usc.ScopeFocus
                         gotopos(posMin - Convert.ToInt32(textBox8.Text) - (int)numericUpDown39.Value * 2);
                     // focuser.Move(posMin - Convert.ToInt32(textBox8.Text) - (int)numericUpDown39.Value * 2);//ensure well beyond backlash + measure position
                     Thread.Sleep(100);
-                    count = focuser.Position;
-                    textBox1.Text = focuser.Position.ToString();
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     Log("Taking up backlash");
-                    FileLog2("Move to: " + focuser.Position.ToString());
+                    FileLog2("Move to: " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                     if (!ContinuousHoldOn)
-                        focuser.Halt();
+                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(1000);
                     gotopos(posMin - (int)numericUpDown39.Value);
                     // focuser.Move(posMin - (int)numericUpDown39.Value);
                     Thread.Sleep(100);
 
-                    count = focuser.Position;
-                    textBox1.Text = focuser.Position.ToString();
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     if (!ContinuousHoldOn)
-                        focuser.Halt();
+                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(2000);
-                    FileLog2("Move to: " +focuser.Position.ToString());
+                    FileLog2("Move to: " +Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
 
 
                     /*
@@ -3789,7 +3789,7 @@ namespace Pololu.Usc.ScopeFocus
             posMin = count;
             vv = 0;
             tempsum = 0;
-            maxMax = 0;
+            //maxMax = 0;
             //  roughvdone = true;
            
             if (checkBox22.Checked == true)
@@ -3845,7 +3845,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 //if (GlobalVariables.Nebcamera == "No camera")
                 //    NoCameraSelected();
-                vcurveenable = 1;//added 1-7-12
+                //vcurveenable = 1;//added 1-7-12
                 /* ***********remd for debugging 6-28
                 if (roughvdone == false)//make sure rough v curve done to establish rough focus point
                 {
@@ -3935,7 +3935,7 @@ namespace Pololu.Usc.ScopeFocus
                 GlobalVariables.Tempon = false;
                 sumMax = 0;
                 avgMax = 0;
-                maxMax = 0;
+              //  maxMax = 0;
                 _apexHFR = 0;
                 vv = 0;
                 peatMax = new double[arraysize2];
@@ -4133,15 +4133,33 @@ namespace Pololu.Usc.ScopeFocus
             try
             {
                 if (button8.BackColor != Color.Lime)
-                    FocusChooser();
+                {
+                   Pololu.Usc.ScopeFocus.Focus.FocusChooser();
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Connected = true;
+                    travel = Pololu.Usc.ScopeFocus.Focus.focuser.MaxStep;
+                    textBox2.Text = travel.ToString();
+                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    textBox1.Text = count.ToString();
+                    Log("connected to " + Pololu.Usc.ScopeFocus.Focus.DevId2);
+                    FileLog2("connected to " + Pololu.Usc.ScopeFocus.Focus.DevId2);
+                    button8.BackColor = System.Drawing.Color.Lime;
+                    //  button8.Text = "Connected";
+                    /*
+                    if (focuser.Connected)
+                    {
+                        MessageBox.Show("ASCOM Focuser connected");
+                    }
+                     */
+                    numericUpDown6.Value = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                }
                 else
                 {
-                   
-                    focuser.Connected = false;
+
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Connected = false;
                     button8.BackColor = Color.WhiteSmoke;
-                    focuser.Dispose();
-                    Log(devId2 + " disconnected");
-                    devId2 = "";
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Dispose();
+                    Log(Pololu.Usc.ScopeFocus.Focus.DevId2 + " disconnected");
+                    Pololu.Usc.ScopeFocus.Focus.DevId2 = "";
                 }
             }
             catch (Exception ex)
@@ -4276,7 +4294,7 @@ namespace Pololu.Usc.ScopeFocus
                 ph.DisConnect();
             if (timer2.Enabled)
                 timer2.Enabled = false;
-            if (!string.IsNullOrEmpty(devId))
+            if (!string.IsNullOrEmpty(Mount.DevId))
             {
                 if (scope.Connected == true)
                 {
@@ -4294,22 +4312,22 @@ namespace Pololu.Usc.ScopeFocus
                     Filter.filterWheel.Dispose();
                 }
             }
-            if (!string.IsNullOrEmpty(devId2))
+            if (!string.IsNullOrEmpty(Pololu.Usc.ScopeFocus.Focus.DevId2))
             {
-                if (focuser.Connected == true)
+                if (Pololu.Usc.ScopeFocus.Focus.focuser.Connected == true)
                 {
-                    focuser.Connected = false;
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Connected = false;
                     Thread.Sleep(100);
-                    focuser.Dispose();
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Dispose();
                 }
             }
-            if (!string.IsNullOrEmpty(devId4))
+            if (!string.IsNullOrEmpty(Pololu.Usc.ScopeFocus.Flap.DevId4))
             {
-                if (FlatFlap.Connected == true)
+                if (Pololu.Usc.ScopeFocus.Flap.FlatFlap.Connected == true)
                 {
-                    FlatFlap.Connected = false;
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.Connected = false;
                     Thread.Sleep(100);
-                    FlatFlap.Dispose();
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.Dispose();
                 }
             }
             //  if (ContinuousHoldOn == true)
@@ -4400,7 +4418,7 @@ namespace Pololu.Usc.ScopeFocus
             //  }
         }
 
-        private bool checkboxChanged = false;//allows for only 1 time fill of all checkboxes at 
+     //   private bool checkboxChanged = false;//allows for only 1 time fill of all checkboxes at 
         //startup, once on is changed--tab change no longer fills the boxes
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -5636,7 +5654,7 @@ namespace Pololu.Usc.ScopeFocus
                 numericUpDown11.Value = 0;
                 numericUpDown12.Value = 0;
             }
-            checkboxChanged = true;//prevents re checking all boxes based on start up selection of filter set..
+         //   checkboxChanged = true;//prevents re checking all boxes based on start up selection of filter set..
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -5647,7 +5665,7 @@ namespace Pololu.Usc.ScopeFocus
                 numericUpDown13.Value = 0;
                 numericUpDown16.Value = 0;
             }
-            checkboxChanged = true;
+         //   checkboxChanged = true;
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -5658,7 +5676,7 @@ namespace Pololu.Usc.ScopeFocus
                 numericUpDown14.Value = 0;
                 numericUpDown17.Value = 0;
             }
-            checkboxChanged = true;
+         //   checkboxChanged = true;
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -5669,7 +5687,7 @@ namespace Pololu.Usc.ScopeFocus
                 numericUpDown15.Value = 0;
                 numericUpDown18.Value = 0;
             }
-            checkboxChanged = true;
+          //  checkboxChanged = true;
         }
 
 
@@ -7906,7 +7924,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
 
-                if (checkBox13.Checked == true && devId4 == null)
+                if (checkBox13.Checked == true && Pololu.Usc.ScopeFocus.Flap.DevId4 == null)
                 {
                     MessageBox.Show("Flats selected but not connected to ASCOM switch", "scopefocus");
                     return;
@@ -8902,7 +8920,7 @@ namespace Pololu.Usc.ScopeFocus
 
             }
 
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
                 // MessageBox.Show("Error Communicating with Nebulosity, Make Sure it's open and click Rescan on Setup tab", "scopefocus");
                 Log("Error Communicating with Nebulosity");
@@ -9490,7 +9508,7 @@ namespace Pololu.Usc.ScopeFocus
             GetTargetLocation();
 
         }
-        private bool FocusGotoOn = false;
+     //   private bool FocusGotoOn = false;
 
         bool ConfirmingLocation = false;
         //goto focus
@@ -9506,7 +9524,7 @@ namespace Pololu.Usc.ScopeFocus
                 ///plate solve the image
                 ///use tolerance from platesolve tab, to ensure is there...if not, sync then take another image and repeat until there.    
 
-                FocusGotoOn = true;
+           //     FocusGotoOn = true;
 
                 if (FocusLocObtained == false)
                 {
@@ -9934,7 +9952,7 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private bool TargetGotoOn = false;
+     //   private bool TargetGotoOn = false;
         private void GotoTargetLocation()  //gototargetlocationhere
         {
             try
@@ -10140,7 +10158,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
             }
-            catch (Exception ex)//*********remd 5-5-14
+            catch (Exception)//*********remd 5-5-14
             {
                 //Log("GotoTargetLocation Error" + ex.ToString());
                 //   Send("GotoTargetLocation Error" + ex.ToString());
@@ -10191,8 +10209,8 @@ namespace Pololu.Usc.ScopeFocus
                 if (usingASCOM)
                 {
                     scope.AbortSlew();
-                    FocusGotoOn = false;
-                    TargetGotoOn = false;
+                //    FocusGotoOn = false;
+                    //TargetGotoOn = false;
                     toolStripStatusLabel1.Text = "Slew Aborted";
 
                 }
@@ -11095,7 +11113,7 @@ namespace Pololu.Usc.ScopeFocus
                     //   Log(port.ToString() + " Conneceted");
                     //   }
                 }
-                catch (SocketException e) // added 10-25-16
+                catch (SocketException) // added 10-25-16
                 {
                     Log("A connection error occured, rescan for Neb and PHD handles");
                     FileLog("A connection error occured, rescan for Neb and PHD handles");
@@ -11566,7 +11584,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
         // TcpClient phdsocket = new TcpClient();
-        private static int PHD_GETSTATUS = 17;
+     //   private static int PHD_GETSTATUS = 17;
 
         public string PHDcommand(int command)//phdcommandhere
         {
@@ -11635,7 +11653,7 @@ namespace Pololu.Usc.ScopeFocus
                     // return "0";
                 }
 
-                catch (IOException e)
+                catch (IOException)
                 {
                     //   Log("IO exception" + e); //***** remd this and 8978 5-29-14
                     retry++;
@@ -11644,7 +11662,7 @@ namespace Pololu.Usc.ScopeFocus
                     // return "0";
 
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     //  Log("socket exception: {0}" + e);
                     retry++;
@@ -13346,11 +13364,11 @@ namespace Pololu.Usc.ScopeFocus
 
         private void ToggleFlat()
         {
-            if (devId4 != null)
+            if (Pololu.Usc.ScopeFocus.Flap.DevId4 != null)
             {
-                if (!FlatFlap.GetSwitch(0))
+                if (!Pololu.Usc.ScopeFocus.Flap.FlatFlap.GetSwitch(0))
                 {
-                    FlatFlap.SetSwitch(0, true);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitch(0, true);
                     FlatsOn = true;
                     button21.Text = "Flat On";
                     button21.BackColor = System.Drawing.Color.Lime;
@@ -13358,7 +13376,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 else
                 {
-                    FlatFlap.SetSwitch(0, false);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitch(0, false);
                     FlatsOn = false;
                     button21.Text = "Flat Off";
                     button21.BackColor = System.Drawing.Color.Red;
@@ -13368,8 +13386,8 @@ namespace Pololu.Usc.ScopeFocus
             {
 
                 // gotopos(3);
-                //focuser.Move(3);
-                focuser.Action("FlatToggle", "");
+                //Pololu.Usc.ScopeFocus.Focus.focuser.Move(3);
+             //   Pololu.Usc.ScopeFocus.Focus.focuser.Action("FlatToggle", "");// remd 1-5-17 (not supported anymore)
                 Thread.Sleep(200);
 
                 //***************need to add to driver ***********
@@ -14187,7 +14205,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             if (checkBox18.Checked == true)
             {
-                if (devId4 == null)
+                if (Pololu.Usc.ScopeFocus.Flap.DevId4 == null)
                 {
                     MessageBox.Show("Flats selected but not connected to ASCOM switch", "scopefocus");
                     checkBox18.Checked = false;
@@ -14233,7 +14251,7 @@ namespace Pololu.Usc.ScopeFocus
                 //  NebListenStart(NebhWnd, SocketPort);
                 //  Thread.Sleep(4000);
                 // textBox41.Refresh();
-                SlavePaused = false;
+                //SlavePaused = false;
 
                 //   CaptureTime = Convert.ToInt32(textBox37.Text) * 1000;
                 //   subsperfilter = ((Convert.ToInt32(textBox41.Text)/CaptureTime));//calculate number of subs based on server total time
@@ -14550,7 +14568,7 @@ namespace Pololu.Usc.ScopeFocus
             else
                 return false;
         }
-        private bool SlavePaused = false;
+     //   private bool SlavePaused = false;
 
         private void SlavePause()
         {
@@ -14610,7 +14628,7 @@ namespace Pololu.Usc.ScopeFocus
         private void SlaveCapture()
         {
             // SendtoSlave((subsperfilter * CaptureTime3).ToString());
-            SlavePaused = false;
+          //  SlavePaused = false;
             ShowWindowAsync(Slavehwnd, SW_SHOW);
             ShowWindowAsync(Slavehwnd, SW_RESTORE);
             SetForegroundWindow(Slavehwnd);
@@ -14669,7 +14687,7 @@ namespace Pololu.Usc.ScopeFocus
             Log("SlaveFlat hit");
             if (IsSlave())
             {
-                SlavePaused = false;
+                //SlavePaused = false;
                 SlaveFlatOn = true;
                 DoFlat();
             }
@@ -15125,7 +15143,7 @@ namespace Pololu.Usc.ScopeFocus
         //if t1 is greater than t2 then result isGreater zero 
 
         bool FlipDone = false;
-        bool okToFlip = false;
+     //   bool okToFlip = false;
 
         private void checkBox23_CheckedChanged(object sender, EventArgs e)
         {
@@ -15143,7 +15161,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
-                okToFlip = true;
+              //  okToFlip = true;
                 DialogResult result1 = MessageBox.Show("Merdian Flip in " + (TimeSpan.FromHours((double)TimeToFlip).ToString()), "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (result1 == DialogResult.OK)
                 {
@@ -15185,85 +15203,100 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         bool usingASCOM = false;
-        private void Chooser()
-        {
-            ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
-            chooser.DeviceType = "Telescope";
-            devId = chooser.Choose();
-            if (devId != "")
-                scope = new ASCOM.DriverAccess.Telescope(devId);
-            else
-                return;
-            //  ASCOM.DriverAccess.Telescope scope = new ASCOM.DriverAccess.Telescope(devId);
-            Log("connected to " + devId);
-            FileLog2("connected to " + devId);
-            scope.Connected = true;
-            if (scope.Connected)
-            {
-                timer2.Enabled = true;
-                timer2.Start();
-            }
-            usingASCOM = true;
-            button49.BackColor = System.Drawing.Color.Lime;
-            //   button49.Text = "Connected";
-        }
+        //private void Chooser()
+        //{
+        //    ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+        //    chooser.DeviceType = "Telescope";
+        //    devId = chooser.Choose();
+        //    if (devId != "")
+        //        scope = new ASCOM.DriverAccess.Telescope(devId);
+        //    else
+        //        return;
+        //    //  ASCOM.DriverAccess.Telescope scope = new ASCOM.DriverAccess.Telescope(devId);
+        //    Log("connected to " + devId);
+        //    FileLog2("connected to " + devId);
+        //    scope.Connected = true;
+        //    if (scope.Connected)
+        //    {
+        //        timer2.Enabled = true;
+        //        timer2.Start();
+        //    }
+        //    usingASCOM = true;
+        //    button49.BackColor = System.Drawing.Color.Lime;
+        //    //   button49.Text = "Connected";
+        //}
       //  bool usingASCOMFocus = false;
-        private static string devId2;
+      //  private static string devId2;
 
-        public void FocusChooser()
-        {
+        //public void FocusChooser()
+        //{
 
-            ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
-            chooser.DeviceType = "Focuser";
-            devId2 = chooser.Choose();
-            //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser(devId2);
-            if (devId2 != "")
-                focuser = new Focuser(devId2);
-            else
-                return;
-
-
-
-            focuser.Connected = true;
-            //***************** I think this needs to be changes so it SETs the value not GETs***************
-            //go back to previous method for storing the maxtravel in settings, then when gets it 
-            //after selecting equipement it sets the value. 
-            //****************************************************************************************
-            travel = focuser.MaxStep;
-            textBox2.Text = travel.ToString();
-            count = focuser.Position;
-            textBox1.Text = count.ToString();
-            Log("connected to " + devId2);
-            FileLog2("connected to " + devId2);
-            button8.BackColor = System.Drawing.Color.Lime;
-            //  button8.Text = "Connected";
-            /*
-            if (focuser.Connected)
-            {
-                MessageBox.Show("ASCOM Focuser connected");
-            }
-             */
-            numericUpDown6.Value = focuser.Position;
-        //    usingASCOMFocus = true;
-
-            //   focuser.CommandString("C", true);
+        //    ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+        //    chooser.DeviceType = "Focuser";
+        //    devId2 = chooser.Choose();
+        //    //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser(devId2);
+        //    if (devId2 != "")
+        //        focuser = new Focuser(devId2);
+        //    else
+        //        return;
 
 
-        }
+
+        //    focuser.Connected = true;
+        //    //***************** I think this needs to be changes so it SETs the value not GETs***************
+        //    //go back to previous method for storing the maxtravel in settings, then when gets it 
+        //    //after selecting equipement it sets the value. 
+        //    //****************************************************************************************
+        //    travel = focuser.MaxStep;
+        //    textBox2.Text = travel.ToString();
+        //    count = focuser.Position;
+        //    textBox1.Text = count.ToString();
+        //    Log("connected to " + devId2);
+        //    FileLog2("connected to " + devId2);
+        //    button8.BackColor = System.Drawing.Color.Lime;
+        //    //  button8.Text = "Connected";
+        //    /*
+        //    if (focuser.Connected)
+        //    {
+        //        MessageBox.Show("ASCOM Focuser connected");
+        //    }
+        //     */
+        //    numericUpDown6.Value = focuser.Position;
+        ////    usingASCOMFocus = true;
+
+        //    //   focuser.CommandString("C", true);
+
+
+        //}
         // ASCOM.DriverAccess.Telescope scope;
-        public static string devId;
+      //  public static string devId;
         private void button49_Click(object sender, EventArgs e)
         {
 
             if (button49.BackColor != Color.Lime)
-                Chooser();
+            {
+                Mount.Chooser();
+                if (Mount.scope.Connected)
+                {
+                    Log("connected to " + Mount.DevId);
+                    FileLog2("connected to " + Mount.DevId);
+                    scope.Connected = true;
+                    if (scope.Connected)
+                    {
+                        timer2.Enabled = true;
+                        timer2.Start();
+                    }
+                    usingASCOM = true;
+                    button49.BackColor = System.Drawing.Color.Lime;
+                }
+            }
             else
             {
                 scope.Connected = false;
                 button49.BackColor = Color.WhiteSmoke;
                 scope.Dispose();
-                Log(devId + " disconnected");
-                devId = "";
+                Log(Mount.DevId + " disconnected");
+                Mount.DevId = "";
             }
         }
         // added 3-12-16 for online solve  
@@ -15803,8 +15836,8 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         //partialsolvehere
-        bool atfocus = false;
-        bool attarget = false;
+    //    bool atfocus = false;
+    //    bool attarget = false;
         private void PartialSolve()
         {
             try
@@ -16087,6 +16120,8 @@ namespace Pololu.Usc.ScopeFocus
 
         private void Solve()
         {
+
+          //  AstrometryNet ast = new AstrometryNet();  // 1-7-17  ideally this is the only instance but in timer1 it is called to cancel. so needs to be 'global'  ??
             try
             {
                 PartialSolve();
@@ -16525,7 +16560,7 @@ namespace Pololu.Usc.ScopeFocus
 
         }
         public static string text;
-        private int cygwinId;
+   //     private int cygwinId;
         Process proc = new Process();
         // executecommandhere
 
@@ -16782,7 +16817,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // remd 11-8-16
                 //   Log("Timer 2 Tick error");
@@ -16871,36 +16906,45 @@ namespace Pololu.Usc.ScopeFocus
 
         //  public static string solveImage = "";
         private void textBox58_Click(object sender, EventArgs e)//select image from file browser, clean the solve folder and past the image as "solve.fit"
-        {
+        { 
             DialogResult result = openFileDialog2.ShowDialog();
-            GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
-            textBox58.Text = GlobalVariables.SolveImage;
-            //  var sourceDir = @"c:\sourcedir";
-
-            // remd 10-22-16
-            if (GlobalVariables.LocalPlateSolve)
+            if (result == DialogResult.OK)
             {
-                // var destDir = @"c:\cygwin\home\astro";
-                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
-                // var pattern = "*.csv";
-                // var file = solveImage;
-                //   var sourceDir = @"c:\cygwin\home\astro";
-                //    var destfile = "solve.fit"; // changed 5-1-16
-                var destfile = Path.GetFileName(GlobalVariables.SolveImage);
+                GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
+                textBox58.Text = GlobalVariables.SolveImage;
+                //  var sourceDir = @"c:\sourcedir";
 
-                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
+                // remd 10-22-16
+                if (GlobalVariables.LocalPlateSolve)
                 {
-                    // remd 10-22-16
+                    // var destDir = @"c:\cygwin\home\astro";
+                    var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
+                    // var pattern = "*.csv";
+                    // var file = solveImage;
+                    //   var sourceDir = @"c:\cygwin\home\astro";
+                    //    var destfile = "solve.fit"; // changed 5-1-16
+                    var destfile = Path.GetFileName(GlobalVariables.SolveImage);
 
-                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.SolveImage)))
                     {
-                        if (files.Name != "tablist.exe")
-                            files.Delete();//empty the directory
+                        // remd 10-22-16
+
+                        foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                        {
+                            if (files.Name != "tablist.exe")
+                                files.Delete();//empty the directory
+                        }
+                        //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                        File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));
                     }
-                    //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                    File.Copy(GlobalVariables.SolveImage, Path.Combine(destDir, destfile));
                 }
             }
+           
+                if (result == DialogResult.Cancel)
+                {
+                 return;
+                }
+            
         }
 
         private void textBox59_TextChanged(object sender, EventArgs e)
@@ -17087,7 +17131,7 @@ namespace Pololu.Usc.ScopeFocus
         //need to set baseline,then compare and if deviation of > textbox63 % refocus 
         //need to find a place to insert monitorHFR, likely Filesystemwater 4
         //also add PHD monitoring see above
-        private int baselineMetricHFR;
+   //     private int baselineMetricHFR;
         private void checkBox27_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox27.Checked == true)
@@ -17115,7 +17159,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button61_Click(object sender, EventArgs e)
         {
-            focuser.Halt();
+            Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
 
         }
 
@@ -17126,13 +17170,13 @@ namespace Pololu.Usc.ScopeFocus
             //since Action must be string1, string2
             if (checkBox28.Checked == true)
             {
-                focuser.Action("Reverse", "True");
+                Pololu.Usc.ScopeFocus.Focus.focuser.Action("Reverse", "True");
                 Log("Reversed");
 
             }
             if (checkBox28.Checked == false)
             {
-                focuser.Action("Reverse", "False");
+                Pololu.Usc.ScopeFocus.Focus.focuser.Action("Reverse", "False");
 
             }
 
@@ -17208,17 +17252,17 @@ namespace Pololu.Usc.ScopeFocus
                 if ((pos == "") || (Convert.ToInt32(pos) < 0) || (Convert.ToInt32(pos) > travel))
                 {
                     MessageBox.Show("Invalid position", "scopefocus");
-                    textBox1.Text = focuser.Position.ToString();
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     return;
                 }
-                DialogResult result1 = MessageBox.Show("Manually set focuser motor position to " + pos + "?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                DialogResult result1 = MessageBox.Show("Manually set Pololu.Usc.ScopeFocus.Focus.focuser motor position to " + pos + "?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                 if (result1 == DialogResult.OK)
                 {
-                    focuser.Action("setPosition", pos);
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Action("setPosition", pos);
                 }
                 else
                 {
-                    textBox1.Text = focuser.Position.ToString();
+                    textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                     return;
                 }
                 e.SuppressKeyPress = true;
@@ -17406,8 +17450,9 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         // restet sequence
-        private void button15_Click(object sender, EventArgs e)
+        private void button15_Click(object sender, EventArgs e) 
         {
+            //  ****consider combining with stop**** 1-5-17
             if (Filter.DevId3 != null)
                 ComboBoxFill();
             checkBox1.Checked = true;
@@ -17489,38 +17534,40 @@ namespace Pololu.Usc.ScopeFocus
                 radioButton8.Checked = false;
             WindowsFormsApplication1.Properties.Settings.Default.Reducer = radioButton10.Checked;
         }
-        string devId4;
+      //  string devId4;
         private void button12_Click(object sender, EventArgs e)
         {
             try
             {
                 if (SwitchIsConnected)
                 {
-                    FlatFlap.Connected = false;
-                    Log(devId4 + " disconnected");
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.Connected = false;
+                    Log(Pololu.Usc.ScopeFocus.Flap.DevId4 + " disconnected");
                     button12.BackColor = System.Drawing.Color.WhiteSmoke;
-                    devId4 = "";
+                    Pololu.Usc.ScopeFocus.Flap.DevId4 = "";
                     return;
                 }
-                ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
-                chooser.DeviceType = "Switch";
-                devId4 = chooser.Choose();
-                if (!string.IsNullOrEmpty(devId4))
-                {
-                    FlatFlap = new ASCOM.DriverAccess.Switch(devId4);
-                    FlatFlap.Connected = true;
-                    Thread.Sleep(200);
-                    FlatFlap.SetSwitch(0, false);
-                }
+
+                //ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+                //chooser.DeviceType = "Switch";
+                //devId4 = chooser.Choose();
+                //if (!string.IsNullOrEmpty(devId4))
+                //{
+                //    FlatFlap = new ASCOM.DriverAccess.Switch(devId4);
+                //    FlatFlap.Connected = true;
+                //    Thread.Sleep(200);
+                //    FlatFlap.SetSwitch(0, false);
+                //}
 
                 else
                 {
-                    return;
+                    Flap.FlapChooser();
+                    if (SwitchIsConnected)
+                        button12.BackColor = System.Drawing.Color.Lime;
+                    Log("connected to " + Pololu.Usc.ScopeFocus.Flap.DevId4);
+                    FileLog2("connected to " + Pololu.Usc.ScopeFocus.Flap.DevId4);
                 }
-                if (SwitchIsConnected)
-                    button12.BackColor = System.Drawing.Color.Lime;
-                Log("connected to " + devId4);
-                FileLog2("connected to " + devId4);
+
             }
 
             catch (Exception ex)
@@ -17537,7 +17584,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 get
                 {
-                    return((this.FlatFlap != null) && (FlatFlap.Connected == true));
+                    return((Pololu.Usc.ScopeFocus.Flap.FlatFlap != null) && (Pololu.Usc.ScopeFocus.Flap.FlatFlap.Connected == true));
                 }
 
             }
@@ -17582,7 +17629,7 @@ namespace Pololu.Usc.ScopeFocus
             ph.Guide();
                 //resumePHD2();              
             }
-            int resumeAttempts = 0;
+        //    int resumeAttempts = 0;
             private void resumePHD2()//resumephd2here
             {
             // remd all below 12-10-16
@@ -17793,7 +17840,7 @@ namespace Pololu.Usc.ScopeFocus
 
             private void button43_Click(object sender, EventArgs e)//slew to center here
             {
-                if (devId != "")
+                if (Mount.DevId != "")
                 {
 
                     if (centerHereDec == 0 || centerHereRA == 0)
@@ -17836,9 +17883,9 @@ namespace Pololu.Usc.ScopeFocus
             private void trackBar1_MouseUp(object sender, MouseEventArgs e)
             {
                
-                if (devId4 != null)
+                if (Pololu.Usc.ScopeFocus.Flap.DevId4 != null)
                 {
-                    FlatFlap.SetSwitchValue(0, (double)trackBar1.Value);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitchValue(0, (double)trackBar1.Value);
                     textBox44.Text = trackBar1.Value.ToString();
                 }
                 else
@@ -18129,67 +18176,80 @@ namespace Pololu.Usc.ScopeFocus
         private void textBox50_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog2.ShowDialog();
-            GlobalVariables.FocusImage = openFileDialog2.FileName.ToString();
-            textBox50.Text = GlobalVariables.FocusImage;
-
-            // added 11-9-16
-            if (GlobalVariables.LocalPlateSolve)
+            if (result == DialogResult.OK)
             {
-                // var destDir = @"c:\cygwin\home\astro";
-                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
-                // var pattern = "*.csv";
-                // var file = solveImage;
-                //   var sourceDir = @"c:\cygwin\home\astro";
-                //    var destfile = "solve.fit"; // changed 5-1-16
-                var destfile = Path.GetFileName(GlobalVariables.FocusImage);
+                GlobalVariables.FocusImage = openFileDialog2.FileName.ToString();
+                textBox50.Text = GlobalVariables.FocusImage;
 
-                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.FocusImage)))
+                // added 11-9-16
+                if (GlobalVariables.LocalPlateSolve)
                 {
-                    // remd 10-22-16
+                    // var destDir = @"c:\cygwin\home\astro";
+                    var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
+                    // var pattern = "*.csv";
+                    // var file = solveImage;
+                    //   var sourceDir = @"c:\cygwin\home\astro";
+                    //    var destfile = "solve.fit"; // changed 5-1-16
+                    var destfile = Path.GetFileName(GlobalVariables.FocusImage);
 
-                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.FocusImage)))
                     {
-                        if (files.Name != "tablist.exe")
-                            files.Delete();//empty the directory
+                        // remd 10-22-16
+
+                        foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                        {
+                            if (files.Name != "tablist.exe")
+                                files.Delete();//empty the directory
+                        }
+                        //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                        File.Copy(GlobalVariables.FocusImage, Path.Combine(destDir, destfile));
                     }
-                    //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                    File.Copy(GlobalVariables.FocusImage, Path.Combine(destDir, destfile));
                 }
             }
-
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
 
         }
 
         private void textBox51_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog2.ShowDialog();
-            GlobalVariables.TargetImage = openFileDialog2.FileName.ToString();
-            // GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
-            textBox51.Text = GlobalVariables.TargetImage;
-
-            // added 11-9-16
-            if (GlobalVariables.LocalPlateSolve)
+            if (result == DialogResult.OK)
             {
-                // var destDir = @"c:\cygwin\home\astro";
-                var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
-                // var pattern = "*.csv";
-                // var file = solveImage;
-                //   var sourceDir = @"c:\cygwin\home\astro";
-                //    var destfile = "solve.fit"; // changed 5-1-16
-                var destfile = Path.GetFileName(GlobalVariables.TargetImage);
+                GlobalVariables.TargetImage = openFileDialog2.FileName.ToString();
+                // GlobalVariables.SolveImage = openFileDialog2.FileName.ToString();
+                textBox51.Text = GlobalVariables.TargetImage;
 
-                if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.TargetImage)))
+                // added 11-9-16
+                if (GlobalVariables.LocalPlateSolve)
                 {
-                    // remd 10-22-16
+                    // var destDir = @"c:\cygwin\home\astro";
+                    var destDir = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp";
+                    // var pattern = "*.csv";
+                    // var file = solveImage;
+                    //   var sourceDir = @"c:\cygwin\home\astro";
+                    //    var destfile = "solve.fit"; // changed 5-1-16
+                    var destfile = Path.GetFileName(GlobalVariables.TargetImage);
 
-                    foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                    if (GlobalVariables.SolveImage != Path.Combine(destDir, Path.GetFileName(GlobalVariables.TargetImage)))
                     {
-                        if (files.Name != "tablist.exe")
-                            files.Delete();//empty the directory
+                        // remd 10-22-16
+
+                        foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
+                        {
+                            if (files.Name != "tablist.exe")
+                                files.Delete();//empty the directory
+                        }
+                        //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
+                        File.Copy(GlobalVariables.TargetImage, Path.Combine(destDir, destfile));
                     }
-                    //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
-                    File.Copy(GlobalVariables.TargetImage, Path.Combine(destDir, destfile));
                 }
+            }
+            if (result == DialogResult.Cancel)
+            {
+                return;
             }
         }
 
@@ -18483,7 +18543,6 @@ namespace Pololu.Usc.ScopeFocus
                 //  textBoxPHDstatus.Text = ph.show("PHDVersion");
             }
 
-      
         private void button51_Click_1(object sender, EventArgs e)
         {
             Handles H = new Handles();

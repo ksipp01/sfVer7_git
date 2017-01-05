@@ -330,7 +330,7 @@ namespace Pololu.Usc.ScopeFocus
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
               //  MainWindow L = new MainWindow();
              //  L.Log("FindHandles Error" + e.ToString());
