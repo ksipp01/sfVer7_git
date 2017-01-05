@@ -187,6 +187,7 @@
     <Compile Include="EquipConnect.Designer.cs">
       <DependentUpon>EquipConnect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Filter.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="Handles.cs" />
     <Compile Include="PHD2comm.cs" />

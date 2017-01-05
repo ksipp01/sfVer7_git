@@ -4929,7 +4929,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox LogTextBox;
+        private System.Windows.Forms.TextBox LogTextBox; 
         private System.IO.FileSystemWatcher fileSystemWatcher3;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolTip toolTip2;

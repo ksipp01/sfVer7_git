@@ -33,8 +33,8 @@
 
 //ver 22 fixed problem with blank messaging parameters
 //ver 23:  TB1 not displaying corrrect position after GotoFocus.  changed several focuser.Move to gotopos lines 2620,2624,2633,2646,2658,3254,3257 
-//ver 24  added prelim Internal filter support.  added checkBox31.  added if (!checkBox31.check) in front of all filterwheel.position.  
-//         ASUMES starting at lowest filterwheel position.  NebCapture sends SetExtFilter N where N = currentfilter
+//ver 24  added prelim Internal filter support.  added checkBox31.  added if (!checkBox31.check) in front of all Filter.filterWheel.position.  
+//         ASUMES starting at lowest Filter.filterWheel position.  NebCapture sends SetExtFilter N where N = currentfilter
 //         thus far untested w/ flats and darks in sequence.  
 
 //ver 25 corected not saving backlash value, allowed leaving textbox to save as well as hitting enter. 
@@ -88,7 +88,7 @@
 
 // 10-11-16 many changes for new FF metric works w/ CDCSimulator
 // 11-8-16  added clipboard use, (works better). removed log timer tick 2 error.  
-//   -- add  a bunch of "&& (devId3 != null))" for dark and flat filter changes that might be done witout filter wheel
+//   -- add  a bunch of "&& (Filter.DevId3 != null))" for dark and flat filter changes that might be done witout filter wheel
 // -- capture status reads from Nebs statuswindow
 // -- added globalvariable.Capcurrent and CapTotal 
 
@@ -120,7 +120,7 @@
 /// ****fix so when using metric the focus star in target frame (checkBox 10) doesn't matter.  get target position not set error if unchecked
 /// ***check MonitorNebStatus()....may have problems is neb is closed before scopefocus
 /// 
-///  for sequence running add script control of internal ?(or external) filterwheel e.g. for QSI see pg 95 of manual
+///  for sequence running add script control of internal ?(or external) Filter.filterWheel e.g. for QSI see pg 95 of manual
 ///  SetFilterN  or SetExtFilterN (1-indexed)
 
 
@@ -188,7 +188,7 @@ namespace Pololu.Usc.ScopeFocus
         //   SerialPort port2;
 
         Focuser focuser;
-        FilterWheel filterWheel;
+      //  FilterWheel filterWheel;
         private ASCOM.DriverAccess.Switch FlatFlap;
         private ASCOM.DriverAccess.Camera cam;
 
@@ -667,6 +667,7 @@ namespace Pololu.Usc.ScopeFocus
             //}
             try // added 10-25-16
             {
+                
                 if (LogTextBox.Text != "")
                     LogTextBox.Text += Environment.NewLine;
                 LogTextBox.Text += DateTime.Now.ToLongTimeString() + "  " + text;
@@ -675,7 +676,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             catch (Exception e) // added 10-25-16
             {
-                Log("logging error line 667");
+              //  Log("logging error line 667");
                 FileLog2("Logging error " + e.ToString());
 
             }
@@ -4284,13 +4285,13 @@ namespace Pololu.Usc.ScopeFocus
                     scope.Dispose();
                 }
             }
-            if (!string.IsNullOrEmpty(devId3))
+            if (!string.IsNullOrEmpty(Filter.DevId3))
             {
-                if (filterWheel.Connected == true)
+                if (Filter.filterWheel.Connected == true)
                 {
-                    filterWheel.Connected = false;
+                    Filter.filterWheel.Connected = false;
                     Thread.Sleep(100);
-                    filterWheel.Dispose();
+                    Filter.filterWheel.Dispose();
                 }
             }
             if (!string.IsNullOrEmpty(devId2))
@@ -4996,24 +4997,24 @@ namespace Pololu.Usc.ScopeFocus
                 return;
             }
 
-            if (devId3 != null)
+            if (Filter.DevId3 != null)
             {
 
-                string[] names = filterWheel.Names;
-                if (filterWheel.Position == names.Length - 1)
-                    filterWheel.Position = 0;
+                string[] names = Filter.filterWheel.Names;
+                if (Filter.filterWheel.Position == names.Length - 1)
+                    Filter.filterWheel.Position = 0;
                 else
                 {
 
-                    filterWheel.Position++;
+                    Filter.filterWheel.Position++;
                 }
-                while (filterWheel.Position == -1)
+                while (Filter.filterWheel.Position == -1)
                     toolStripStatusLabel4.Text = "Filter Moving";
 
                 //     DisplayCurrentFilter();//***need to account for 5 position versus prev 4  ****  2-28-14
                 // }
 
-                FileLog2("Filter moved to position: " + filterWheel.Position.ToString());
+                FileLog2("Filter moved to position: " + Filter.filterWheel.Position.ToString());
             }
             //focuser.Move(1);
             //     focuser.Action("FilterAdvance", "");
@@ -5111,17 +5112,17 @@ namespace Pololu.Usc.ScopeFocus
                                     currentfilter = 1;
                             }
                  */
-                if (devId3 != null)
+                if (Filter.DevId3 != null)
                 {
-                    if (filterWheel.Position == -1)
+                    if (Filter.filterWheel.Position == -1)
                         toolStripStatusLabel4.Text = "Filter Moving";
-                    while (filterWheel.Position == -1)
+                    while (Filter.filterWheel.Position == -1)
                     {
                         Thread.Sleep(100);
                     }
-                    //  currentfilter = Convert.ToInt16(filterWheel.Position);
-                    //   Log(filterWheel.Names[currentfilter].ToString());
-                    Filtertext = filterWheel.Names[filterWheel.Position];
+                    //  currentfilter = Convert.ToInt16(Filter.filterWheel.Position);
+                    //   Log(Filter.filterWheel.Names[currentfilter].ToString());
+                    Filtertext = Filter.filterWheel.Names[Filter.filterWheel.Position];
                     FileLog2("Current Filter: " + Filtertext);
                 }
                 else
@@ -5715,7 +5716,7 @@ namespace Pololu.Usc.ScopeFocus
                     currentfilter = 2;
                     //   filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox3.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox3.SelectedIndex;
                     DisplayCurrentFilter();
                     //     FlatDone = false;
                     //     fileSystemWatcher1.EnableRaisingEvents = true;
@@ -5760,7 +5761,7 @@ namespace Pololu.Usc.ScopeFocus
                     //   filteradvance();
                     //   filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox4.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox4.SelectedIndex;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     //  textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -5801,7 +5802,7 @@ namespace Pololu.Usc.ScopeFocus
                     //   filteradvance();
                     //    filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox5.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
                     DisplayCurrentFilter();
                     //    FlatDone = false;
                     //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -5859,7 +5860,7 @@ namespace Pololu.Usc.ScopeFocus
                         //   filteradvance();
                         //    filteradvance();
                         if (!checkBox31.Checked)
-                            filterWheel.Position = (short)comboBox1.SelectedIndex;
+                            Filter.filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -5916,7 +5917,7 @@ namespace Pololu.Usc.ScopeFocus
                         //   filteradvance();
                         //    filteradvance();
                         if (!checkBox31.Checked)
-                            filterWheel.Position = (short)comboBox8.SelectedIndex;
+                            Filter.filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -5952,13 +5953,13 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
                         ToggleFlat();
                     //filteradvance();//back to pos 1 
-                    //   filterWheel.Position = 0;
+                    //   Filter.filterWheel.Position = 0;
                     Thread.Sleep(1000);
                     Handles.Editfound = 0;
                     Nebname = "Flat1";
@@ -6013,7 +6014,7 @@ namespace Pololu.Usc.ScopeFocus
                     currentfilter = 3;
                     // filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox4.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox4.SelectedIndex;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6048,7 +6049,7 @@ namespace Pololu.Usc.ScopeFocus
                     //  filteradvance();
                     //  filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox5.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
                     DisplayCurrentFilter();
                     //    FlatDone = false;
                     // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6099,8 +6100,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null))
-                            filterWheel.Position = (short)comboBox1.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                            Filter.filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6153,8 +6154,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null)) // 11-8-16
-                            filterWheel.Position = (short)comboBox8.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null)) // 11-8-16
+                            Filter.filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6188,8 +6189,8 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;//back to pos 0 
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;//back to pos 0 
                     DisplayCurrentFilter();
                     //    filteradvance();
                     //     filteradvance();
@@ -6244,7 +6245,7 @@ namespace Pololu.Usc.ScopeFocus
                     currentfilter = 4;
                     //  filteradvance();
                     if (!checkBox31.Checked)
-                        filterWheel.Position = (short)comboBox5.SelectedIndex;
+                        Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     if (checkBox8.Checked == true)
@@ -6297,7 +6298,7 @@ namespace Pololu.Usc.ScopeFocus
                     else
                     {
                         if (!checkBox31.Checked)
-                            filterWheel.Position = (short)comboBox1.SelectedIndex;
+                            Filter.filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6351,8 +6352,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null))
-                            filterWheel.Position = (short)comboBox8.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                            Filter.filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6386,8 +6387,8 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     //  filteradvance();
                     //  filteradvance();
@@ -6463,8 +6464,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null))
-                            filterWheel.Position = (short)comboBox1.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                            Filter.filterWheel.Position = (short)comboBox1.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6564,8 +6565,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null))
-                            filterWheel.Position = (short)comboBox8.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                            Filter.filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6599,8 +6600,8 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
                         ToggleFlat();
@@ -6674,8 +6675,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        if ((!checkBox31.Checked) && (devId3 != null))
-                            filterWheel.Position = (short)comboBox8.SelectedIndex;
+                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                            Filter.filterWheel.Position = (short)comboBox8.SelectedIndex;
                         DisplayCurrentFilter();
                         //    FlatDone = false;
                         // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6710,8 +6711,8 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
                         ToggleFlat();
@@ -6761,8 +6762,8 @@ namespace Pololu.Usc.ScopeFocus
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
-                    if ((!checkBox31.Checked) && (devId3 != null))
-                        filterWheel.Position = 0;
+                    if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                        Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
                     if (FlatsOn == false)
                         ToggleFlat();
@@ -6984,7 +6985,7 @@ namespace Pololu.Usc.ScopeFocus
                         // 11-8-16 TODO fix for clipboard use
                         intFilterPos = currentfilter;
                         byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
-                        //use the one above for testing w/ external ASCOM filterwheel
+                        //use the one above for testing w/ external ASCOM Filter.filterWheel
                         //  byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
                         try
                         {
@@ -8010,8 +8011,8 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     currentfilter = 1;
-                    if (devId3 != null)
-                        filterWheel.Position = (short)comboBox2.SelectedIndex;//move to selected filter
+                    if (Filter.DevId3 != null)
+                        Filter.filterWheel.Position = (short)comboBox2.SelectedIndex;//move to selected filter
                     DisplayCurrentFilter();
                     textBox21.BackColor = System.Drawing.Color.White;
                     Filtertext = comboBox2.Text;
@@ -8038,7 +8039,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         // filteradvance();
                         if (!checkBox31.Checked)
-                            filterWheel.Position = (short)comboBox3.SelectedIndex;
+                            Filter.filterWheel.Position = (short)comboBox3.SelectedIndex;
                         DisplayCurrentFilter();
                         currentfilter = 2;
                         if (checkBox17.Checked == false)
@@ -8061,7 +8062,7 @@ namespace Pololu.Usc.ScopeFocus
 
                             currentfilter = 3;
                             if (!checkBox31.Checked)
-                                filterWheel.Position = (short)comboBox4.SelectedIndex;
+                                Filter.filterWheel.Position = (short)comboBox4.SelectedIndex;
                             DisplayCurrentFilter();
                             if (checkBox17.Checked == false)
                                 subsperfilter = (int)numericUpDown14.Value;
@@ -8084,7 +8085,7 @@ namespace Pololu.Usc.ScopeFocus
                                 //   filteradvance();
                                 //   filteradvance();
                                 if (!checkBox31.Checked)
-                                    filterWheel.Position = (short)comboBox5.SelectedIndex;
+                                    Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
                                 DisplayCurrentFilter();
                                 currentfilter = 4;
                                 if (checkBox17.Checked == false)
@@ -8102,8 +8103,8 @@ namespace Pololu.Usc.ScopeFocus
                                     if (comboBox1.SelectedItem.ToString() != "Dark 1")
                                     {
                                         currentfilter = 5;
-                                        if ((!checkBox31.Checked) && (devId3 != null))
-                                            filterWheel.Position = (short)comboBox1.SelectedIndex;
+                                        if ((!checkBox31.Checked) && (Filter.DevId3 != null))
+                                            Filter.filterWheel.Position = (short)comboBox1.SelectedIndex;
                                         DisplayCurrentFilter();
                                         if (checkBox17.Checked == false)
                                             subsperfilter = (int)numericUpDown14.Value;
@@ -17226,34 +17227,34 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private static string devId3;
+        //private static string Filter.DevId3;
 
-        public void FilterWheelChooser()
-        {
+        //public void Filter.filterWheelChooser() // 1-7-17 moved to separate class
+        //{
 
-            ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
-            chooser.DeviceType = "FilterWheel";
-            devId3 = chooser.Choose();
-            //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser(devId2);
-            if (devId3 != "")
-                filterWheel = new FilterWheel(devId3);
-            else
-                return;
-            filterWheel.Connected = true;
-            Log("filterwheel connected " + devId3);
-            FileLog2("filterwheel connected " + devId3);
-            buttonFilterConnect.BackColor = System.Drawing.Color.Lime;
-            if (!checkBox31.Checked)
-                filterWheel.Position = 0;
-            DisplayCurrentFilter();
-            if (!checkBox31.Checked)
-            {
-                foreach (string filter in filterWheel.Names)
-                    comboBox6.Items.Add(filter);
-                comboBox6.SelectedItem = filterWheel.Position;
-                ComboBoxFill();
-            }
-        }
+        //    ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
+        //    chooser.DeviceType = "Filter.filterWheel";
+        //    Filter.DevId3 = chooser.Choose();
+        //    //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser(devId2);
+        //    if (Filter.DevId3 != "")
+        //        Filter.filterWheel = new Filter.filterWheel(Filter.DevId3);
+        //    else
+        //        return;
+        //    Filter.filterWheel.Connected = true;
+        //    Log("Filter.filterWheel connected " + Filter.DevId3);
+        //    FileLog2("Filter.filterWheel connected " + Filter.DevId3);
+        //    buttonFilterConnect.BackColor = System.Drawing.Color.Lime;
+        //    if (!checkBox31.Checked)
+        //        Filter.filterWheel.Position = 0;
+        //    DisplayCurrentFilter();
+        //    if (!checkBox31.Checked)
+        //    {
+        //        foreach (string filter in Filter.filterWheel.Names)
+        //            comboBox6.Items.Add(filter);
+        //        comboBox6.SelectedItem = Filter.filterWheel.Position;
+        //        ComboBoxFill();
+        //    }
+        //}
 
 
         private void ComboBoxFill()
@@ -17265,7 +17266,7 @@ namespace Pololu.Usc.ScopeFocus
             comboBox5.Items.Clear();
             comboBox8.Items.Clear();
            
-            foreach (string filter in filterWheel.Names)
+            foreach (string filter in Filter.filterWheel.Names)
             {
                 comboBox2.Items.Add(filter);
                 comboBox3.Items.Add(filter);
@@ -17292,23 +17293,44 @@ namespace Pololu.Usc.ScopeFocus
         {
             //  WindowsFormsApplication1.EquipConnect c = new WindowsFormsApplication1.EquipConnect();
             //  c.Show();
-
+            //   Filter f = new Filter();
             if (buttonFilterConnect.BackColor != Color.Lime)
-                FilterWheelChooser();
+            {
+                Filter.FilterWheelChooser();
+                if (Filter.filterWheel.Connected == true)
+                {
+                    Log("Filter.filterWheel connected " + Filter.DevId3);
+                    FileLog2("Filter.filterWheel connected " + Filter.DevId3);
+                    buttonFilterConnect.BackColor = System.Drawing.Color.Lime;
+                    if (!checkBox31.Checked)
+                        Filter.filterWheel.Position = 0;
+                    DisplayCurrentFilter();
+                }
+                if (!checkBox31.Checked)
+                {
+                    foreach (string filter in Filter.filterWheel.Names)
+                        comboBox6.Items.Add(filter);
+                    comboBox6.SelectedItem = Filter.filterWheel.Position;
+                    ComboBoxFill();
+                }
+
+            }
+
             else
             {
-                filterWheel.Connected = false;
+
+                Filter.filterWheel.Connected = false;
                 buttonFilterConnect.BackColor = Color.WhiteSmoke;
-                filterWheel.Dispose();
-                Log(devId3 + " disconnected");
-                devId3 = "";
+                Filter.filterWheel.Dispose();
+                Log(Filter.DevId3 + " disconnected");
+                Filter.DevId3 = "";
             }
         }
 
         private void comboBox6_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             if (!checkBox31.Checked)
-                filterWheel.Position = (short)comboBox6.SelectedIndex;
+                Filter.filterWheel.Position = (short)comboBox6.SelectedIndex;
             DisplayCurrentFilter();
         }
 
@@ -17386,7 +17408,7 @@ namespace Pololu.Usc.ScopeFocus
         // restet sequence
         private void button15_Click(object sender, EventArgs e)
         {
-            if (devId3 != null)
+            if (Filter.DevId3 != null)
                 ComboBoxFill();
             checkBox1.Checked = true;
             checkBox2.Checked = false;
