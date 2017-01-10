@@ -51,7 +51,6 @@
             this.checkBox10 = new System.Windows.Forms.CheckBox();
             this.textBox19 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button10 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDown9 = new System.Windows.Forms.NumericUpDown();
             this.button14 = new System.Windows.Forms.Button();
@@ -78,11 +77,9 @@
             this.button9 = new System.Windows.Forms.Button();
             this.ButtonDisable = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.textBox11 = new System.Windows.Forms.TextBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.dataSet1 = new System.Data.DataSet();
             this.dataTable1 = new System.Data.DataTable();
             this.dataColumn1 = new System.Data.DataColumn();
@@ -200,7 +197,6 @@
             this.label26 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.button15 = new System.Windows.Forms.Button();
             this.button19 = new System.Windows.Forms.Button();
             this.button24 = new System.Windows.Forms.Button();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
@@ -268,6 +264,7 @@
             this.textBox23 = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.button15 = new System.Windows.Forms.Button();
             this.label30 = new System.Windows.Forms.Label();
             this.button30 = new System.Windows.Forms.Button();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
@@ -406,6 +403,8 @@
             this.label75 = new System.Windows.Forms.Label();
             this.label73 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.checkBox36 = new System.Windows.Forms.CheckBox();
+            this.checkBox35 = new System.Windows.Forms.CheckBox();
             this.button53 = new System.Windows.Forms.Button();
             this.button52 = new System.Windows.Forms.Button();
             this.textBox9 = new System.Windows.Forms.TextBox();
@@ -436,6 +435,7 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
+            this.label97 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
@@ -444,7 +444,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown39)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -642,18 +641,6 @@
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(6, 15);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(75, 23);
-            this.button10.TabIndex = 156;
-            this.button10.Text = "Backlash";
-            this.toolTip1.SetToolTip(this.button10, "Multiple repeated fine V-curves with alternating In/Out directions.\r\nThe differen" +
-        "ce in focus point equals backlash");
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -689,7 +676,7 @@
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(262, 11);
+            this.button14.Location = new System.Drawing.Point(251, 20);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(97, 23);
             this.button14.TabIndex = 163;
@@ -876,9 +863,9 @@
             // 
             // button51
             // 
-            this.button51.Location = new System.Drawing.Point(274, 39);
+            this.button51.Location = new System.Drawing.Point(289, 49);
             this.button51.Name = "button51";
-            this.button51.Size = new System.Drawing.Size(77, 23);
+            this.button51.Size = new System.Drawing.Size(59, 23);
             this.button51.TabIndex = 174;
             this.button51.Text = "Rescan";
             this.toolTip1.SetToolTip(this.button51, "Rescan for Neb or PHD window, if Neb or PHD are closed and restarted, click here " +
@@ -891,7 +878,7 @@
             this.UseClipBoard.AutoSize = true;
             this.UseClipBoard.Checked = true;
             this.UseClipBoard.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.UseClipBoard.Location = new System.Drawing.Point(270, 66);
+            this.UseClipBoard.Location = new System.Drawing.Point(191, 53);
             this.UseClipBoard.Name = "UseClipBoard";
             this.UseClipBoard.Size = new System.Drawing.Size(92, 17);
             this.UseClipBoard.TabIndex = 9;
@@ -970,18 +957,6 @@
             this.button8.UseVisualStyleBackColor = false;
             this.button8.Click += new System.EventHandler(this.button8_Click_2);
             // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(6, 51);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 158;
-            this.button5.Text = "Temp Cal";
-            this.toolTip3.SetToolTip(this.button5, "Repeat Fine V-curves to determine focus point with temp changes.\r\nPress Abort to " +
-        "stop");
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // textBox11
             // 
             this.textBox11.Location = new System.Drawing.Point(67, 43);
@@ -1054,14 +1029,6 @@
             this.menuStrip1.Size = new System.Drawing.Size(749, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileSystemWatcher1
-            // 
-            this.fileSystemWatcher1.EnableRaisingEvents = true;
-            this.fileSystemWatcher1.Filter = "*.bmp";
-            this.fileSystemWatcher1.NotifyFilter = System.IO.NotifyFilters.LastWrite;
-            this.fileSystemWatcher1.SynchronizingObject = this;
-            this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
             // 
             // dataSet1
             // 
@@ -1256,14 +1223,13 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label97);
             this.groupBox4.Controls.Add(this.UseClipBoard);
             this.groupBox4.Controls.Add(this.button51);
             this.groupBox4.Controls.Add(this.checkBox29);
             this.groupBox4.Controls.Add(this.checkBox28);
             this.groupBox4.Controls.Add(this.button59);
-            this.groupBox4.Controls.Add(this.button10);
             this.groupBox4.Controls.Add(this.textBox8);
-            this.groupBox4.Controls.Add(this.button5);
             this.groupBox4.Controls.Add(this.button14);
             this.groupBox4.Location = new System.Drawing.Point(361, 129);
             this.groupBox4.Name = "groupBox4";
@@ -1276,7 +1242,7 @@
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.Enabled = false;
-            this.checkBox29.Location = new System.Drawing.Point(151, 19);
+            this.checkBox29.Location = new System.Drawing.Point(136, 24);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(99, 17);
             this.checkBox29.TabIndex = 173;
@@ -1286,7 +1252,7 @@
             // checkBox28
             // 
             this.checkBox28.AutoSize = true;
-            this.checkBox28.Location = new System.Drawing.Point(179, 55);
+            this.checkBox28.Location = new System.Drawing.Point(109, 53);
             this.checkBox28.Name = "checkBox28";
             this.checkBox28.Size = new System.Drawing.Size(66, 17);
             this.checkBox28.TabIndex = 172;
@@ -1296,7 +1262,7 @@
             // 
             // button59
             // 
-            this.button59.Location = new System.Drawing.Point(90, 51);
+            this.button59.Location = new System.Drawing.Point(18, 49);
             this.button59.Name = "button59";
             this.button59.Size = new System.Drawing.Size(75, 23);
             this.button59.TabIndex = 170;
@@ -1306,7 +1272,7 @@
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(93, 17);
+            this.textBox8.Location = new System.Drawing.Point(80, 21);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(50, 20);
             this.textBox8.TabIndex = 157;
@@ -2330,16 +2296,6 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Filter/Flat";
             // 
-            // button15
-            // 
-            this.button15.Location = new System.Drawing.Point(76, 48);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(55, 23);
-            this.button15.TabIndex = 265;
-            this.button15.Text = "Reset";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
-            // 
             // button19
             // 
             this.button19.Location = new System.Drawing.Point(123, 191);
@@ -3095,6 +3051,16 @@
             this.groupBox16.TabIndex = 188;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Automation Control";
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(76, 48);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(55, 23);
+            this.button15.TabIndex = 265;
+            this.button15.Text = "Reset";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
             // label30
             // 
@@ -4520,6 +4486,8 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.checkBox36);
+            this.tabPage3.Controls.Add(this.checkBox35);
             this.tabPage3.Controls.Add(this.button53);
             this.tabPage3.Controls.Add(this.button52);
             this.tabPage3.Controls.Add(this.textBox9);
@@ -4535,6 +4503,26 @@
             this.tabPage3.Size = new System.Drawing.Size(738, 222);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "About";
+            // 
+            // checkBox36
+            // 
+            this.checkBox36.AutoSize = true;
+            this.checkBox36.Location = new System.Drawing.Point(50, 42);
+            this.checkBox36.Name = "checkBox36";
+            this.checkBox36.Size = new System.Drawing.Size(106, 17);
+            this.checkBox36.TabIndex = 12;
+            this.checkBox36.Text = "Plate Solve Plots";
+            this.checkBox36.UseVisualStyleBackColor = true;
+            // 
+            // checkBox35
+            // 
+            this.checkBox35.AutoSize = true;
+            this.checkBox35.Location = new System.Drawing.Point(50, 18);
+            this.checkBox35.Name = "checkBox35";
+            this.checkBox35.Size = new System.Drawing.Size(122, 17);
+            this.checkBox35.TabIndex = 11;
+            this.checkBox35.Text = "Plate Solve .new file";
+            this.checkBox35.UseVisualStyleBackColor = true;
             // 
             // button53
             // 
@@ -4583,6 +4571,7 @@
             this.checkBox34.Size = new System.Drawing.Size(152, 17);
             this.checkBox34.TabIndex = 5;
             this.checkBox34.Text = "Enable Timeout Monitoring";
+            this.toolTip1.SetToolTip(this.checkBox34, "send message if nothing happening after 1.5 x exposure time");
             this.checkBox34.UseVisualStyleBackColor = true;
             // 
             // checkBox33
@@ -4782,6 +4771,15 @@
             this.fileSystemWatcher7.SynchronizingObject = this;
             this.fileSystemWatcher7.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher7_Created);
             // 
+            // label97
+            // 
+            this.label97.AutoSize = true;
+            this.label97.Location = new System.Drawing.Point(20, 23);
+            this.label97.Name = "label97";
+            this.label97.Size = new System.Drawing.Size(54, 13);
+            this.label97.TabIndex = 175;
+            this.label97.Text = "Backlash:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4815,7 +4813,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown39)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -4937,7 +4934,6 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.IO.FileSystemWatcher fileSystemWatcher1;
         public System.IO.FileSystemWatcher fileSystemWatcher2;
         private System.Data.DataSet dataSet1;
         private System.Data.DataTable dataTable1;
@@ -5126,9 +5122,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.NumericUpDown numericUpDown9;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.TextBox textBox8;
-        private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label16;
@@ -5327,6 +5321,9 @@
         private System.Windows.Forms.Button button52;
         private System.Windows.Forms.Button button53;
         private System.Windows.Forms.Button button36;
+        private System.Windows.Forms.CheckBox checkBox35;
+        private System.Windows.Forms.CheckBox checkBox36;
+        private System.Windows.Forms.Label label97;
     }
 }
 

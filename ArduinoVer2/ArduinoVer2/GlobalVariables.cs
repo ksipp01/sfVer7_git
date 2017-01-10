@@ -132,12 +132,12 @@ namespace Pololu.Usc.ScopeFocus
             get { return ffenable; }
             set { ffenable = value; }
         }
-        private static bool tempon = false;
-        public static bool Tempon
-        {
-            get { return tempon; }
-            set { tempon = value; }
-        }
+        //private static bool tempon = false; // remd 1-10-17
+        //public static bool Tempon
+        //{
+        //    get { return tempon; }
+        //    set { tempon = value; }
+        //}
         //public static int Serverhwnd
         //{
         //    get { return _serverhwnd; }

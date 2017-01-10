@@ -111,6 +111,8 @@
 //                                     make sure to not use the file name originally opened. (change by .01 when get to that one) 
 //                                     rem filesystemwatcher2_delete lines 4254 down   // not sure if necessary.  
 // 1-7-17 remd all checkboxChanged. maMax, vcurveenable, TargetGotoOn, SlavePaused
+// 1-9-17 fixed error if PHD2 closes
+// 1-10-17 removed backlash determiniation and tempcal.  they don't work and arent used/  backlash can be foun by diff between upslope and dwnslope foucs points. 
 
 ///  to do:
 /// ver21 see above 
@@ -223,7 +225,7 @@ namespace Pololu.Usc.ScopeFocus
               }
               */
               
-            fileSystemWatcher1.EnableRaisingEvents = false;
+        //    fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;
@@ -252,7 +254,7 @@ namespace Pololu.Usc.ScopeFocus
         //  Focuser focuser;
         // ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser("");
         //    Focuser focuser;
-        Telescope scope;
+     //   Telescope scope;
         //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser("ASCOM.Arduino.Focuser");
         //Focuser focuser;
 
@@ -519,16 +521,16 @@ namespace Pololu.Usc.ScopeFocus
         //  private static double maxarrayMax = 1;
         //   int apexHFR;
         //int backlashN = 10;
-        private static float backlashSum = 0;//*****only used in 2 methods....find way of eliminating this varible!!
+   //     private static float backlashSum = 0;//*****only used in 2 methods....find way of eliminating this varible!!
 
 
         //     int vLostStar = 0;
         //     float backlashAvg = 0;
-        int backlashCount;
-        bool backlashDetermOn;
-        bool backlashOUT;
-        int backlashPosIN;
-        int backlashPosOUT;
+     //   int backlashCount;
+    //   bool backlashDetermOn;
+    //    bool backlashOUT;
+    //    int backlashPosIN;
+    //    int backlashPosOUT;
         //   float backlash = 0;
         int backlash;
      //   double maxMax = 1;
@@ -573,7 +575,7 @@ namespace Pololu.Usc.ScopeFocus
 
         int closing = 0;
         //  int syncval;
-        int templog;
+     //   int templog;
         //  int MoveDelay; //helps ensure no focus movement during capture
         int roundto;
         int vN;
@@ -988,7 +990,7 @@ namespace Pololu.Usc.ScopeFocus
 
             if (vDone != 1)
                 vcurve();
-
+            FileLog2("fileSystemWatcher2 changed");
             //    }
 
 
@@ -1938,7 +1940,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
-            fileSystemWatcher1.EnableRaisingEvents = false;
+            //fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;//added 3_13
             fileSystemWatcher5.EnableRaisingEvents = false;//added to test  metricHFR
             fileSystemWatcher7.EnableRaisingEvents = false;//added 12-29-16
@@ -2156,26 +2158,8 @@ namespace Pololu.Usc.ScopeFocus
         string[] metricpath;
 
 
-
-
-
-
-
-        //vcurvehere
-        void vcurve()
+        void SetFilterText() // ,moved from below 1-5-17
         {
-            FileLog2("V-Curve");
-            int vLostStar = 0;
-            float backlashAvg = 0;
-
-            //  Data d = new Data();
-            //  try
-            //  {
-
-
-
-            double maxarrayMax = 1;
-            int backlashN = 10;
             if (currentfilter == 1)
                 Filtertext = comboBox2.Text;
             if (currentfilter == 2)
@@ -2193,15 +2177,53 @@ namespace Pololu.Usc.ScopeFocus
                     return;
                 }
             }
+        }
+
+
+
+
+        //vcurvehere
+        void vcurve()
+        {
+            FileLog2("V-Curve");
+            int vLostStar = 0;
+        //    float backlashAvg = 0;
+
+            //  Data d = new Data();
+            //  try
+            //  {
+
+
+            SetFilterText();
+            double maxarrayMax = 1;
+          //  int backlashN = 10;
+            //if (currentfilter == 1)
+            //    Filtertext = comboBox2.Text;
+            //if (currentfilter == 2)
+            //    Filtertext = comboBox3.Text;
+            //if (currentfilter == 3)
+            //    Filtertext = comboBox4.Text;
+            //if (currentfilter == 4)
+            //    Filtertext = comboBox5.Text;
+            //if (enteredMaxHFR < enteredMinHFR)
+            //{
+            //    DialogResult result = MessageBox.Show("Minimum HFR cannot be greater than Maximum HFR ", "scopefocus",
+            //          MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    if (result == DialogResult.OK)
+            //    {
+            //        return;
+            //    }
+            //}
             roundto = 1;  // 10-25-16
             int MoveDelay = (int)numericUpDown9.Value;
 
             //vcurveenable = 1;
-            if (GlobalVariables.Tempon)
-            {
-                fileSystemWatcher1.EnableRaisingEvents = true;
-            }
-            if ((vProgress == 0) & (GlobalVariables.Tempon))
+            //if (GlobalVariables.Tempon)
+            //{
+            //    //fileSystemWatcher1.EnableRaisingEvents = true;
+            //}
+          //  if ((vProgress == 0) & (GlobalVariables.Tempon))  1-10-17
+                if (vProgress == 0)
             {
                 int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
                 //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
@@ -2341,8 +2363,8 @@ namespace Pololu.Usc.ScopeFocus
                     list[vProgress] = avg;
                 }
                 // try some lost star handling  7-27-14  ver 19
-
-                if ((GlobalVariables.FFenable) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false)) //check only for fine V-curve
+            //    if ((GlobalVariables.FFenable) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false)) //check only for fine V-curve
+                    if ((GlobalVariables.FFenable) & (repeatDone == 1)) //check only for fine V-curve
                 {
                     if ((vProgress > 2) && (vProgress < (vN - 2)))//don't use first/last stars
                     {
@@ -2366,7 +2388,7 @@ namespace Pololu.Usc.ScopeFocus
                         if ((((double)list[vProgress] / (double)list[vProgress - 1]) > 1.5) || (((double)list[vProgress] / (double)list[vProgress - 1]) < .5)) //find outlier
                         {
                             vLostStar++;
-                            Log("HFR " + list[vProgress].ToString() + " lost star?");
+                            Log("HFR " + list[vProgress].ToString() + " lost star or possible outlier");
 
                         }
                     }
@@ -2396,13 +2418,14 @@ namespace Pololu.Usc.ScopeFocus
                     string strLogText2 = "TempCal" + "\t " + tempavg.ToString() + "\t " + posMin.ToString();
                     string strLogText3 = "Fine-V: N " + (vProgress + 1).ToString() + "-" + (repeatProgress + 1).ToString() + "\t" + count.ToString() + " \t" + avg.ToString() + "\t" + avgMax.ToString();
                     positionbar();
-
-                    if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true) & (repeatDone == 1))
+                   // if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true) & (repeatDone == 1)) //1-1017
+                        if ((GlobalVariables.FFenable != true) & (repeatDone == 1))
                     {
                         chart1.Series[0].Points.AddXY(Convert.ToDouble(count), Convert.ToDouble(avg)); //chart course v curve
                     }
-                    if ((GlobalVariables.FFenable == true) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false))
-                    {
+                  //  if ((GlobalVariables.FFenable == true) & (!GlobalVariables.Tempon) & (repeatDone == 1) & (backlashDetermOn == false))
+                        if ((GlobalVariables.FFenable == true) & (repeatDone == 1))
+                        {
                         if ((avg < enteredMinHFR) || (avg > enteredMaxHFR) & (radioButton1.Checked == true))
                         {
                             chart1.Series[2].Points.AddXY(Convert.ToDouble(count), Convert.ToDouble(avg)); // chart data not used for calcs < min and > max
@@ -2428,8 +2451,8 @@ namespace Pololu.Usc.ScopeFocus
                     //    log = File.AppendText(fullpath);
                     //}
                     // Write to the file:
-                    if (backlashDetermOn == false)
-                    {
+                    //if (backlashDetermOn == false) // remd 1-10-17
+                    //{
                         if ((GlobalVariables.FFenable) & (vProgress == 0))
                         {
                             //    log.WriteLine(DateTime.Now);
@@ -2438,36 +2461,38 @@ namespace Pololu.Usc.ScopeFocus
                             FileLog2(DateTime.Now.ToString());
                             //   FileLog2("Fine-V" + "\tTemp" + "\t Pos" + "\tN" + "\tHFR" + "\tminHFR" + "\tposmin");
                         }
-                        if ((vProgress == 0) & (!GlobalVariables.Tempon))
-                        {
-                            //log.WriteLine(DateTime.Now);
-                            //log.WriteLine("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
-                            FileLog2(DateTime.Now.ToString());
-                            FileLog2("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
-                        }
-                        if ((GlobalVariables.Tempon) & (vProgress == (vN - 1)))
-                        {
-                            if (templog == 0)
-                            {
-                                //     FileLog2(DateTime.Now.ToString());
-                                FileLog2("Type" + "\tAvgTemp" + "\tposMin");
-                                // log.WriteLine(strLogText2);
-                                templog = 1;
-                                // log.Close();
-                            }
+                        //if ((vProgress == 0) & (!GlobalVariables.Tempon)) // remd 1-10-17
+                        //{
+                        //    //log.WriteLine(DateTime.Now);
+                        //    //log.WriteLine("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
+                        //    FileLog2(DateTime.Now.ToString());
+                        //    FileLog2("Type  N:" + "\t  Pos" + "\tHFRAvg" + "\tMaxAvg");
+                        //}
+                        //if ((GlobalVariables.Tempon) & (vProgress == (vN - 1))) // remd 1-10-17
+                        //{
+                        //    if (templog == 0)
+                        //    {
+                        //        //     FileLog2(DateTime.Now.ToString());
+                        //        FileLog2("Type" + "\tAvgTemp" + "\tposMin");
+                        //        // log.WriteLine(strLogText2);
+                        //        templog = 1;
+                        //        // log.Close();
+                        //    }
 
-                            FileLog2(strLogText2);//was log.WriteLine and next 2 below
+                        //    FileLog2(strLogText2);//was log.WriteLine and next 2 below
 
-                        }
-                        if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true))
+                        //}
+                      //  if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable != true)) 1-10-17
+                            if (GlobalVariables.FFenable != true)
                         {
                             FileLog2(strLogTextA);
                         }
-                        if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable == true))
+                      //  if ((!GlobalVariables.Tempon) & (GlobalVariables.FFenable == true)) // 1-10-17
+                            if (GlobalVariables.FFenable == true)
                         {
                             FileLog2(strLogText3);
                         }
-                    }
+                   // }
 
                     //    log.Close();
                     repeatDone = 0;
@@ -2482,8 +2507,8 @@ namespace Pololu.Usc.ScopeFocus
                             //defines Fine-V step size
                             step = (int)numericUpDown8.Value;
                         }
-                        if (backlashDetermOn != true)
-                        {
+                        //if (backlashDetermOn != true) // remd 1-10-17
+                        //{
                             vProgress++;
                             vv++;
                             fileSystemWatcher2.EnableRaisingEvents = false; //****  11-20-14 this is added to allow focuser to complete movement before using the next exposure
@@ -2493,34 +2518,34 @@ namespace Pololu.Usc.ScopeFocus
                             fileSystemWatcher2.EnableRaisingEvents = true;
                             fileSystemWatcher5.EnableRaisingEvents = true;
 
-                        }
+                     //   }
 
 
 
                         //  }
-                        if (backlashDetermOn == true)
-                        {
-                            if (backlashOUT == false)
-                            {
-                                if (vProgress < (vN - 1))
-                                {
-                                    gotopos(Convert.ToInt32(count - step));
-                                }
-                                vProgress++;
-                                vv++;
-                                Thread.Sleep(MoveDelay);
-                            }
-                            if (backlashOUT == true)
-                            {
-                                if (vProgress < (vN - 1))
-                                {
-                                    gotopos(Convert.ToInt32(count + step));
-                                }
-                                vProgress++;
-                                vv++;
-                                Thread.Sleep(MoveDelay);
-                            }
-                        }
+                        //if (backlashDetermOn == true) // 1-10-17
+                        //{
+                        //    if (backlashOUT == false)
+                        //    {
+                        //        if (vProgress < (vN - 1))
+                        //        {
+                        //            gotopos(Convert.ToInt32(count - step));
+                        //        }
+                        //        vProgress++;
+                        //        vv++;
+                        //        Thread.Sleep(MoveDelay);
+                        //    }
+                        //    if (backlashOUT == true)
+                        //    {
+                        //        if (vProgress < (vN - 1))
+                        //        {
+                        //            gotopos(Convert.ToInt32(count + step));
+                        //        }
+                        //        vProgress++;
+                        //        vv++;
+                        //        Thread.Sleep(MoveDelay);
+                        //    }
+                        //}
 
                     }
                     else // 7-25-14
@@ -2571,7 +2596,8 @@ namespace Pololu.Usc.ScopeFocus
                 //                                                                                   
                 if (radioButton1.Checked == true)
                 {                                //below was vN/2 +4 and -4 changed to +/- vN/4 11-24
-                    if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable) & (backlashDetermOn == false))
+                 //   if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable) & (backlashDetermOn == false)) // 1-10-17
+                        if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable))
                     {
                         fileSystemWatcher2.EnableRaisingEvents = false;
                         fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
@@ -2729,7 +2755,7 @@ namespace Pololu.Usc.ScopeFocus
                 if ((vDone == 1) & (GlobalVariables.FFenable))
                 {
 
-                    fileSystemWatcher1.EnableRaisingEvents = false;
+                  //  fileSystemWatcher1.EnableRaisingEvents = false;
                     fileSystemWatcher2.EnableRaisingEvents = false;
                     fileSystemWatcher5.EnableRaisingEvents = false; // added to test metric HFR
                                                                     //handle repeated fine v curves
@@ -2823,9 +2849,10 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //end coarse v-curve and goes to rough focus point
-                if ((vDone == 1) & (!GlobalVariables.Tempon) & (backlashDetermOn == false) & (GlobalVariables.FFenable != true))
+              //  if ((vDone == 1) & (!GlobalVariables.Tempon) & (backlashDetermOn == false) & (GlobalVariables.FFenable != true)) // 1-10-17
+                    if ((vDone == 1) & (GlobalVariables.FFenable != true))
                 {
-                    fileSystemWatcher1.EnableRaisingEvents = false;
+                 //   fileSystemWatcher1.EnableRaisingEvents = false;
                     fileSystemWatcher2.EnableRaisingEvents = false;
                     if (checkBox29.Checked == false)
                     {
@@ -2843,145 +2870,145 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //reset for more v -curves for tempcal
-                if ((GlobalVariables.Tempon) & (vDone != 1))
-                {
-                    repeatDone = 0;
-                    repeatTotal = 0;
-                    fileSystemWatcher1.EnableRaisingEvents = true;
-                }
+                //if ((GlobalVariables.Tempon) & (vDone != 1))
+                //{
+                //    repeatDone = 0;
+                //    repeatTotal = 0;
+                //    fileSystemWatcher1.EnableRaisingEvents = true;
+                //}
                 //tempcal done
-                if ((GlobalVariables.Tempon) & (vDone == 1))
-                {
-                    tempsum = 0;
-                    vDone = 0;
-                    vv = 0;
-                    min = 500;
-                    vProgress = 0;
-                    fileSystemWatcher1.EnableRaisingEvents = false;
-                    int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
-                    if ((finegoto - 100) < 0)
-                    {
-                        DialogResult result1 = MessageBox.Show("Goto Exceeds Full In", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        if (result1 == DialogResult.OK)
-                        {
-                            return;
-                        }
-                    }
-                    chart1.Series[3].Points.AddXY(Convert.ToDouble(posMin), Convert.ToDouble(tempavg));
-                    if (checkBox29.Checked == false)
-                    {
-                        gotopos(Convert.ToInt32(finegoto - 100));//take up backlash                            
-                        Thread.Sleep(2000);
-                        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
-                        Thread.Sleep(1000);
-                        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
-                        Thread.Sleep(1000);
-                        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
-                        Thread.Sleep(1000);
-                    }
-                    gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(posMin));
+            //    if ((GlobalVariables.Tempon) & (vDone == 1)) // remd 1-10-17
+            //    {
+            //        tempsum = 0;
+            //        vDone = 0;
+            //        vv = 0;
+            //        min = 500;
+            //        vProgress = 0;
+            //        fileSystemWatcher1.EnableRaisingEvents = false;
+            //        int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
+            //        if ((finegoto - 100) < 0)
+            //        {
+            //            DialogResult result1 = MessageBox.Show("Goto Exceeds Full In", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //            if (result1 == DialogResult.OK)
+            //            {
+            //                return;
+            //            }
+            //        }
+            //        chart1.Series[3].Points.AddXY(Convert.ToDouble(posMin), Convert.ToDouble(tempavg));
+            //        if (checkBox29.Checked == false)
+            //        {
+            //            gotopos(Convert.ToInt32(finegoto - 100));//take up backlash                            
+            //            Thread.Sleep(2000);
+            //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
+            //            Thread.Sleep(1000);
+            //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
+            //            Thread.Sleep(1000);
+            //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
+            //            Thread.Sleep(1000);
+            //        }
+            //        gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
+            //        Thread.Sleep(1000);
+            //        gotopos(Convert.ToInt32(posMin));
 
-                    repeatProgress = 0;
-                    //vcurveenable = 0;
-                    Array.Clear(list, 0, arraysize2);
-                    Array.Clear(listMax, 0, arraysize2);
-                    _hFRarraymin = 999;
-                    maxarrayMax = 1;
-                    tempcal();
+            //        repeatProgress = 0;
+            //        //vcurveenable = 0;
+            //        Array.Clear(list, 0, arraysize2);
+            //        Array.Clear(listMax, 0, arraysize2);
+            //        _hFRarraymin = 999;
+            //        maxarrayMax = 1;
+            //        tempcal();
 
-                }
-              //  vcurveenable = 0;//added 9-12
-                                 //   return;  //added 11-20-14
-            }
-
-
-
-
-            if ((backlashDetermOn == true) & (vDone == 1))
-            {
-                backlashCount++;
-                if (backlashCount == backlashN - 1)
-                {
-                    standby();
-                }
-                if (backlashOUT == true)
-                {
-                    backlashOUT = false;
-                    backlashPosOUT = posMin;
-                }
-                else
-                {
-
-                    backlashOUT = true;
-                    backlashPosIN = posMin;
-                }
-
-                if ((backlashCount == 2) || (backlashCount == 4) || (backlashCount == 6) || (backlashCount == 8) || (backlashCount == 10))
-                {
-
-                    backlash = Math.Abs(backlashPosIN - backlashPosOUT);
-                    textBox8.Text = backlash.ToString();
-                    chart1.Series[2].Points.AddXY(Convert.ToDouble(backlashCount), Convert.ToDouble(backlash));
-                    backlashSum = backlash + backlashSum;
-                    backlashAvg = backlashSum / (backlashCount / 2);
-                    Log("Backlash: N " + backlashCount.ToString() + "\tPosOUT " + backlashPosOUT.ToString() + "\tPosIN " + backlashPosIN.ToString() + "\tBacklash " + backlash.ToString() + "\tAvg " + backlashAvg.ToString());
-                    //string path = textBox11.Text.ToString();
-                    //string fullpath = path + @"\log.txt";
-
-                    //StreamWriter log;
-                    //if (!File.Exists(fullpath))
-                    //{
-                    //    log = new StreamWriter(fullpath);
-                    //}
-                    //else
-                    //{
-                    //    log = File.AppendText(fullpath);
-                    //}
-                    if (backlashCount == 2)
-                    {
-                        //log.WriteLine(DateTime.Now);
-                        //log.WriteLine("Backlash N" + "\tPosOUT" + "\tPosIN" + "\tBacklash" + "\tAvg");
-                        FileLog2(DateTime.Now.ToString());
-                        FileLog2("Backlash N" + "\tPosOUT" + "\tPosIN" + "\tBacklash" + "\tAvg");
-                    }
-                    //  log.WriteLine("         " + backlashCount.ToString() + "\t  " + backlashPosOUT.ToString() + "\t " + backlashPosIN.ToString() + "\t   " + backlash.ToString() + "\t\t" + backlashAvg.ToString());
-                    FileLog2("         " + backlashCount.ToString() + "\t  " + backlashPosOUT.ToString() + "\t " + backlashPosIN.ToString() + "\t   " + backlash.ToString() + "\t\t" + backlashAvg.ToString());
-                    if (backlashCount == backlashN)
-                    {
-                        //  log.WriteLine("Avg Backlash: " + backlashAvg.ToString());
-                        FileLog2("Avg Backlash: " + backlashAvg.ToString());
-                        textBox8.Text = "Avg " + backlashAvg.ToString();
-
-                    }
-                    //  log.Close();
-
-                }
-
-                tempsum = 0;
-                vDone = 0;
-                vv = 0;
-                min = 500;
-
-                //maxMax = 1;
-                fileSystemWatcher1.EnableRaisingEvents = true;
-
-                vProgress = 0;
-                repeatProgress = 0;
-                //?????not sure why below???
-                posMin = count;
-                Array.Clear(listMax, 0, arraysize2);
-                Array.Clear(list, 0, arraysize2);
-                _hFRarraymin = 999;
-                maxarrayMax = 1;
+            //    }
+            //  //  vcurveenable = 0;//added 9-12
+            //                     //   return;  //added 11-20-14
+            //}
 
 
 
 
-            }
+            //if ((backlashDetermOn == true) & (vDone == 1)) // remd 1-10-17
+            //{
+            //    backlashCount++;
+            //    if (backlashCount == backlashN - 1)
+            //    {
+            //        standby();
+            //    }
+            //    if (backlashOUT == true)
+            //    {
+            //        backlashOUT = false;
+            //        backlashPosOUT = posMin;
+            //    }
+            //    else
+            //    {
 
-            // }
+            //        backlashOUT = true;
+            //        backlashPosIN = posMin;
+            //    }
+
+            //    if ((backlashCount == 2) || (backlashCount == 4) || (backlashCount == 6) || (backlashCount == 8) || (backlashCount == 10))
+            //    {
+
+            //        backlash = Math.Abs(backlashPosIN - backlashPosOUT);
+            //        textBox8.Text = backlash.ToString();
+            //        chart1.Series[2].Points.AddXY(Convert.ToDouble(backlashCount), Convert.ToDouble(backlash));
+            //        backlashSum = backlash + backlashSum;
+            //        backlashAvg = backlashSum / (backlashCount / 2);
+            //        Log("Backlash: N " + backlashCount.ToString() + "\tPosOUT " + backlashPosOUT.ToString() + "\tPosIN " + backlashPosIN.ToString() + "\tBacklash " + backlash.ToString() + "\tAvg " + backlashAvg.ToString());
+            //        //string path = textBox11.Text.ToString();
+            //        //string fullpath = path + @"\log.txt";
+
+            //        //StreamWriter log;
+            //        //if (!File.Exists(fullpath))
+            //        //{
+            //        //    log = new StreamWriter(fullpath);
+            //        //}
+            //        //else
+            //        //{
+            //        //    log = File.AppendText(fullpath);
+            //        //}
+            //        if (backlashCount == 2)
+            //        {
+            //            //log.WriteLine(DateTime.Now);
+            //            //log.WriteLine("Backlash N" + "\tPosOUT" + "\tPosIN" + "\tBacklash" + "\tAvg");
+            //            FileLog2(DateTime.Now.ToString());
+            //            FileLog2("Backlash N" + "\tPosOUT" + "\tPosIN" + "\tBacklash" + "\tAvg");
+            //        }
+            //        //  log.WriteLine("         " + backlashCount.ToString() + "\t  " + backlashPosOUT.ToString() + "\t " + backlashPosIN.ToString() + "\t   " + backlash.ToString() + "\t\t" + backlashAvg.ToString());
+            //        FileLog2("         " + backlashCount.ToString() + "\t  " + backlashPosOUT.ToString() + "\t " + backlashPosIN.ToString() + "\t   " + backlash.ToString() + "\t\t" + backlashAvg.ToString());
+            //        if (backlashCount == backlashN)
+            //        {
+            //            //  log.WriteLine("Avg Backlash: " + backlashAvg.ToString());
+            //            FileLog2("Avg Backlash: " + backlashAvg.ToString());
+            //            textBox8.Text = "Avg " + backlashAvg.ToString();
+
+            //        }
+            //        //  log.Close();
+
+            //    }
+
+            //    tempsum = 0;
+            //    vDone = 0;
+            //    vv = 0;
+            //    min = 500;
+
+            //    //maxMax = 1;
+            //    fileSystemWatcher1.EnableRaisingEvents = true;
+
+            //    vProgress = 0;
+            //    repeatProgress = 0;
+            //    //?????not sure why below???
+            //    posMin = count;
+            //    Array.Clear(listMax, 0, arraysize2);
+            //    Array.Clear(list, 0, arraysize2);
+            //    _hFRarraymin = 999;
+            //    maxarrayMax = 1;
+
+
+
+
+            //}
+
+             }
             /* 
              catch (Exception e)
              {
@@ -3104,38 +3131,47 @@ namespace Pololu.Usc.ScopeFocus
         }
 
         //tempcal, backlash and mult v-curve
-        private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
-        {
-            if (GlobalVariables.Tempon)
-            {
-                tempcal();
-            }
-            if (backlashDetermOn == true)
-            {
-                backlashDeterm();
-            }
-        }
+        //private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
+        //{
+        //    // try 
+        //    if (vDone != 1)
+        //        vcurve();
+        //    FileLog2("fileSystemWatcher2 changed");
 
-        void backlashDeterm()
-        {
 
-            backlashDetermOn = true;
-            fileSystemWatcher1.EnableRaisingEvents = true;
-            //   port.DiscardInBuffer();
-            GlobalVariables.FFenable = true;
-            GlobalVariables.Tempon = false;
-            vcurve();
-        }
 
-        void tempcal()
-        {
 
-            fileSystemWatcher1.EnableRaisingEvents = true;
-            //    port.DiscardInBuffer();
-            GlobalVariables.FFenable = true;
-            GlobalVariables.Tempon = true;
-            vcurve();
-        }
+
+        //    //if (GlobalVariables.Tempon) // remd 1-6-17
+        //    //{
+        //    //    tempcal();
+        //    //}
+        //    //if (backlashDetermOn == true)
+        //    //{
+        //    //    backlashDeterm();
+        //    //}
+        //}
+
+        //void backlashDeterm()
+        //{
+
+        //    backlashDetermOn = true;
+        //    fileSystemWatcher1.EnableRaisingEvents = true;
+        //    //   port.DiscardInBuffer();
+        //    GlobalVariables.FFenable = true;
+        //    GlobalVariables.Tempon = false;
+        //    vcurve();
+        //}
+
+        //void tempcal()
+        //{
+
+        //    fileSystemWatcher1.EnableRaisingEvents = true;
+        //    //    port.DiscardInBuffer();
+        //    GlobalVariables.FFenable = true;
+        //    GlobalVariables.Tempon = true;
+        //    vcurve();
+        //}
 
         public static int GetBestHFRPos(int Xa, int Ya, int Yb, int ma)
         {
@@ -3252,7 +3288,7 @@ namespace Pololu.Usc.ScopeFocus
                 fileSystemWatcher2.EnableRaisingEvents = false;
                 fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
                 fileSystemWatcher3.EnableRaisingEvents = true;
-                fileSystemWatcher1.EnableRaisingEvents = false;
+          //      fileSystemWatcher1.EnableRaisingEvents = false;
                 fileSystemWatcher4.EnableRaisingEvents = false;
                 focusSampleComplete = false; // 10-13-16
                 _gotoFocusOn = true;//~line 440
@@ -3652,7 +3688,7 @@ namespace Pololu.Usc.ScopeFocus
                 textBox13.Text = server.ToString();
                 textBox28.Text = pswd.ToString();
                 textBox36.Text = to.ToString();
-                fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
+                //fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
                 fileSystemWatcher2.Path = GlobalVariables.Path2.ToString();
                 fileSystemWatcher5.Path = GlobalVariables.Path2.ToString();//added to test metricHFR
                 fileSystemWatcher3.Path = GlobalVariables.Path2.ToString();
@@ -3764,6 +3800,8 @@ namespace Pololu.Usc.ScopeFocus
         //v-curve (coarse)
         private void button6_Click_1(object sender, EventArgs e)
         {
+            if (checkBox22.Checked)
+                ClearMetricFiles();
             //if (GlobalVariables.Nebcamera == "No camera")
             //    NoCameraSelected();
             setarraysize();
@@ -3772,7 +3810,7 @@ namespace Pololu.Usc.ScopeFocus
             //  {
             //     port.DiscardOutBuffer();
             //    port.DiscardInBuffer();
-            backlashDetermOn = false;
+        //    backlashDetermOn = false;
             repeatProgress = 0;
             repeatDone = 0;
             vProgress = 0;
@@ -3784,7 +3822,7 @@ namespace Pololu.Usc.ScopeFocus
             chart1.Series[0].Points.Clear();
             chart1.Series[1].Points.Clear();
             chart1.Series[2].Points.Clear();
-            GlobalVariables.Tempon = false;
+      //      GlobalVariables.Tempon = false; // 1-10-17
             GlobalVariables.FFenable = false;
             posMin = count;
             vv = 0;
@@ -3797,7 +3835,7 @@ namespace Pololu.Usc.ScopeFocus
             else // added 12-29-16 
                 fileSystemWatcher2.EnableRaisingEvents = true;
             fileSystemWatcher3.EnableRaisingEvents = false;
-            fileSystemWatcher1.EnableRaisingEvents = false;
+        //    fileSystemWatcher1.EnableRaisingEvents = false; // 1-10-17
             avgMax = 0;
             sumMax = 0;
             //added with new variable array stuff to fix std dev 11-7
@@ -3818,7 +3856,10 @@ namespace Pololu.Usc.ScopeFocus
             {
 
                 if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
+                {
                     currentmetricN = 0;
+                    ClearMetricFiles();
+                    }
                 /*
                 if (roughvdone == false)//make sure rough v curve done to establish rough focus point
                 {
@@ -3880,7 +3921,7 @@ namespace Pololu.Usc.ScopeFocus
                     textBox20.Enabled = false; //don't allow changes once done
                     textBox18.Enabled = false;
                 }
-                backlashDetermOn = false;
+             //   backlashDetermOn = false; // remd 1-6-17
                 //    port.DiscardInBuffer();
                 fineVrepeatcounter();
                 chart1.Series[0].Points.Clear();
@@ -3932,7 +3973,7 @@ namespace Pololu.Usc.ScopeFocus
                 sum = 0;
                 min = 500;
                 _hFRarraymin = 999;
-                GlobalVariables.Tempon = false;
+             //   GlobalVariables.Tempon = false; // 1-10-17
                 sumMax = 0;
                 avgMax = 0;
               //  maxMax = 0;
@@ -3962,11 +4003,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else // added 12-29-16
                 {
-                    fileSystemWatcher2.EnableRaisingEvents = true;
-
-                    fileSystemWatcher3.EnableRaisingEvents = false;
-                    fileSystemWatcher1.EnableRaisingEvents = false;
-                }
+                  //  if (!backlashDetermOn && !GlobalVariables.Tempon) // 1-10-17
+                    //    if (!backlashDetermOn )
+                    //{
+                        fileSystemWatcher2.EnableRaisingEvents = true;
+                        fileSystemWatcher3.EnableRaisingEvents = false;
+                    }
+                   // if (backlashDetermOn || GlobalVariables.Tempon)
+                   //fileSystemWatcher1.EnableRaisingEvents = true;
+              //  }
             }
 
             catch (Exception ex)
@@ -4095,6 +4140,8 @@ namespace Pololu.Usc.ScopeFocus
             GetAvg();
             if (checkBox22.Checked == false)
                 FillData();
+            else
+                ClearMetricFiles();
             setarraysize();
             // remd 10-11-16
             //if (_enteredSlopeDWN == 0 || _enteredSlopeUP == 0 || _enteredPID == 0)
@@ -4102,6 +4149,7 @@ namespace Pololu.Usc.ScopeFocus
             //    MessageBox.Show("Focus data is blank -- check equipment selelction or save v-curve data then retry.  GotoFocus Aborted", "scopefocus");
             //    return;
             //}
+           
             gotoFocus();
         }
 
@@ -4181,7 +4229,7 @@ namespace Pololu.Usc.ScopeFocus
         {
 
             //  *** remd 11-3-16   rem for sim
-
+            FileLog2("fileSystemWatcher2_deleted");
             if (GlobalVariables.FFenable)
             {
 
@@ -4296,11 +4344,11 @@ namespace Pololu.Usc.ScopeFocus
                 timer2.Enabled = false;
             if (!string.IsNullOrEmpty(Mount.DevId))
             {
-                if (scope.Connected == true)
+                if (Mount.scope.Connected == true)
                 {
-                    scope.Connected = false;
+                    Mount.scope.Connected = false;
                     Thread.Sleep(100);
-                    scope.Dispose();
+                    Mount.scope.Dispose();
                 }
             }
             if (!string.IsNullOrEmpty(Filter.DevId3))
@@ -4765,129 +4813,302 @@ namespace Pololu.Usc.ScopeFocus
 
         }
         //determine backlash
-        private void button10_Click(object sender, EventArgs e)
-        {
+       // private void button10_Click(object sender, EventArgs e) // remd all on 1-10-17, doesn't work anymomre and never used.  
+       // {
+       //     // backlash can be determined from difference of dwnslope vs upslope focus point.  
+       //     try
+       //     {
 
-            try
-            {
-                backlash = 0;
-                backlashSum = 0;
-                backlashCount = 0;
-                chart1.Series[0].Points.Clear();
-                chart1.Series[1].Points.Clear();
-                chart1.Series[2].Points.Clear();
+       //         backlash = 0;
+       //         backlashSum = 0;
+       //         backlashCount = 0;
+       //         GlobalVariables.Tempon = false;
+       //         backlashDetermOn = true;
+       //         radioButton1.Checked = false;//calculations off
+       //         GlobalVariables.FFenable = true;
 
-                sum = 0;
-                avg = 0;
-                vDone = 0;
-                vProgress = 0;
-                GlobalVariables.Tempon = false;
-                tempsum = 0;
-                vv = 0;
-                templog = 0;
-                backlashDetermOn = true;
-                radioButton1.Checked = false;//calculations off
-                GlobalVariables.FFenable = true;
-                int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
-                //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
-                if ((finegoto - 100) < 0)
-                {
-                    DialogResult result1 = MessageBox.Show("Goto Exceeds Full In/rAdditional backfocus needed to take-up backlash and center V-curve", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (result1 == DialogResult.OK)
-                    {
-                        return;
-                    }
-                }
-                if (checkBox29.Checked == false)
-                {
-                    gotopos(Convert.ToInt32(finegoto - 100));//take up backlash  
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
-                    Thread.Sleep(1000);
-                }
-                gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
-                Thread.Sleep(1000);
-                gotopos(Convert.ToInt32(finegoto));
-                backlashOUT = true;//identifies current v curve direction is going out(reverse)
-                fileSystemWatcher2.EnableRaisingEvents = false;
-                fileSystemWatcher5.EnableRaisingEvents = false;//added to test metricHFR
-                fileSystemWatcher3.EnableRaisingEvents = false;
+       //    //     button3.PerformClick();
+       //    //     fileSystemWatcher1.EnableRaisingEvents = true;
 
-                fileSystemWatcher1.EnableRaisingEvents = true;
-            }
-            catch (Exception ex)
-            {
-                Log("Backlash error" + ex.ToString());
-                FileLog("Backlash Error" + ex.ToString());
-            }
-        }
-        //tempcal button
-        private void button5_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                chart1.Series[0].Points.Clear();
-                chart1.Series[1].Points.Clear();
-                chart1.Series[2].Points.Clear();
+       //         // add button 3 stuff
 
-                //  min = 1;
-                sum = 0;
-                avg = 0;
-                vDone = 0;
-                vProgress = 0;
-                GlobalVariables.Tempon = true;
-                tempsum = 0;
-                vv = 0;
-                templog = 0;
-                peatMax = new double[arraysize2];
-                minHFRpos = new int[arraysize2];
-                maxMaxPos = new double[arraysize2];
-                peat = new int[arraysize2];
-                listMax = new double[arraysize2];
-                list = new int[arraysize2];
-                peat = new int[arraysize2];
-                Array.Clear(listMax, 0, arraysize2);
-                int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
-                //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
-                if ((finegoto - 100) < 0)
-                {
-                    DialogResult result1 = MessageBox.Show("Goto Exceeds Full In", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (result1 == DialogResult.OK)
-                    {
-                        return;
-                    }
-                }
-                if (checkBox29.Checked == false)
-                {
-                    gotopos(Convert.ToInt32(finegoto - 100));//take up backlash  
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
-                    Thread.Sleep(1000);
-                    gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
-                    Thread.Sleep(1000);
-                }
-                gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
-                Thread.Sleep(1000);
-                fileSystemWatcher2.EnableRaisingEvents = false;
-                fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
-                fileSystemWatcher3.EnableRaisingEvents = false;
-                fileSystemWatcher1.EnableRaisingEvents = true;
-                //  tempcal();
-            }
-            catch (Exception ex)
-            {
-                Log("TempCal Error" + ex.ToString());
-                Send("TempCal Error" + ex.ToString());
-                FileLog("TempCal Error" + ex.ToString());
 
-            }
-        }
+       //         if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
+       //             currentmetricN = 0;
+       //         /*
+       //         if (roughvdone == false)//make sure rough v curve done to establish rough focus point
+       //         {
+       //             DialogResult result2;
+       //             result2 = MessageBox.Show("Must perform a rough V-curve first", "scopefocus",
+       //                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+       //             if (result2 == DialogResult.OK)
+       //             {
+       //                 return;
+       //             }
+       //             return;
+       //         }
+       //          */
+       //         //  button3.PerformClick();
+       //         /*
+       //         if (clientSocket.Connected == false)
+       //         {
+       //             //clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
+       //             NebListenStart(NebhWnd, SocketPort);
+       //         }
+       //          */
+
+
+
+       //         //if (GlobalVariables.Nebcamera == "No camera")
+       //         //    NoCameraSelected();
+       //         //vcurveenable = 1;//added 1-7-12
+       //         /* ***********remd for debugging 6-28
+       //         if (roughvdone == false)//make sure rough v curve done to establish rough focus point
+       //         {
+       //             DialogResult result2;
+       //             result2 = MessageBox.Show("Must perform a rough V-curve first", "scopefocus",
+       //                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+       //             if (result2 == DialogResult.OK)
+       //             {
+       //                 return;
+       //             }
+       //         }
+       //          */
+       //         setarraysize();
+       //         //      watchforOpenPort();
+       //         //      if (portopen == 1)
+       //         //      {
+       //         if ((textBox20.Text == "" || textBox18.Text == "") & (radioButton1.Checked == true))
+       //         {
+       //             DialogResult result;
+       //             result = MessageBox.Show("HFR Min/Max cannot be blank", "scopefocus",
+       //                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+       //             if (result == DialogResult.OK)
+       //             {
+       //                 textBox18.Focus();
+       //                 return;
+       //             }
+       //         }
+       //         if (radioButton1.Checked == true)
+       //         {
+       //             enteredMaxHFR = Convert.ToInt32(textBox20.Text.ToString());
+       //             enteredMinHFR = Convert.ToInt32(textBox18.Text.ToString());
+       //             textBox20.Enabled = false; //don't allow changes once done
+       //             textBox18.Enabled = false;
+       //         }
+       //         //   backlashDetermOn = false; // remd 1-6-17
+       //         //    port.DiscardInBuffer();
+       //         fineVrepeatcounter();
+       //         chart1.Series[0].Points.Clear();
+       //         chart1.Series[1].Points.Clear();
+       //         chart1.Series[2].Points.Clear();
+
+       //         int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
+       //         //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
+       //         if ((finegoto - 100) < 0)
+       //         {
+       //             DialogResult result1 = MessageBox.Show("Goto Exceeds Full In\rAdditional backfocus needed to take-up backlash and center V-curve", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+       //             if (result1 == DialogResult.OK)
+       //             {
+       //                 return;
+       //             }
+       //         }
+       //         if (checkBox29.Checked == false) // not using backlash compensation
+       //         {
+       //             Log("Clearing backlash...");//added 1-7-12
+       //                                         //  gotopos(Convert.ToInt32(finegoto - 3000));//take up backlash     
+       //                                         //   Thread.Sleep(1000);
+
+       //             if (textBox8.Text == "")
+       //                 gotopos(finegoto - ((int)numericUpDown2.Value * 2)); // 12-29-16 change from * 4 to *2
+       //             //   focuser.Move(finegoto - ((int)numericUpDown2.Value * 4));//if no backlash determined move 4* course step size to get beyond backalsh
+       //             else//if not using backlash compensation....still need to make sure backlash it taken up 
+
+       //                 //remd next 4 on 12-29-16  no need to go this far past.....
+       //                 //    gotopos(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));
+       //                 ////   focuser.Move(finegoto - (Convert.ToInt32(textBox8.Text) + (int)numericUpDown8.Value * 4));//ensure well beyond backlash + measure position
+
+       //                 //Thread.Sleep(1000);
+       //                 //gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
+       //                 Thread.Sleep(1000);
+       //             gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
+       //             Thread.Sleep(1000);
+       //         }
+       //         gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
+       //         Thread.Sleep(1000);
+       //         gotopos(Convert.ToInt32(finegoto));
+       //         Thread.Sleep(1000);
+       //         GlobalVariables.FFenable = true;
+       //         repeatProgress = 0;
+       //         repeatDone = 0;
+       //         vProgress = 0;
+       //         vDone = 0;
+       //         repeatTotal = 0;
+       //         vN = 0;
+       //         sum = 0;
+       //         min = 500;
+       //         _hFRarraymin = 999;
+       //         GlobalVariables.Tempon = false;
+       //         sumMax = 0;
+       //         avgMax = 0;
+       //         //  maxMax = 0;
+       //         _apexHFR = 0;
+       //         vv = 0;
+       //         peatMax = new double[arraysize2];
+       //         minHFRpos = new int[arraysize2];
+       //         maxMaxPos = new double[arraysize2];
+       //         peat = new int[arraysize2];
+       //         listMax = new double[arraysize2];
+       //         list = new int[arraysize2];
+       //         peat = new int[arraysize2];
+       //         Array.Clear(listMax, 0, arraysize2);
+       //         //****added 11-14
+       //         arraycountleft = 0;
+       //         arraycountright = 0;
+       //         if (GlobalVariables.FineRepeatOn == false)//added 1-7-12
+       //         {
+       //             GlobalVariables.FineRepeatDone = 0;
+       //         }
+
+
+       //         if (checkBox22.Checked) // added 11-3-16
+       //         {
+       //             fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR   // moved from above the if 12-29-16
+       //             MetricCapture();
+       //         }
+       //         else // added 12-29-16
+       //         {
+       //             if (!backlashDetermOn && !GlobalVariables.Tempon)
+       //                 fileSystemWatcher2.EnableRaisingEvents = true;
+
+       //             fileSystemWatcher3.EnableRaisingEvents = false;
+       //             if (backlashDetermOn || GlobalVariables.Tempon)
+       //                 fileSystemWatcher1.EnableRaisingEvents = true;
+       //         }
+       //     }
+            
+
+
+
+
+       //         // rem below to catch 1-6-17
+
+       //     //    chart1.Series[0].Points.Clear();
+       //     //    chart1.Series[1].Points.Clear();
+       //     //    chart1.Series[2].Points.Clear();
+
+       //     //    sum = 0;
+       //     //    avg = 0;
+       //     //    vDone = 0;
+       //     //    vProgress = 0;
+       //     //  //  GlobalVariables.Tempon = false;
+       //     //    tempsum = 0;
+       //     //    vv = 0;
+       //     //    templog = 0;
+       //     //    //backlashDetermOn = true;
+       //     //    //radioButton1.Checked = false;//calculations off
+       //     //    //GlobalVariables.FFenable = true;
+
+       //     //    int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
+       //     //    //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
+       //     //    if ((finegoto - 100) < 0)
+       //     //    {
+       //     //        DialogResult result1 = MessageBox.Show("Goto Exceeds Full In/rAdditional backfocus needed to take-up backlash and center V-curve", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+       //     //        if (result1 == DialogResult.OK)
+       //     //        {
+       //     //            return;
+       //     //        }
+       //     //    }
+       //     //    if (checkBox29.Checked == false)
+       //     //    {
+       //     //        gotopos(Convert.ToInt32(finegoto - 100));//take up backlash  
+       //     //        Thread.Sleep(1000);
+       //     //        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
+       //     //        Thread.Sleep(1000);
+       //     //        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
+       //     //        Thread.Sleep(1000);
+       //     //        gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
+       //     //        Thread.Sleep(1000);
+       //     //    }
+       //     //    gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
+       //     //    Thread.Sleep(1000);
+       //     //    gotopos(Convert.ToInt32(finegoto));
+       //     //    backlashOUT = true;//identifies current v curve direction is going out(reverse)
+       //     //    fileSystemWatcher2.EnableRaisingEvents = false;
+       //     //    fileSystemWatcher5.EnableRaisingEvents = false;//added to test metricHFR
+       //     //    fileSystemWatcher3.EnableRaisingEvents = false;
+
+       //     ////    fileSystemWatcher1.EnableRaisingEvents = true;
+       //// }
+       //     catch (Exception ex)
+       //     {
+       //         Log("Backlash error" + ex.ToString());
+       //         FileLog("Backlash Error" + ex.ToString());
+       //     }
+       // }
+        ////tempcal button
+        //private void button5_Click(object sender, EventArgs e) // remd on 1-10-17, doesn't work anymore, never used, best to refocus and not used temp change coefficients.  
+        //{
+        //    try
+        //    {
+        //        chart1.Series[0].Points.Clear();
+        //        chart1.Series[1].Points.Clear();
+        //        chart1.Series[2].Points.Clear();
+
+        //        //  min = 1;
+        //        sum = 0;
+        //        avg = 0;
+        //        vDone = 0;
+        //        vProgress = 0;
+        //        GlobalVariables.Tempon = true;
+        //        tempsum = 0;
+        //        vv = 0;
+        //        templog = 0;
+        //        peatMax = new double[arraysize2];
+        //        minHFRpos = new int[arraysize2];
+        //        maxMaxPos = new double[arraysize2];
+        //        peat = new int[arraysize2];
+        //        listMax = new double[arraysize2];
+        //        list = new int[arraysize2];
+        //        peat = new int[arraysize2];
+        //        Array.Clear(listMax, 0, arraysize2);
+        //        int finegoto = posMin - ((((int)numericUpDown3.Value) / 2) * ((int)numericUpDown8.Value));
+        //        //fine v-curve goes to N/2 * step size in from the focus position -- V should be centered
+        //        if ((finegoto - 100) < 0)
+        //        {
+        //            DialogResult result1 = MessageBox.Show("Goto Exceeds Full In", "scopefocus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //            if (result1 == DialogResult.OK)
+        //            {
+        //                return;
+        //            }
+        //        }
+        //        if (checkBox29.Checked == false)
+        //        {
+        //            gotopos(Convert.ToInt32(finegoto - 100));//take up backlash  
+        //            Thread.Sleep(1000);
+        //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 4));
+        //            Thread.Sleep(1000);
+        //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
+        //            Thread.Sleep(1000);
+        //            gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
+        //            Thread.Sleep(1000);
+        //        }
+        //        gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
+        //        Thread.Sleep(1000);
+        //        fileSystemWatcher2.EnableRaisingEvents = false;
+        //        fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
+        //        fileSystemWatcher3.EnableRaisingEvents = false;
+        //        fileSystemWatcher1.EnableRaisingEvents = true;
+        //        //  tempcal();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log("TempCal Error" + ex.ToString());
+        //        Send("TempCal Error" + ex.ToString());
+        //        FileLog("TempCal Error" + ex.ToString());
+
+        //    }
+        //}
         //deletes selected rows
         private void button18_Click(object sender, EventArgs e)
         {
@@ -5386,7 +5607,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     StopPHD();
                     //  StopTracking();
-                    scope.Tracking = false;
+                    Mount.scope.Tracking = false;
                 }
                 if (phdsocket.Connected)
                     phdsocket.Close();
@@ -9154,8 +9375,8 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     // use mount position.  
 
-                    FocusRA = scope.RightAscension;
-                    FocusDEC = scope.Declination;
+                    FocusRA = Mount.scope.RightAscension;
+                    FocusDEC = Mount.scope.Declination;
                     Log("ASCOM Focus Position Set: RA = " + FocusRA.ToString() + "DEC = " + FocusDEC.ToString());
                     FileLog2("ASCOM Focus Position Set: RA = " + FocusRA.ToString() + "DEC = " + FocusDEC.ToString());
                     button33.Text = "At Focus";
@@ -9324,8 +9545,8 @@ namespace Pololu.Usc.ScopeFocus
 
                     // use mount position.  
 
-                    TargetRA = scope.RightAscension;
-                    TargetDEC = scope.Declination;
+                    TargetRA = Mount.scope.RightAscension;
+                    TargetDEC = Mount.scope.Declination;
                     Log("ASCOM Target Position Set: RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
                     FileLog2("ASCOM Target Position Set: RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
 
@@ -9542,12 +9763,12 @@ namespace Pololu.Usc.ScopeFocus
                 StopPHD();
                 //   if (usingASCOM)
                 // scope.SlewToCoordinates(FocusRA, FocusDEC);
-                scope.SlewToCoordinatesAsync(FocusRA, FocusDEC);
+                Mount.scope.SlewToCoordinatesAsync(FocusRA, FocusDEC);
                 Log("slewing to focus star");
                 toolStripStatusLabel1.Text = "Slewing";
                 toolStripStatusLabel1.BackColor = Color.Red;
                 this.Refresh();
-                while (scope.Slewing)
+                while (Mount.scope.Slewing)
                 {
 
                     Thread.Sleep(50); // pause for 1/20 second
@@ -9981,17 +10202,17 @@ namespace Pololu.Usc.ScopeFocus
                     StopPHD();//already paused if doing meridian flip
                     //   if (usingASCOM)
                     //   scope.SlewToCoordinates(TargetRA, TargetDEC);
-                    scope.SlewToCoordinatesAsync(TargetRA, TargetDEC);//allows abort
+                    Mount.scope.SlewToCoordinatesAsync(TargetRA, TargetDEC);//allows abort
                 }
                 else
-                    scope.SlewToCoordinates(TargetRA, TargetDEC);
+                    Mount.scope.SlewToCoordinates(TargetRA, TargetDEC);
 
                 if (backgroundWorker2.IsBusy == false)//cant call log if running from bkgnd worker
                     Log("slewing to target");
                 toolStripStatusLabel1.Text = "Slewing";
                 toolStripStatusLabel1.BackColor = Color.Red;
                 this.Refresh();
-                while (scope.Slewing)
+                while (Mount.scope.Slewing)
                 {
                     Thread.Sleep(50); // pause for 1/20 second
                     System.Windows.Forms.Application.DoEvents();//this makes it necssary to push twice!!!????
@@ -10208,7 +10429,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 if (usingASCOM)
                 {
-                    scope.AbortSlew();
+                   Mount.scope.AbortSlew();
                 //    FocusGotoOn = false;
                     //TargetGotoOn = false;
                     toolStripStatusLabel1.Text = "Slew Aborted";
@@ -14730,7 +14951,7 @@ namespace Pololu.Usc.ScopeFocus
            
             GlobalVariables.Path2 = textBox11.Text.ToString();
             Log("Path set to " + GlobalVariables.Path2.ToString());
-            fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
+            //fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
             fileSystemWatcher2.Path = GlobalVariables.Path2.ToString();
             fileSystemWatcher5.Path = GlobalVariables.Path2.ToString();//added to test metricHFR
             fileSystemWatcher3.Path = GlobalVariables.Path2.ToString();
@@ -14743,9 +14964,8 @@ namespace Pololu.Usc.ScopeFocus
             MessageBox.Show("This value is calcuated from server subs * capture time", "scopefocus");
         }
 
-        private void checkBox22_CheckedChanged_1(object sender, EventArgs e)
+        private void ClearMetricFiles()
         {
-            EquipRefresh();
             metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
             if (checkBox22.Checked == true)
             {
@@ -14758,6 +14978,12 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
             }
+        }
+
+        private void checkBox22_CheckedChanged_1(object sender, EventArgs e)
+        {
+            EquipRefresh();
+            ClearMetricFiles();
             //this stuff not used w/ full frame metric
             //   checkBox10.Checked = false;  rem'd 8-26-13.  this should stay checked o/w will try to slew to target when not needed.
             //   checkBox10.Enabled = false;
@@ -14772,6 +14998,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button27_Click(object sender, EventArgs e)
         {
+            ClearMetricFiles();
             SampleMetric();
         }
         /*
@@ -15103,7 +15330,7 @@ namespace Pololu.Usc.ScopeFocus
                 //else
                 //    FlipNeeded = false;
 
-                if (scope.SideOfPier == scope.DestinationSideOfPier(scope.RightAscension, scope.Declination))
+                if (Mount.scope.SideOfPier == Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination))
                     FlipNeeded = false;
                 else
                     FlipNeeded = true;
@@ -15117,7 +15344,7 @@ namespace Pololu.Usc.ScopeFocus
 
                     //     Log("guiding paused for flip");
                     GotoTargetLocation();
-                    while (scope.Slewing)
+                    while (Mount.scope.Slewing)
                         Thread.Sleep(100);
                     FlipDone = true;
                     FlipNeeded = false;
@@ -15280,8 +15507,8 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     Log("connected to " + Mount.DevId);
                     FileLog2("connected to " + Mount.DevId);
-                    scope.Connected = true;
-                    if (scope.Connected)
+                    Mount.scope.Connected = true;
+                   if (Mount.scope.Connected)
                     {
                         timer2.Enabled = true;
                         timer2.Start();
@@ -15292,9 +15519,9 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
-                scope.Connected = false;
+                Mount.scope.Connected = false;
                 button49.BackColor = Color.WhiteSmoke;
-                scope.Dispose();
+                Mount.scope.Dispose();
                 Log(Mount.DevId + " disconnected");
                 Mount.DevId = "";
             }
@@ -15856,8 +16083,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
 
 
-                    CurrentRA = scope.RightAscension;
-                    CurrentDEC = scope.Declination;
+                    CurrentRA = Mount.scope.RightAscension;
+                    CurrentDEC = Mount.scope.Declination;
                     //    var destDir = @"c:\cygwin\home\astro";
                     //    var destDir = @"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\bin"; // 10-22-16
                     //   var destDir = @"%localappdata%\cygwin_ansvr\bin"; // 10-22-16
@@ -15984,8 +16211,8 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (ConfirmingLocation)
                 {
-                    CurrentRA = scope.RightAscension;
-                    CurrentDEC = scope.Declination;
+                    CurrentRA = Mount.scope.RightAscension;
+                    CurrentDEC = Mount.scope.Declination;
 
                     // first attempts at comparing parse solve coords w/ scope coords.
                     //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
@@ -16000,7 +16227,7 @@ namespace Pololu.Usc.ScopeFocus
 
                     if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
                     {
-                        scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                        Mount.scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
                         Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
                         if (solvetry < 3)
                         {
@@ -16209,7 +16436,7 @@ namespace Pololu.Usc.ScopeFocus
                         toolStripStatusLabel1.Text = "Slewing to Target";
                         toolStripStatusLabel1.BackColor = Color.Red;
                         this.Refresh();
-                        scope.SlewToCoordinates(RA, DEC);
+                        Mount.scope.SlewToCoordinates(RA, DEC);
                         toolStripStatusLabel1.Text = "Ready";
                         toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
                         Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
@@ -16302,8 +16529,8 @@ namespace Pololu.Usc.ScopeFocus
                         DialogResult result2 = MessageBox.Show("Are you sure you want to sync to this position?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                         if (result2 == DialogResult.OK)
                         {
-                            scope.SyncToCoordinates(RA, DEC);
-                            Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                            Mount.scope.SyncToCoordinates(RA, DEC);
+                            Log("synced to:  RA = " + Mount.scope.RightAscension.ToString() + "     Dec = " + Mount.scope.Declination.ToString());
                             fileSystemWatcher7.EnableRaisingEvents = false;
                         }
                         else
@@ -16397,8 +16624,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             Log("Plate Solve Position Check");
             //scope.SlewToCoordinates(RA, DEC);
-            CurrentRA = scope.RightAscension;
-            CurrentDEC = scope.Declination;
+            CurrentRA = Mount.scope.RightAscension;
+            CurrentDEC = Mount.scope.Declination;
             // first attempts at comparing parse solve coords w/ scope coords.
             //need to FIX...seems to maintain RA and DEC from first plate solve after the second one. 
             //if (usingASCOM == true)
@@ -16412,7 +16639,7 @@ namespace Pololu.Usc.ScopeFocus
 
             if ((Math.Abs(CurrentRA - RA) * 60 > Convert.ToDouble(textBox59.Text)) || (Math.Abs(CurrentDEC - DEC) * 60 > Convert.ToDouble(textBox59.Text)))//*************untested!!****
             {
-                scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
+                Mount.scope.SyncToCoordinates(RA, DEC);//sync to parsed(solve) location 
                 Log("repeating" + "DeltaRA = " + ((Math.Abs(CurrentRA - RA) * 60).ToString()) + "     DeltaDEC = " + ((Math.Abs(CurrentDEC - DEC) * 60).ToString()));
                 //     button55.PerformClick();//prob dont need since fsw7 still on
                 fileSystemWatcher7.SynchronizingObject = this;
@@ -16423,10 +16650,10 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
-                scope.SyncToCoordinates(RA, DEC);
+                Mount.scope.SyncToCoordinates(RA, DEC);
                 Log("sync tolerance met");
                 fileSystemWatcher7.EnableRaisingEvents = false;
-                Log("synced to:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+                Log("synced to:  RA = " + Mount.scope.RightAscension.ToString() + "     Dec = " + Mount.scope.Declination.ToString());
                 Thread.Sleep(500);
                 if (!UseClipBoard.Checked) // 11-8-16  TODO not sure about why this is here
                     serverStream.Flush();
@@ -16612,7 +16839,17 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 //     string command = "solve-field --sigma " + sigma.ToString() + " -z  "+ DwnSz+ " -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";  // Original working command line
-                string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);
+                string command = "";
+                if ((checkBox35.Checked) && (!checkBox35.Checked))
+                    command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);  // write .new file
+                if ((!checkBox35.Checked) && (checkBox35.Checked))
+                    command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 -N none -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);  // plots yes
+                if ((!checkBox35.Checked) && (!checkBox36.Checked))
+                    command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);  // Orig no .new and no plots
+
+                if ((checkBox35.Checked) && (checkBox35.Checked))
+                    command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);  // write .new file
+
                 //   string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O -N none --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + GlobalVariables.SolveImage;
 
                 //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
@@ -16735,25 +16972,37 @@ namespace Pololu.Usc.ScopeFocus
                         }
                     }
                 }
-
-                if (checkBox30.Checked == true)
+                if (PHD2comm.PHD2Connected)
+                {
                     LostStarMonitor();
-                //*********** this results in error when closing ***********
-                //may need 'if scope.connected'
-                //    scope = new ASCOM.DriverAccess.Telescope(devId);
+                    textBoxPHDstatus.Text = PHD2comm.PHDAppState;
+                }
+                else
+                {
+                    button36.Text = "Connect";
+                    button36.BackColor = Color.WhiteSmoke;
+                    textBoxPHDstatus.Text = "Connection Lost";
+                    Log("PHD2 Connection Lost");
+                    FileLog("PHD2Connection Lost");
+                }
 
-                //*****this times out...?? less frequent sampling*********
-                textBox53.Text = Math.Round(scope.SiderealTime, 4).ToString();
-                textBox54.Text = Math.Round(scope.RightAscension, 4).ToString();
-                textBox55.Text = Math.Round(scope.Declination, 4).ToString();
-                TimeToFlip = Math.Round(Math.Abs(scope.SiderealTime - scope.RightAscension), 2);
+               
+                    //*********** this results in error when closing ***********
+                    //may need 'if scope.connected'
+                    //    scope = new ASCOM.DriverAccess.Telescope(devId);
+
+                    //*****this times out...?? less frequent sampling*********
+                    textBox53.Text = Math.Round(Mount.scope.SiderealTime, 4).ToString();
+                textBox54.Text = Math.Round(Mount.scope.RightAscension, 4).ToString();
+                textBox55.Text = Math.Round(Mount.scope.Declination, 4).ToString();
+                TimeToFlip = Math.Round(Math.Abs(Mount.scope.SiderealTime - Mount.scope.RightAscension), 2);
                 textBox57.Text = TimeToFlip.ToString();
                 //if (TimeToFlip < 0)
                 //    FlipNeeded = true;
                 //else
                 //    FlipNeeded = false;
 
-                if (scope.SideOfPier == scope.DestinationSideOfPier(scope.RightAscension, scope.Declination))
+                if (Mount.scope.SideOfPier == Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination))
                     FlipNeeded = false;
                 else
                 {
@@ -16767,12 +17016,14 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
 
-                    textBox5.Text = scope.SideOfPier.ToString();
-                textBox45.Text = scope.DestinationSideOfPier(scope.RightAscension, scope.Declination).ToString();//see if the slewing to the - 
+                    textBox5.Text = Mount.scope.SideOfPier.ToString();
+                textBox45.Text = Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination).ToString();//see if the slewing to the - 
                                                                                                                  //current location would warrant a flip
                                                                                                                  //  textBoxPHDstatus.Text = ph.getAppState();
             //    ph.PHDgetAppState();
-                textBoxPHDstatus.Text = PHD2comm.PHDAppState;
+
+               
+
 
                 // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
                 TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
@@ -17040,22 +17291,22 @@ namespace Pololu.Usc.ScopeFocus
         {
             double AzmError = Convert.ToDouble(textBox46.Text);//enter from astrotortilla PA routine in arcminutes
             double AltError = Convert.ToDouble(textBox47.Text);//from AT arcmin
-            double M = AzmError * (Math.Cos(scope.Altitude)) / (Math.Cos(RefStarDec));//angular distance corrected altitude and dec or refstar
+            double M = AzmError * (Math.Cos(Mount.scope.Altitude)) / (Math.Cos(RefStarDec));//angular distance corrected altitude and dec or refstar
             double CorrectedRA = RefStarRA - (M / 900);//RA of where star should be if good PA
             double CorrectedDec = RefStarDec - (AltError / 60);///dec same as above
-            scope.SlewToCoordinatesAsync(CorrectedRA, CorrectedDec);  //move scope to this position
+            Mount.scope.SlewToCoordinatesAsync(CorrectedRA, CorrectedDec);  //move scope to this position
             Log("slewing to correction position: RA = " + CorrectedRA.ToString() + "     Dec = " + CorrectedDec.ToString());
             MessageBox.Show("Use Mount Alt/Azm adjustments to center refernce star", "scopefocus");
-            scope.SyncToCoordinates(CorrectedRA, CorrectedDec);
+            Mount.scope.SyncToCoordinates(CorrectedRA, CorrectedDec);
 
 
         }
 
         private void button58_Click(object sender, EventArgs e)
         {
-            RefStarDec = scope.Declination;
-            RefStarRA = scope.RightAscension;
-            Log("synced:  RA = " + scope.RightAscension.ToString() + "     Dec = " + scope.Declination.ToString());
+            RefStarDec = Mount.scope.Declination;
+            RefStarRA = Mount.scope.RightAscension;
+            Log("synced:  RA = " + Mount.scope.RightAscension.ToString() + "     Dec = " + Mount.scope.Declination.ToString());
         }
 
         //this should be re-written so the arduino is polled as to the state of ContinuousHoldOn to avoid any ambiguity
@@ -17850,7 +18101,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     else
                     {
-                        scope.SlewToCoordinates(centerHereRA, centerHereDec);
+                    Mount.scope.SlewToCoordinates(centerHereRA, centerHereDec);
                         Log("Slew to Offset complete - At RA = " + centerHereRA.ToString() + "     Dec = " + centerHereDec.ToString());
                         FileLog2("Slew to Offset complete - At RA = " + centerHereRA.ToString() + "     Dec = " + centerHereDec.ToString());
                     }
