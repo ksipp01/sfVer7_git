@@ -979,7 +979,11 @@ namespace Pololu.Usc.ScopeFocus
         {
             // simulation by writing fake bmp file results in mult FSW triggers.  try to ignore dupluicates
             // unrem for sim 
-
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher2.EnableRaisingEvents = false;
+                return;
+            }
 
             //    delay(1); // add for sim testing only 11-3-16
 
@@ -1007,6 +1011,13 @@ namespace Pololu.Usc.ScopeFocus
         private bool autoMetricVcurve = false;
         private void fileSystemWatcher3_Changed(object sender, FileSystemEventArgs e)
         {
+
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher3.EnableRaisingEvents = false;
+                return;
+            }
+
             // int nn;
             FileLog2("fileSystemWatcher3 changed");
             textBox41.Refresh();//dual scope status textbox
@@ -1972,6 +1983,34 @@ namespace Pololu.Usc.ScopeFocus
 
             try
             {
+                int fsPauseNumber = 0; // added 1-12-17
+                if (fileSystemWatcher2.EnableRaisingEvents)
+                {
+                    fileSystemWatcher2.EnableRaisingEvents = false;
+                    fsPauseNumber = 2;
+                }
+                if (fileSystemWatcher3.EnableRaisingEvents)
+                {
+                    fileSystemWatcher3.EnableRaisingEvents = false;
+                    fsPauseNumber = 3;
+                }
+                if (fileSystemWatcher4.EnableRaisingEvents)
+                {
+                    fileSystemWatcher4.EnableRaisingEvents = false;
+                    fsPauseNumber = 4;
+                }
+                if (fileSystemWatcher5.EnableRaisingEvents)
+                {
+                    fileSystemWatcher5.EnableRaisingEvents = false;
+                    fsPauseNumber = 5;
+                }
+                if (fileSystemWatcher7.EnableRaisingEvents)
+                {
+                    fileSystemWatcher7.EnableRaisingEvents = false;
+                    fsPauseNumber = 7;
+                }
+
+
                 if (Pololu.Usc.ScopeFocus.Focus.DevId2 == null)
                 {
                     MessageBox.Show("Not connected to focuser", "scopefocus");
@@ -2011,19 +2050,21 @@ namespace Pololu.Usc.ScopeFocus
                 this.Refresh(); // added 10-24-16
 
                 Pololu.Usc.ScopeFocus.Focus.focuser.Move(value);
-
+      
 
                 //************added 11-3-13 may not be needed  ************
                 //     BUT     *************seems like ascom focusers need some delay while moving  
                 //*****  4-22-14 if IsMoving causes problems add a checkbox to allow disable. 
                 while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
                 {
-                    delay(1);
+                  //  delay(1);
                     count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = count.ToString();
 
-                    positionbar();   //**** remd 11-20-14
-                                     //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
+                    //  positionbar();   //**** remd 1-12-17
+                  
+
+                    //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
                 }
                 // end add
                 delay(1);
@@ -2036,6 +2077,30 @@ namespace Pololu.Usc.ScopeFocus
                 toolStripStatusLabel1.Text = "Ready";
                 this.Refresh();
                 positionbar();
+                // added 1-12-17
+                switch (fsPauseNumber)
+                {
+                    case 2:
+                        fileSystemWatcher2.EnableRaisingEvents = true;
+                        break;
+                    case 3:
+                        fileSystemWatcher3.EnableRaisingEvents = true;
+                        break;
+                    case 4:
+                        fileSystemWatcher4.EnableRaisingEvents = true;
+                        break;
+                    case 5:
+                        fileSystemWatcher5.EnableRaisingEvents = true;
+                        break;
+                    case 7:
+                        fileSystemWatcher7.EnableRaisingEvents = true;
+                        break;
+                    case 0:
+                        break;
+                }
+
+
+
             }
 
             catch (Exception e)
@@ -2385,7 +2450,7 @@ namespace Pololu.Usc.ScopeFocus
                             MessageBox.Show("Possible Lost Star, V-curve aborted");
                         }
 
-                        if ((((double)list[vProgress] / (double)list[vProgress - 1]) > 1.5) || (((double)list[vProgress] / (double)list[vProgress - 1]) < .5)) //find outlier
+                        if ((((double)list[vProgress] / (double)list[vProgress - 1]) > 2) || (((double)list[vProgress] / (double)list[vProgress - 1]) < .5)) //find outlier  // 1-11-17 changed to 2 from 1.5
                         {
                             vLostStar++;
                             Log("HFR " + list[vProgress].ToString() + " lost star or possible outlier");
@@ -2509,15 +2574,17 @@ namespace Pololu.Usc.ScopeFocus
                         }
                         //if (backlashDetermOn != true) // remd 1-10-17
                         //{
+                        if (!aborted)
+                        {
                             vProgress++;
                             vv++;
-                            fileSystemWatcher2.EnableRaisingEvents = false; //****  11-20-14 this is added to allow focuser to complete movement before using the next exposure
-                            fileSystemWatcher5.EnableRaisingEvents = false;
+                         //   fileSystemWatcher2.EnableRaisingEvents = false; //****  11-20-14 this is added to allow focuser to complete movement before using the next exposure
+                         //   fileSystemWatcher5.EnableRaisingEvents = false;
                             gotopos(Convert.ToInt32(count + step));
                             Thread.Sleep(MoveDelay);//helps prevent focus mvmnt during capture
-                            fileSystemWatcher2.EnableRaisingEvents = true;
-                            fileSystemWatcher5.EnableRaisingEvents = true;
-
+                         //   fileSystemWatcher2.EnableRaisingEvents = true;
+                        //    fileSystemWatcher5.EnableRaisingEvents = true;
+                        }
                      //   }
 
 
@@ -3768,17 +3835,25 @@ namespace Pololu.Usc.ScopeFocus
             ClosePrep();
         }
 
-
+        bool aborted = false;
         //Abort
         private void button4_Click_2(object sender, EventArgs e)
         {
+
+            fileSystemWatcher2.EnableRaisingEvents = false;
+            fileSystemWatcher3.EnableRaisingEvents = false;
+            //fileSystemWatcher1.EnableRaisingEvents = false;
+            fileSystemWatcher4.EnableRaisingEvents = false;//added 3_13
+            fileSystemWatcher5.EnableRaisingEvents = false;//added to test  metricHFR
+            fileSystemWatcher7.EnableRaisingEvents = false;//added 12-29-16
             GlobalVariables.FineRepeatOn = false;//added 1-7-12
             GlobalVariables.FineRepeatDone = 0;
             textBox20.Enabled = true;
             textBox18.Enabled = true;
             Log("Aborted");
             FileLog2("Aborted");
-            standby();
+            aborted = true;
+          //  standby();
         }
         //reverse
         private void button2_Click_1(object sender, EventArgs e)
@@ -3800,8 +3875,11 @@ namespace Pololu.Usc.ScopeFocus
         //v-curve (coarse)
         private void button6_Click_1(object sender, EventArgs e)
         {
+            aborted = false;
             if (checkBox22.Checked)
                 ClearMetricFiles();
+
+          
             //if (GlobalVariables.Nebcamera == "No camera")
             //    NoCameraSelected();
             setarraysize();
@@ -3829,13 +3907,13 @@ namespace Pololu.Usc.ScopeFocus
             tempsum = 0;
             //maxMax = 0;
             //  roughvdone = true;
-           
+
             if (checkBox22.Checked == true)
                 fileSystemWatcher5.EnableRaisingEvents = true;//added to test metricHFR
             else // added 12-29-16 
                 fileSystemWatcher2.EnableRaisingEvents = true;
             fileSystemWatcher3.EnableRaisingEvents = false;
-        //    fileSystemWatcher1.EnableRaisingEvents = false; // 1-10-17
+            //    fileSystemWatcher1.EnableRaisingEvents = false; // 1-10-17
             avgMax = 0;
             sumMax = 0;
             //added with new variable array stuff to fix std dev 11-7
@@ -3854,12 +3932,17 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-
+                aborted = false;
                 if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
                 {
                     currentmetricN = 0;
                     ClearMetricFiles();
                     }
+
+              
+
+
+
                 /*
                 if (roughvdone == false)//make sure rough v curve done to establish rough focus point
                 {
@@ -3955,14 +4038,14 @@ namespace Pololu.Usc.ScopeFocus
 
                     //Thread.Sleep(1000);
                     //gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 3));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                     gotopos(Convert.ToInt32(finegoto - ((int)numericUpDown8.Value) * 2));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                 }
                 gotopos(Convert.ToInt32(finegoto - (int)numericUpDown8.Value));
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
                 gotopos(Convert.ToInt32(finegoto));
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
                 GlobalVariables.FFenable = true;
                 repeatProgress = 0;
                 repeatDone = 0;
@@ -3994,24 +4077,29 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     GlobalVariables.FineRepeatDone = 0;
                 }
-               
+                while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
+                {
+                    Thread.Sleep(100);  // wait till done moving
 
-                if (checkBox22.Checked) // added 11-3-16
+                }
+                    if (checkBox22.Checked) // added 11-3-16
                 {
                     fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR   // moved from above the if 12-29-16
                     MetricCapture();
                 }
                 else // added 12-29-16
                 {
-                  //  if (!backlashDetermOn && !GlobalVariables.Tempon) // 1-10-17
+                    //  if (!backlashDetermOn && !GlobalVariables.Tempon) // 1-10-17
                     //    if (!backlashDetermOn )
                     //{
-                        fileSystemWatcher2.EnableRaisingEvents = true;
-                        fileSystemWatcher3.EnableRaisingEvents = false;
-                    }
-                   // if (backlashDetermOn || GlobalVariables.Tempon)
-                   //fileSystemWatcher1.EnableRaisingEvents = true;
-              //  }
+                    
+                    fileSystemWatcher2.EnableRaisingEvents = true;
+                    fileSystemWatcher3.EnableRaisingEvents = false;
+                }
+
+                // if (backlashDetermOn || GlobalVariables.Tempon)
+                //fileSystemWatcher1.EnableRaisingEvents = true;
+                //  }
             }
 
             catch (Exception ex)
@@ -4136,6 +4224,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button11_Click_1(object sender, EventArgs e)
         {
+            aborted = false;
             //   Data d = new Data();
             GetAvg();
             if (checkBox22.Checked == false)
@@ -5691,6 +5780,12 @@ namespace Pololu.Usc.ScopeFocus
         // for sequences
         private void fileSystemWatcher4_Changed(object sender, FileSystemEventArgs e)
         {
+
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher4.EnableRaisingEvents = false;
+                return;
+            }
             idleCount = 0;
             //if (FlatDone == false)
             //  {
@@ -8739,7 +8834,12 @@ namespace Pololu.Usc.ScopeFocus
             //  try
             //  {
 
-
+            if (aborted)
+            {
+                fileSystemWatcher5.EnableRaisingEvents = false; //1-12-17
+                
+                return;
+            }
             //  string[] metricpath = Directory.GetFiles(path2.ToString(), "*.fit");
 
             //   button25.PerformClick();
@@ -17212,6 +17312,13 @@ namespace Pololu.Usc.ScopeFocus
         //automatically select last obtained capture from Neb
         private async void fileSystemWatcher7_Created(object sender, FileSystemEventArgs e)
         {
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher7.EnableRaisingEvents = false;
+                aborted = false;
+                return;
+            }
+
             FileInfo file = new FileInfo(e.FullPath);//returns name of file that triggered FSW7
             Log(file.Name.ToString());
             if (SettingFocusSolve)
