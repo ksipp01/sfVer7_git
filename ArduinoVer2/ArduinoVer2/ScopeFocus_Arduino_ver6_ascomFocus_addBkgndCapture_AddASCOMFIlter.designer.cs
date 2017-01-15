@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series25 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series26 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series27 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series28 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title7 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -197,8 +197,6 @@
             this.label26 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.button19 = new System.Windows.Forms.Button();
-            this.button24 = new System.Windows.Forms.Button();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.label61 = new System.Windows.Forms.Label();
             this.label56 = new System.Windows.Forms.Label();
@@ -406,10 +404,6 @@
             this.textBox64 = new System.Windows.Forms.TextBox();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.checkBox35 = new System.Windows.Forms.CheckBox();
-            this.button53 = new System.Windows.Forms.Button();
-            this.button52 = new System.Windows.Forms.Button();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.button25 = new System.Windows.Forms.Button();
             this.checkBox33 = new System.Windows.Forms.CheckBox();
             this.button48 = new System.Windows.Forms.Button();
             this.textBox24 = new System.Windows.Forms.TextBox();
@@ -434,6 +428,7 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.disableCloseWarning = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown21)).BeginInit();
@@ -888,7 +883,7 @@
             this.checkBox34.AutoSize = true;
             this.checkBox34.Checked = true;
             this.checkBox34.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox34.Location = new System.Drawing.Point(401, 199);
+            this.checkBox34.Location = new System.Drawing.Point(52, 138);
             this.checkBox34.Name = "checkBox34";
             this.checkBox34.Size = new System.Drawing.Size(152, 17);
             this.checkBox34.TabIndex = 5;
@@ -898,9 +893,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(22, 68);
+            this.button5.Location = new System.Drawing.Point(52, 161);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(103, 23);
+            this.button5.Size = new System.Drawing.Size(102, 23);
             this.button5.TabIndex = 13;
             this.button5.Text = "Set Min Neb Sz";
             this.toolTip1.SetToolTip(this.button5, "Start \"Capture Series\" with 10000s exposure time, adjust window size so lower lef" +
@@ -965,58 +960,58 @@
             // 
             // chart1
             // 
-            chartArea2.AxisX.Title = "Position";
-            chartArea2.AxisY.Crossing = -1.7976931348623157E+308D;
-            chartArea2.AxisY.IsStartedFromZero = false;
-            chartArea2.AxisY.Title = "HFR";
-            chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chart1.Legends.Add(legend2);
+            chartArea7.AxisX.Title = "Position";
+            chartArea7.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea7.AxisY.IsStartedFromZero = false;
+            chartArea7.AxisY.Title = "HFR";
+            chartArea7.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea7);
+            legend7.Name = "Legend1";
+            this.chart1.Legends.Add(legend7);
             this.chart1.Location = new System.Drawing.Point(26, 350);
             this.chart1.Name = "chart1";
             this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series5.Legend = "Legend1";
-            series5.MarkerBorderWidth = 2;
-            series5.Name = "Rough V";
-            series5.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series5.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series6.Legend = "Legend1";
-            series6.MarkerBorderColor = System.Drawing.Color.Blue;
-            series6.MarkerColor = System.Drawing.Color.White;
-            series6.MarkerSize = 8;
-            series6.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series6.Name = "Fine V- Data Used";
-            series6.YValuesPerPoint = 2;
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series7.Legend = "Legend1";
-            series7.MarkerBorderColor = System.Drawing.Color.Red;
-            series7.MarkerColor = System.Drawing.Color.White;
-            series7.MarkerSize = 8;
-            series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series7.Name = "Fine V";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series8.Legend = "Legend1";
-            series8.MarkerBorderColor = System.Drawing.Color.Purple;
-            series8.MarkerColor = System.Drawing.Color.Purple;
-            series8.MarkerSize = 8;
-            series8.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
-            series8.Name = "Temp Cal";
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
-            this.chart1.Series.Add(series7);
-            this.chart1.Series.Add(series8);
+            series25.ChartArea = "ChartArea1";
+            series25.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series25.Legend = "Legend1";
+            series25.MarkerBorderWidth = 2;
+            series25.Name = "Rough V";
+            series25.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series25.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series26.ChartArea = "ChartArea1";
+            series26.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series26.Legend = "Legend1";
+            series26.MarkerBorderColor = System.Drawing.Color.Blue;
+            series26.MarkerColor = System.Drawing.Color.White;
+            series26.MarkerSize = 8;
+            series26.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series26.Name = "Fine V- Data Used";
+            series26.YValuesPerPoint = 2;
+            series27.ChartArea = "ChartArea1";
+            series27.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series27.Legend = "Legend1";
+            series27.MarkerBorderColor = System.Drawing.Color.Red;
+            series27.MarkerColor = System.Drawing.Color.White;
+            series27.MarkerSize = 8;
+            series27.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series27.Name = "Fine V";
+            series28.ChartArea = "ChartArea1";
+            series28.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series28.Legend = "Legend1";
+            series28.MarkerBorderColor = System.Drawing.Color.Purple;
+            series28.MarkerColor = System.Drawing.Color.Purple;
+            series28.MarkerSize = 8;
+            series28.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series28.Name = "Temp Cal";
+            this.chart1.Series.Add(series25);
+            this.chart1.Series.Add(series26);
+            this.chart1.Series.Add(series27);
+            this.chart1.Series.Add(series28);
             this.chart1.Size = new System.Drawing.Size(688, 157);
             this.chart1.TabIndex = 51;
             this.chart1.Text = "chart1";
-            title2.Name = "Title 1";
-            this.chart1.Titles.Add(title2);
+            title7.Name = "Title 1";
+            this.chart1.Titles.Add(title7);
             // 
             // menuStrip1
             // 
@@ -1123,9 +1118,9 @@
             // Column1
             // 
             this.Column1.DataPropertyName = "Date";
-            dataGridViewCellStyle2.Format = "G";
-            dataGridViewCellStyle2.NullValue = null;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Format = "G";
+            dataGridViewCellStyle7.NullValue = null;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle7;
             this.Column1.HeaderText = "Date";
             this.Column1.Name = "Column1";
             this.Column1.Width = 150;
@@ -2301,8 +2296,6 @@
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.tabPage4.Controls.Add(this.button19);
-            this.tabPage4.Controls.Add(this.button24);
             this.tabPage4.Controls.Add(this.groupBox15);
             this.tabPage4.Controls.Add(this.groupBox14);
             this.tabPage4.Controls.Add(this.groupBox13);
@@ -2314,28 +2307,6 @@
             this.tabPage4.Size = new System.Drawing.Size(738, 222);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Filter/Flat";
-            // 
-            // button19
-            // 
-            this.button19.Location = new System.Drawing.Point(123, 191);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(55, 23);
-            this.button19.TabIndex = 264;
-            this.button19.Text = "Abort";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click_2);
-            // 
-            // button24
-            // 
-            this.button24.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.button24.Enabled = false;
-            this.button24.Location = new System.Drawing.Point(55, 189);
-            this.button24.Name = "button24";
-            this.button24.Size = new System.Drawing.Size(55, 23);
-            this.button24.TabIndex = 263;
-            this.button24.Text = "Start";
-            this.button24.UseVisualStyleBackColor = true;
-            this.button24.Click += new System.EventHandler(this.button24_Click);
             // 
             // groupBox15
             // 
@@ -3005,7 +2976,7 @@
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(8, 161);
+            this.label32.Location = new System.Drawing.Point(52, 191);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(83, 13);
             this.label32.TabIndex = 34;
@@ -3048,7 +3019,7 @@
             // 
             // textBox23
             // 
-            this.textBox23.Location = new System.Drawing.Point(95, 158);
+            this.textBox23.Location = new System.Drawing.Point(139, 188);
             this.textBox23.Name = "textBox23";
             this.textBox23.Size = new System.Drawing.Size(37, 20);
             this.textBox23.TabIndex = 33;
@@ -3892,7 +3863,7 @@
             this.groupBox24.Controls.Add(this.button31);
             this.groupBox24.Controls.Add(this.label60);
             this.groupBox24.Controls.Add(this.textBoxPHDstatus);
-            this.groupBox24.Location = new System.Drawing.Point(6, 96);
+            this.groupBox24.Location = new System.Drawing.Point(6, 98);
             this.groupBox24.Name = "groupBox24";
             this.groupBox24.Size = new System.Drawing.Size(187, 72);
             this.groupBox24.TabIndex = 186;
@@ -4517,14 +4488,11 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.disableCloseWarning);
             this.tabPage3.Controls.Add(this.textBox64);
             this.tabPage3.Controls.Add(this.button5);
             this.tabPage3.Controls.Add(this.checkBox36);
             this.tabPage3.Controls.Add(this.checkBox35);
-            this.tabPage3.Controls.Add(this.button53);
-            this.tabPage3.Controls.Add(this.button52);
-            this.tabPage3.Controls.Add(this.textBox9);
-            this.tabPage3.Controls.Add(this.button25);
             this.tabPage3.Controls.Add(this.checkBox34);
             this.tabPage3.Controls.Add(this.checkBox33);
             this.tabPage3.Controls.Add(this.button48);
@@ -4539,15 +4507,15 @@
             // 
             // textBox64
             // 
-            this.textBox64.Location = new System.Drawing.Point(131, 70);
+            this.textBox64.Location = new System.Drawing.Point(161, 163);
             this.textBox64.Name = "textBox64";
-            this.textBox64.Size = new System.Drawing.Size(55, 20);
+            this.textBox64.Size = new System.Drawing.Size(54, 20);
             this.textBox64.TabIndex = 14;
             // 
             // checkBox36
             // 
             this.checkBox36.AutoSize = true;
-            this.checkBox36.Location = new System.Drawing.Point(50, 42);
+            this.checkBox36.Location = new System.Drawing.Point(52, 67);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(106, 17);
             this.checkBox36.TabIndex = 12;
@@ -4557,56 +4525,19 @@
             // checkBox35
             // 
             this.checkBox35.AutoSize = true;
-            this.checkBox35.Location = new System.Drawing.Point(50, 18);
+            this.checkBox35.Location = new System.Drawing.Point(52, 43);
             this.checkBox35.Name = "checkBox35";
             this.checkBox35.Size = new System.Drawing.Size(122, 17);
             this.checkBox35.TabIndex = 11;
             this.checkBox35.Text = "Plate Solve .new file";
             this.checkBox35.UseVisualStyleBackColor = true;
             // 
-            // button53
-            // 
-            this.button53.Location = new System.Drawing.Point(111, 164);
-            this.button53.Name = "button53";
-            this.button53.Size = new System.Drawing.Size(75, 23);
-            this.button53.TabIndex = 10;
-            this.button53.Text = "Guide";
-            this.button53.UseVisualStyleBackColor = true;
-            this.button53.Click += new System.EventHandler(this.button53_Click);
-            // 
-            // button52
-            // 
-            this.button52.Location = new System.Drawing.Point(30, 163);
-            this.button52.Name = "button52";
-            this.button52.Size = new System.Drawing.Size(75, 23);
-            this.button52.TabIndex = 9;
-            this.button52.Text = "Stop";
-            this.button52.UseVisualStyleBackColor = true;
-            this.button52.Click += new System.EventHandler(this.button52_Click);
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new System.Drawing.Point(111, 133);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(100, 20);
-            this.textBox9.TabIndex = 7;
-            // 
-            // button25
-            // 
-            this.button25.Location = new System.Drawing.Point(30, 131);
-            this.button25.Name = "button25";
-            this.button25.Size = new System.Drawing.Size(75, 23);
-            this.button25.TabIndex = 6;
-            this.button25.Text = "AppState";
-            this.button25.UseVisualStyleBackColor = true;
-            this.button25.Click += new System.EventHandler(this.button25_Click);
-            // 
             // checkBox33
             // 
             this.checkBox33.AutoSize = true;
             this.checkBox33.Checked = true;
             this.checkBox33.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox33.Location = new System.Drawing.Point(210, 199);
+            this.checkBox33.Location = new System.Drawing.Point(52, 115);
             this.checkBox33.Name = "checkBox33";
             this.checkBox33.Size = new System.Drawing.Size(114, 17);
             this.checkBox33.TabIndex = 4;
@@ -4789,6 +4720,16 @@
             this.fileSystemWatcher1.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher1.SynchronizingObject = this;
             this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
+            // 
+            // disableCloseWarning
+            // 
+            this.disableCloseWarning.AutoSize = true;
+            this.disableCloseWarning.Location = new System.Drawing.Point(52, 92);
+            this.disableCloseWarning.Name = "disableCloseWarning";
+            this.disableCloseWarning.Size = new System.Drawing.Size(133, 17);
+            this.disableCloseWarning.TabIndex = 15;
+            this.disableCloseWarning.Text = "Disable Close Warning";
+            this.disableCloseWarning.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
@@ -5266,8 +5207,6 @@
         private System.Windows.Forms.Label label61;
         private System.Windows.Forms.Label label56;
         private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.Button button19;
-        private System.Windows.Forms.Button button24;
         private System.Windows.Forms.RadioButton radioButton4;
         private System.Windows.Forms.GroupBox groupBox20;
         private System.Windows.Forms.Label label89;
@@ -5317,10 +5256,6 @@
         private System.Windows.Forms.CheckBox checkBox34;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button button25;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.Button button52;
-        private System.Windows.Forms.Button button53;
         private System.Windows.Forms.Button button36;
         private System.Windows.Forms.CheckBox checkBox35;
         private System.Windows.Forms.CheckBox checkBox36;
@@ -5329,6 +5264,7 @@
         private System.Windows.Forms.NumericUpDown numericUpDown42;
         private System.Windows.Forms.TextBox textBox64;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.CheckBox disableCloseWarning;
     }
 }
 

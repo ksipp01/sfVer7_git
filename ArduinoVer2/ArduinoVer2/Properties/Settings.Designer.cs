@@ -465,5 +465,17 @@ namespace WindowsFormsApplication1.Properties {
                 this["MinNebSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool disableCloseWArning {
+            get {
+                return ((bool)(this["disableCloseWArning"]));
+            }
+            set {
+                this["disableCloseWArning"] = value;
+            }
+        }
     }
 }

@@ -2775,6 +2775,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+                disableCloseWarning.Checked = WindowsFormsApplication1.Properties.Settings.Default.disableCloseWArning;
                 MinNebSize = WindowsFormsApplication1.Properties.Settings.Default.MinNebSize;
                 textBox64.Text = MinNebSize.ToString();
                 ClipboardListen = false;
@@ -2953,7 +2954,16 @@ namespace Pololu.Usc.ScopeFocus
 
         private void ButtonDisable_Click_1(object sender, EventArgs e)
         {
-            ClosePrep();
+            if (!disableCloseWarning.Checked)
+            {
+                DialogResult result = MessageBox.Show("Do you really want to close the application?", "scopefocus", MessageBoxButtons.OKCancel);
+                if (result == DialogResult.OK)
+                    ClosePrep();
+                else
+                    return;
+            }
+            else
+                ClosePrep();
         }
 
         bool aborted = false;
@@ -3570,6 +3580,7 @@ namespace Pololu.Usc.ScopeFocus
         private void ClosePrep()
         {
             // PHD2comm.PHD2Connected = false;
+            WindowsFormsApplication1.Properties.Settings.Default.disableCloseWArning = disableCloseWarning.Checked;
             if (PHD2comm.PHD2Connected)
                 ph.DisConnect();
             if (timer2.Enabled)
@@ -4997,11 +5008,11 @@ namespace Pololu.Usc.ScopeFocus
         //}
 
 
-        private void button19_Click(object sender, EventArgs e)
-        {
-            //    FilterStepFwd();
+        //private void button19_Click(object sender, EventArgs e)
+        //{
+        //    //    FilterStepFwd();
 
-        }
+        //}
 
 
         //filter advance on filter tab
@@ -12456,10 +12467,10 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-        private void button19_Click_1(object sender, EventArgs e)
-        {
-            //  ResumePHD();
-        }
+        //private void button19_Click_1(object sender, EventArgs e)
+        //{
+        //    //  ResumePHD();
+        //}
         /*
         private void button22_Click_1(object sender, EventArgs e)
         {
@@ -17927,76 +17938,76 @@ namespace Pololu.Usc.ScopeFocus
             DisplayCurrentFilter();
         }
 
-        private void button24_Click(object sender, EventArgs e)
-        {
-            //{
-            //    button22.PerformClick();
-            //    return;
-            //}
-            SequenceGo();
-        }
+        //private void button24_Click(object sender, EventArgs e)
+        //{
+        //    //{
+        //    //    button22.PerformClick();
+        //    //    return;
+        //    //}
+        //    SequenceGo();
+        //}
 
-        private void button19_Click_2(object sender, EventArgs e)
-        {
-
-
-            DialogResult result;
-            result = MessageBox.Show("Abort the current sequence?", "scopefocus",
-                            MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-            if (result == DialogResult.OK)
-            {
-                backgroundWorker2.CancelAsync();// added 1-23-13
-
-                ShowWindowAsync(Handles.NebhWnd, SW_SHOW);
-                Thread.Sleep(200);
-                SetForegroundWindow(Handles.Aborthwnd);
-                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                Thread.Sleep(250);
-
-                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                Thread.Sleep(250);
+        //private void button19_Click_2(object sender, EventArgs e)
+        //{
 
 
-                fileSystemWatcher1.EnableRaisingEvents = false; // 1-15-17 was 4
-                filterCountCurrent = 0;
-                subCountCurrent = 0;
-                standby();
+        //    DialogResult result;
+        //    result = MessageBox.Show("Abort the current sequence?", "scopefocus",
+        //                    MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+        //    if (result == DialogResult.OK)
+        //    {
+        //        backgroundWorker2.CancelAsync();// added 1-23-13
+
+        //        ShowWindowAsync(Handles.NebhWnd, SW_SHOW);
+        //        Thread.Sleep(200);
+        //        SetForegroundWindow(Handles.Aborthwnd);
+        //        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+        //        Thread.Sleep(250);
+
+        //        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+        //        Thread.Sleep(250);
+
+
+        //        fileSystemWatcher1.EnableRaisingEvents = false; // 1-15-17 was 4
+        //        filterCountCurrent = 0;
+        //        subCountCurrent = 0;
+        //        standby();
 
 
 
-                if (!UseClipBoard.Checked)
-                {
-                    clientSocket2.Close();
-                    Thread.Sleep(250);
-                    SendKeys.SendWait("~");
-                    SendKeys.Flush();
-                }
-                // ************ end 11-23-13 addt
+        //        if (!UseClipBoard.Checked)
+        //        {
+        //            clientSocket2.Close();
+        //            Thread.Sleep(250);
+        //            SendKeys.SendWait("~");
+        //            SendKeys.Flush();
+        //        }
+        //        // ************ end 11-23-13 addt
 
-            }
-            if (result == DialogResult.Cancel)
-                return;
-            //if (paused == false)
-            //{
-            //    fileSystemWatcher4.EnableRaisingEvents = false;
-            //    button22.BackColor = System.Drawing.Color.Lime;
-            //    paused = true;
-            //    button22.Text = "Resume";
-            //    PHDcommand(PHD_PAUSE);
-            //    Log("guiding puased");
-            //}
-            //else
-            //{
-            //    fileSystemWatcher4.EnableRaisingEvents = true;
-            //    button22.UseVisualStyleBackColor = true;
-            //    paused = false;
-            //    button22.Text = "Pause";
-            //    if (Handles.PHDVNumber == 2)
-            //        resumePHD2();
-            //    else
-            //        PHDcommand(PHD_RESUME);
-            //}
-        }
+        //    }
+        //    if (result == DialogResult.Cancel)
+        //        return;
+        //    //if (paused == false)
+        //    //{
+        //    //    fileSystemWatcher4.EnableRaisingEvents = false;
+        //    //    button22.BackColor = System.Drawing.Color.Lime;
+        //    //    paused = true;
+        //    //    button22.Text = "Resume";
+        //    //    PHDcommand(PHD_PAUSE);
+        //    //    Log("guiding puased");
+        //    //}
+        //    //else
+        //    //{
+        //    //    fileSystemWatcher4.EnableRaisingEvents = true;
+        //    //    button22.UseVisualStyleBackColor = true;
+        //    //    paused = false;
+        //    //    button22.Text = "Pause";
+        //    //    if (Handles.PHDVNumber == 2)
+        //    //        resumePHD2();
+        //    //    else
+        //    //        PHDcommand(PHD_RESUME);
+        //    //}
+        //}
 
         // restet sequence
         private void button15_Click(object sender, EventArgs e) 
@@ -19021,43 +19032,43 @@ namespace Pololu.Usc.ScopeFocus
 
 
         // 12-2-16 test PHD2 event monitoring
-        private void button25_Click(object sender, EventArgs e)
-        {
-            textBox9.Text = PHD2comm.PHDAppState;
+        //private void button25_Click(object sender, EventArgs e)
+        //{
+        //    textBox9.Text = PHD2comm.PHDAppState;
 
 
-        }
+        //}
       //  PHD2comm.AppState state = new PHD2comm.AppState();
-        private void button52_Click(object sender, EventArgs e)
-        {
-            ph.StopCapture();
+        //private void button52_Click(object sender, EventArgs e)
+        //{
+        //    ph.StopCapture();
 
 
-            //ph.getAppState();
-            //if (ph.getAppState().ToString() != null)
-            //    MessageBox.Show(ph.getAppState().ToString());
-
-
-
-
-                //while (ph.getAppState().ToString() != "Stopped")
-                //    Thread.Sleep(100);
-
-                //if (PHD2comm.State != null)
-                //    MessageBox.Show(PHD2comm.State.ToString());
+        //    //ph.getAppState();
+        //    //if (ph.getAppState().ToString() != null)
+        //    //    MessageBox.Show(ph.getAppState().ToString());
 
 
 
-                //  ph.StartEventMonitor();
-                //   ph.StopCapture();
-                //   ph.Loop();
-                //  ph.PHD2connect();
-        }
 
-        private void button53_Click(object sender, EventArgs e)
-        {
-             ph.Guide();
-        }
+        //        //while (ph.getAppState().ToString() != "Stopped")
+        //        //    Thread.Sleep(100);
+
+        //        //if (PHD2comm.State != null)
+        //        //    MessageBox.Show(PHD2comm.State.ToString());
+
+
+
+        //        //  ph.StartEventMonitor();
+        //        //   ph.StopCapture();
+        //        //   ph.Loop();
+        //        //  ph.PHD2connect();
+        //}
+
+        //private void button53_Click(object sender, EventArgs e)
+        //{
+        //     ph.Guide();
+        //}
       
         private void button36_Click_1(object sender, EventArgs e)
         {
@@ -19165,7 +19176,7 @@ namespace Pololu.Usc.ScopeFocus
         //    NebListenStart(Handles.NebhWnd, SocketPort);
         //    msdelay(750);
         //    Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
-         
+
         //}
 
         private void button51_Click_1(object sender, EventArgs e)
