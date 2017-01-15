@@ -72,8 +72,7 @@
             this.UseClipBoard = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.checkBox34 = new System.Windows.Forms.CheckBox();
-            this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
-            this.toolTip3 = new System.Windows.Forms.ToolTip(this.components);
+            this.button5 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.ButtonDisable = new System.Windows.Forms.Button();
@@ -118,6 +117,7 @@
             this.label17 = new System.Windows.Forms.Label();
             this.button49 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.numericUpDown42 = new System.Windows.Forms.NumericUpDown();
             this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
             this.radioButton9 = new System.Windows.Forms.RadioButton();
@@ -405,6 +405,7 @@
             this.label75 = new System.Windows.Forms.Label();
             this.label73 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.textBox64 = new System.Windows.Forms.TextBox();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.checkBox35 = new System.Windows.Forms.CheckBox();
             this.button53 = new System.Windows.Forms.Button();
@@ -436,6 +437,7 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
+            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
@@ -452,6 +454,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown42)).BeginInit();
             this.groupBox20.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown40)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -521,6 +524,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher5)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
             // 
             // LogTextBox
@@ -537,6 +541,7 @@
             // 
             // fileSystemWatcher2
             // 
+            this.fileSystemWatcher2.EnableRaisingEvents = true;
             this.fileSystemWatcher2.Filter = "*.bmp";
             this.fileSystemWatcher2.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher2.Path = this.folderBrowserDialog1.SelectedPath;
@@ -550,6 +555,7 @@
             // 
             // fileSystemWatcher3
             // 
+            this.fileSystemWatcher3.EnableRaisingEvents = true;
             this.fileSystemWatcher3.Filter = "*.bmp";
             this.fileSystemWatcher3.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher3.Path = this.folderBrowserDialog1.SelectedPath;
@@ -883,6 +889,7 @@
             this.UseClipBoard.Text = "Use Clipboard";
             this.toolTip1.SetToolTip(this.UseClipBoard, "Uses copy to clipboard to communicate with Neb.  preffered for beta version");
             this.UseClipBoard.UseVisualStyleBackColor = true;
+            this.UseClipBoard.CheckedChanged += new System.EventHandler(this.UseClipBoard_CheckedChanged);
             // 
             // numericUpDown1
             // 
@@ -915,11 +922,17 @@
             this.toolTip1.SetToolTip(this.checkBox34, "send message if nothing happening after 1.5 x exposure time");
             this.checkBox34.UseVisualStyleBackColor = true;
             // 
-            // toolTip3
+            // button5
             // 
-            this.toolTip3.AutoPopDelay = 8000;
-            this.toolTip3.InitialDelay = 500;
-            this.toolTip3.ReshowDelay = 100;
+            this.button5.Location = new System.Drawing.Point(22, 68);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(103, 23);
+            this.button5.TabIndex = 13;
+            this.button5.Text = "Set Min Neb Sz";
+            this.toolTip1.SetToolTip(this.button5, "Start \"Capture Series\" with 10000s exposure time, adjust window size so lower lef" +
+        "t status message is not cut off, then click to set (one-time setup) ");
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button3
             // 
@@ -928,8 +941,7 @@
             this.button3.Size = new System.Drawing.Size(50, 23);
             this.button3.TabIndex = 149;
             this.button3.Text = "Fine";
-            this.toolTip3.SetToolTip(this.button3, "Moves to N/2 times step size and generates V-curve\r\nMust first determine focus po" +
-        "sition with std(course) V-curve");
+            this.toolTip1.SetToolTip(this.button3, "Moves to N/2 times step size and generates V-curve");
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
@@ -940,7 +952,7 @@
             this.button9.Size = new System.Drawing.Size(75, 23);
             this.button9.TabIndex = 145;
             this.button9.Text = "&Snyc Pos";
-            this.toolTip3.SetToolTip(this.button9, "Push to sync after any manual position changes");
+            this.toolTip1.SetToolTip(this.button9, "Push to sync after any manual position changes");
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click_1);
             // 
@@ -951,7 +963,7 @@
             this.ButtonDisable.Size = new System.Drawing.Size(75, 23);
             this.ButtonDisable.TabIndex = 106;
             this.ButtonDisable.Text = "&Close";
-            this.toolTip3.SetToolTip(this.ButtonDisable, "Moves to zero and closes application");
+            this.toolTip1.SetToolTip(this.ButtonDisable, "Moves to zero and closes application");
             this.ButtonDisable.UseVisualStyleBackColor = true;
             this.ButtonDisable.Click += new System.EventHandler(this.ButtonDisable_Click_1);
             // 
@@ -963,8 +975,7 @@
             this.button8.Size = new System.Drawing.Size(55, 23);
             this.button8.TabIndex = 153;
             this.button8.Text = "Focus";
-            this.toolTip3.SetToolTip(this.button8, "Connect to Arduino after port selection.\r\nSends Stepper Delay and Max Travel to a" +
-        "pplication.\r\nWill autoconnect if single port detected");
+            this.toolTip1.SetToolTip(this.button8, "Connect to Arduino after port selection.");
             this.button8.UseVisualStyleBackColor = false;
             this.button8.Click += new System.EventHandler(this.button8_Click_2);
             // 
@@ -974,7 +985,7 @@
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(180, 20);
             this.textBox11.TabIndex = 162;
-            this.toolTip3.SetToolTip(this.textBox11, "Full path of Directory setting in Nebulosity");
+            this.toolTip1.SetToolTip(this.textBox11, "Full path of Directory setting in Nebulosity");
             this.textBox11.Click += new System.EventHandler(this.textBox11_Click);
             this.textBox11.TextChanged += new System.EventHandler(this.textBox11_TextChanged);
             // 
@@ -1386,6 +1397,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.numericUpDown42);
             this.groupBox2.Controls.Add(this.checkBox31);
             this.groupBox2.Controls.Add(this.groupBox20);
             this.groupBox2.Controls.Add(this.radioButton4);
@@ -1412,14 +1424,27 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Equipment";
             // 
+            // numericUpDown42
+            // 
+            this.numericUpDown42.Location = new System.Drawing.Point(189, 96);
+            this.numericUpDown42.Name = "numericUpDown42";
+            this.numericUpDown42.Size = new System.Drawing.Size(37, 20);
+            this.numericUpDown42.TabIndex = 198;
+            this.numericUpDown42.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numericUpDown42.ValueChanged += new System.EventHandler(this.numericUpDown42_ValueChanged);
+            // 
             // checkBox31
             // 
             this.checkBox31.AutoSize = true;
-            this.checkBox31.Location = new System.Drawing.Point(62, 95);
+            this.checkBox31.Location = new System.Drawing.Point(18, 97);
             this.checkBox31.Name = "checkBox31";
-            this.checkBox31.Size = new System.Drawing.Size(120, 17);
+            this.checkBox31.Size = new System.Drawing.Size(174, 17);
             this.checkBox31.TabIndex = 197;
-            this.checkBox31.Text = "Internal Filter Wheel";
+            this.checkBox31.Text = "Internal Filter Wheel - Positions:";
             this.checkBox31.UseVisualStyleBackColor = true;
             this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
             // 
@@ -2587,7 +2612,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox8.Location = new System.Drawing.Point(50, 161);
             this.comboBox8.Name = "comboBox8";
             this.comboBox8.Size = new System.Drawing.Size(121, 21);
@@ -2604,7 +2631,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox1.Location = new System.Drawing.Point(50, 136);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
@@ -2621,7 +2650,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox5.Location = new System.Drawing.Point(50, 111);
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(121, 21);
@@ -2684,7 +2715,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox2.Location = new System.Drawing.Point(50, 36);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
@@ -2702,7 +2735,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox3.Location = new System.Drawing.Point(50, 61);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(121, 21);
@@ -2719,7 +2754,9 @@
             "Ha",
             "OIII",
             "SII",
-            "No Filter"});
+            "No Filter",
+            "Dark 1",
+            "Dark 2"});
             this.comboBox4.Location = new System.Drawing.Point(51, 86);
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(121, 21);
@@ -4506,6 +4543,8 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.textBox64);
+            this.tabPage3.Controls.Add(this.button5);
             this.tabPage3.Controls.Add(this.checkBox36);
             this.tabPage3.Controls.Add(this.checkBox35);
             this.tabPage3.Controls.Add(this.button53);
@@ -4523,6 +4562,13 @@
             this.tabPage3.Size = new System.Drawing.Size(738, 222);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "About";
+            // 
+            // textBox64
+            // 
+            this.textBox64.Location = new System.Drawing.Point(131, 70);
+            this.textBox64.Name = "textBox64";
+            this.textBox64.Size = new System.Drawing.Size(55, 20);
+            this.textBox64.TabIndex = 14;
             // 
             // checkBox36
             // 
@@ -4546,7 +4592,7 @@
             // 
             // button53
             // 
-            this.button53.Location = new System.Drawing.Point(50, 158);
+            this.button53.Location = new System.Drawing.Point(111, 164);
             this.button53.Name = "button53";
             this.button53.Size = new System.Drawing.Size(75, 23);
             this.button53.TabIndex = 10;
@@ -4556,7 +4602,7 @@
             // 
             // button52
             // 
-            this.button52.Location = new System.Drawing.Point(50, 129);
+            this.button52.Location = new System.Drawing.Point(30, 163);
             this.button52.Name = "button52";
             this.button52.Size = new System.Drawing.Size(75, 23);
             this.button52.TabIndex = 9;
@@ -4566,14 +4612,14 @@
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(131, 99);
+            this.textBox9.Location = new System.Drawing.Point(111, 133);
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(100, 20);
             this.textBox9.TabIndex = 7;
             // 
             // button25
             // 
-            this.button25.Location = new System.Drawing.Point(50, 97);
+            this.button25.Location = new System.Drawing.Point(30, 131);
             this.button25.Name = "button25";
             this.button25.Size = new System.Drawing.Size(75, 23);
             this.button25.TabIndex = 6;
@@ -4646,6 +4692,7 @@
             // 
             // fileSystemWatcher4
             // 
+            this.fileSystemWatcher4.EnableRaisingEvents = true;
             this.fileSystemWatcher4.Filter = "*.fit";
             this.fileSystemWatcher4.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher4.SynchronizingObject = this;
@@ -4660,6 +4707,7 @@
             // 
             // fileSystemWatcher5
             // 
+            this.fileSystemWatcher5.EnableRaisingEvents = true;
             this.fileSystemWatcher5.Filter = "*.fit";
             this.fileSystemWatcher5.SynchronizingObject = this;
             this.fileSystemWatcher5.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher5_Changed);
@@ -4771,9 +4819,17 @@
             // 
             // fileSystemWatcher7
             // 
+            this.fileSystemWatcher7.EnableRaisingEvents = true;
             this.fileSystemWatcher7.Filter = "*.fit";
             this.fileSystemWatcher7.SynchronizingObject = this;
             this.fileSystemWatcher7.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher7_Created);
+            // 
+            // fileSystemWatcher1
+            // 
+            this.fileSystemWatcher1.EnableRaisingEvents = true;
+            this.fileSystemWatcher1.NotifyFilter = System.IO.NotifyFilters.LastWrite;
+            this.fileSystemWatcher1.SynchronizingObject = this;
+            this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
             // 
             // MainWindow
             // 
@@ -4799,7 +4855,6 @@
             this.Text = "scopefocus - Main";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load_1);
-            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).EndInit();
@@ -4819,6 +4874,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown42)).EndInit();
             this.groupBox20.ResumeLayout(false);
             this.groupBox20.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown40)).EndInit();
@@ -4914,6 +4970,7 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -4924,8 +4981,6 @@
         private System.Windows.Forms.TextBox LogTextBox; 
         private System.IO.FileSystemWatcher fileSystemWatcher3;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.ToolTip toolTip2;
-        private System.Windows.Forms.ToolTip toolTip3;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -5319,6 +5374,10 @@
         private System.Windows.Forms.CheckBox checkBox35;
         private System.Windows.Forms.CheckBox checkBox36;
         private System.Windows.Forms.Label label97;
+        public System.IO.FileSystemWatcher fileSystemWatcher1;
+        private System.Windows.Forms.NumericUpDown numericUpDown42;
+        private System.Windows.Forms.TextBox textBox64;
+        private System.Windows.Forms.Button button5;
     }
 }
 

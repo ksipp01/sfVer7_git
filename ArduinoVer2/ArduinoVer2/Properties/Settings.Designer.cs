@@ -441,5 +441,29 @@ namespace WindowsFormsApplication1.Properties {
                 this["GoalADU"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int intFilterNumber {
+            get {
+                return ((int)(this["intFilterNumber"]));
+            }
+            set {
+                this["intFilterNumber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MinNebSize {
+            get {
+                return ((int)(this["MinNebSize"]));
+            }
+            set {
+                this["MinNebSize"] = value;
+            }
+        }
     }
 }

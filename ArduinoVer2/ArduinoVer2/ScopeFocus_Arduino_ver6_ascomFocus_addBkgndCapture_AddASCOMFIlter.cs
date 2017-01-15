@@ -113,6 +113,8 @@
 // 1-7-17 remd all checkboxChanged. maMax, vcurveenable, TargetGotoOn, SlavePaused
 // 1-9-17 fixed error if PHD2 closes
 // 1-10-17 removed backlash determiniation and tempcal.  they don't work and arent used/  backlash can be foun by diff between upslope and dwnslope foucs points. 
+// 1-13-17 and 1-14-17 consolidated filesystemwatcher to 2.  2,3,4,5 into #1 and #7 stayed separate.   
+
 
 ///  to do:
 /// ver21 see above 
@@ -189,15 +191,15 @@ namespace Pololu.Usc.ScopeFocus
         //   SerialPort port;
         //   SerialPort port2;
 
-      //  Focuser focuser;
-      //  FilterWheel filterWheel;
-     //   private ASCOM.DriverAccess.Switch FlatFlap;
-    //    private ASCOM.DriverAccess.Camera cam;
+        //  Focuser focuser;
+        //  FilterWheel filterWheel;
+        //   private ASCOM.DriverAccess.Switch FlatFlap;
+        //    private ASCOM.DriverAccess.Camera cam;
 
 
         // 12-2-16 test PHD2 event monitoring
         PHD2comm ph = new PHD2comm();
-        
+
 
 
         public MainWindow()
@@ -224,14 +226,14 @@ namespace Pololu.Usc.ScopeFocus
 
               }
               */
-              
-        //    fileSystemWatcher1.EnableRaisingEvents = false;
+
+            fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;
             fileSystemWatcher5.EnableRaisingEvents = false;//added to test metricHFR
                                                            //       fileSystemWatcher6.EnableRaisingEvents = true;
-       //     textBox11.Focus();
+                                                           //     textBox11.Focus();
 
 
             //    string devId2 = ASCOM.DriverAccess.Focuser.Choose("");
@@ -254,7 +256,7 @@ namespace Pololu.Usc.ScopeFocus
         //  Focuser focuser;
         // ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser("");
         //    Focuser focuser;
-     //   Telescope scope;
+        //   Telescope scope;
         //  ASCOM.DriverAccess.Focuser focuser = new ASCOM.DriverAccess.Focuser("ASCOM.Arduino.Focuser");
         //Focuser focuser;
 
@@ -281,7 +283,7 @@ namespace Pololu.Usc.ScopeFocus
         //    get { return comboBox5.Text; }
         //    set { comboBox5.Text = value; }
         //}
-
+        public int intFilterNumber;
         private int SocketPort = 4301;
         private string ScriptName = "\\listenPort.neb";
         //begin handle stuff
@@ -435,6 +437,8 @@ namespace Pololu.Usc.ScopeFocus
         }
         private static bool solveRequested = false;
 
+
+        private bool ClipboardListen { get; set; }
         //  int EnteredPID;
         //   double EnteredSlopeUP;
         //   double EnteredSlopeDWN;
@@ -979,11 +983,12 @@ namespace Pololu.Usc.ScopeFocus
         {
             // simulation by writing fake bmp file results in mult FSW triggers.  try to ignore dupluicates
             // unrem for sim 
-            if (aborted) // 1-12-17
-            {
-                fileSystemWatcher2.EnableRaisingEvents = false;
-                return;
-            }
+
+            //if (aborted) // 1-12-17  //remd for test 1-13-17
+            //{
+            //    fileSystemWatcher2.EnableRaisingEvents = false;
+            //    return;
+            //}
 
             //    delay(1); // add for sim testing only 11-3-16
 
@@ -992,9 +997,12 @@ namespace Pololu.Usc.ScopeFocus
             //     {
             //       lastRead = lastWriteTime;
 
-            if (vDone != 1)
-                vcurve();
-            FileLog2("fileSystemWatcher2 changed");
+            //if (vDone != 1) remd for test 1-13-17
+            //    vcurve();
+
+
+
+            //  FileLog2("fileSystemWatcher2 changed");
             //    }
 
 
@@ -1073,7 +1081,7 @@ namespace Pololu.Usc.ScopeFocus
                                 PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
                                 Thread.Sleep(2000);
                                 checkBox22.Checked = true;
-                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                 if (!UseClipBoard.Checked)
                                 {
                                     if (clientSocket.Client.Connected == true)
@@ -1173,7 +1181,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                     posMin = count; //reset to prev focus point
                                     BestPos = count;
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                     if (calcRedo < 4)
                                         gotoFocus();
                                     else
@@ -1198,7 +1206,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                         posMin = count; //reset to prev focus point
                                         BestPos = count;
-                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was 3
                                         if (calcRedo < 4)
                                             gotoFocus();
                                         else
@@ -1220,13 +1228,13 @@ namespace Pololu.Usc.ScopeFocus
                                         if (calcRedo > 0)
                                             calcRedo = 0;
                                         Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
-                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                     }
                                 }
                                 else // added 10-24-16
                                 {
                                     Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                 }
                                 ////9-9-15
                                 //// check to make sure HFR improved....it should always improve a little or sample point was too close to PID
@@ -1299,7 +1307,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                     posMin = count; //reset to prev focus point
                                     BestPos = count;
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                     if (calcRedo < 4)
                                         gotoFocus();
                                     else
@@ -1326,7 +1334,7 @@ namespace Pololu.Usc.ScopeFocus
 
                                         posMin = count;
                                         BestPos = count;
-                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                         if (calcRedo < 4)
                                             gotoFocus();
                                         else
@@ -1345,14 +1353,14 @@ namespace Pololu.Usc.ScopeFocus
                                     {
                                         if (calcRedo > 0)
                                             calcRedo = 0;
-                                        fileSystemWatcher3.EnableRaisingEvents = false;
+                                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                         //   focuser.Move((int)BestPos);
                                         gotopos((int)BestPos);  // 10-13-16 try so waits for focuser move to complete...while below doesn't seem to work....
                                     }
                                 }
                                 else // added 10-24-16
                                 {
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                     //   focuser.Move((int)BestPos);
                                     gotopos((int)BestPos);
                                 }
@@ -1463,11 +1471,12 @@ namespace Pololu.Usc.ScopeFocus
                     else
                         nnn = (int)numericUpDown5.Value;
 
-                    fileSystemWatcher3.EnableRaisingEvents = true;
+                    fileSystemWatcher1.EnableRaisingEvents = true;// 1-13-17 was 3
                     if ((checkBox22.Checked == true) & (vProgress == nnn))
                     {
+                        fsNumber = 3;
                         vProgress++;
-                        fileSystemWatcher3.Filter = "*.fit";
+                        fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
                         MetricCapture();
                         return;
                         //  Thread.Sleep((int)MetricTime * 1000);
@@ -1518,14 +1527,14 @@ namespace Pololu.Usc.ScopeFocus
                                     //  posMin = Convert.ToInt32(BestPos);
                                     autoMetricVcurve = true;
                                     HFRtestON = false;
-                                    fileSystemWatcher3.EnableRaisingEvents = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was 3
                                     if (!checkBox22.Checked) // added 11-13-16
                                         checkBox22.Checked = true;
                                     button3.PerformClick(); // 11-3-16 was buton 25 "metric V" (**** untested ****)
                                     return;
                                 }
                                 //
-                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                 if (!UseClipBoard.Checked)
                                 {
                                     if (clientSocket.Client.Connected == true)
@@ -1539,7 +1548,7 @@ namespace Pololu.Usc.ScopeFocus
                                 redo = 0;
                                 posMin = Convert.ToInt32(BestPos);
                                 HFRtestON = false;
-                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was 3
                                 gotoFocus();
                                 return;
 
@@ -1549,7 +1558,7 @@ namespace Pololu.Usc.ScopeFocus
                                 Log("Repeat Focus did not improve - Aborting");
                                 FileLog2("Repeat Focus did not improve - Aborting");
                                 Send("Repeat Focus did not improve - Aborting");
-                                fileSystemWatcher3.EnableRaisingEvents = false;
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                                 HFRtestON = false;
                                 BestPos = count;
                                 redo = 0;
@@ -1572,11 +1581,11 @@ namespace Pololu.Usc.ScopeFocus
                                 radioButton3.Checked = true;
                             }
                             //    redo = true;
-                            fileSystemWatcher3.EnableRaisingEvents = false;
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
                             HFRtestON = false;
                             if (checkBox22.Checked == true)
                             {
-                                fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                                fileSystemWatcher1.EnableRaisingEvents = false;  // 1-13-17 was 3 //added 7-25-14
                                 _gotoFocusOn = false;
                                 //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                                 textBox4.Text = ((int)BestPos).ToString();
@@ -1630,7 +1639,7 @@ namespace Pololu.Usc.ScopeFocus
                         FileLog2("Focus Improved - Final Focus Position = " + Convert.ToInt32(BestPos).ToString());
                         redo = 0;
                         posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
-                        fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
+                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3  // added 9-9-15 due to testing above. 
 
                         // try add 10-13-16
                         //FilterFocusOn = false;
@@ -1648,7 +1657,7 @@ namespace Pololu.Usc.ScopeFocus
 
                         if (checkBox22.Checked == true)
                         {
-                            fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3  //added 7-25-14
                             _gotoFocusOn = false;
                             //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                             textBox4.Text = ((int)BestPos).ToString();
@@ -1706,7 +1715,8 @@ namespace Pololu.Usc.ScopeFocus
                     HFRtestON = false;
                     //    focusSampleComplete = false; // 11-8-16 was true
                     posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
-                    fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
+                 //   fileSystemWatcher3.EnableRaisingEvents = false; // added 9-9-15 due to testing above. 
+                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was above
 
                     // try add 10-13-16
                     //FilterFocusOn = false;
@@ -1724,7 +1734,8 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (checkBox22.Checked == true)
                 {
-                    fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                    // 1-13-17 below was 3 not 1
+                    fileSystemWatcher1.EnableRaisingEvents = false; //added 7-25-14
                     _gotoFocusOn = false;
                     //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
                     textBox4.Text = ((int)BestPos).ToString();
@@ -1912,7 +1923,9 @@ namespace Pololu.Usc.ScopeFocus
                 if (!IsSlave())
                 {
                     focusSampleComplete = false; // added 11-12-16
-                    fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                    fsNumber = 4;
+                    fileSystemWatcher1.Filter = "*.fit";
+                    fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was 4  //move this to last 3-4 from under abort/sleep
                     NebCapture();
                     FileLog2("FSW4 - enabled, NebCapture started from FSW3");
                    
@@ -1951,7 +1964,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
-            //fileSystemWatcher1.EnableRaisingEvents = false;
+            fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;//added 3_13
             fileSystemWatcher5.EnableRaisingEvents = false;//added to test  metricHFR
             fileSystemWatcher7.EnableRaisingEvents = false;//added 12-29-16
@@ -1983,32 +1996,37 @@ namespace Pololu.Usc.ScopeFocus
 
             try
             {
-                int fsPauseNumber = 0; // added 1-12-17
-                if (fileSystemWatcher2.EnableRaisingEvents)
-                {
-                    fileSystemWatcher2.EnableRaisingEvents = false;
-                    fsPauseNumber = 2;
+               bool fsPause = false; // added 1-12-17
+              if (fileSystemWatcher1.EnableRaisingEvents) // remd 1-13-17 
+               {
+                    fileSystemWatcher1.EnableRaisingEvents = false;
+                    fsPause = true;
                 }
-                if (fileSystemWatcher3.EnableRaisingEvents)
-                {
-                    fileSystemWatcher3.EnableRaisingEvents = false;
-                    fsPauseNumber = 3;
-                }
-                if (fileSystemWatcher4.EnableRaisingEvents)
-                {
-                    fileSystemWatcher4.EnableRaisingEvents = false;
-                    fsPauseNumber = 4;
-                }
-                if (fileSystemWatcher5.EnableRaisingEvents)
-                {
-                    fileSystemWatcher5.EnableRaisingEvents = false;
-                    fsPauseNumber = 5;
-                }
-                if (fileSystemWatcher7.EnableRaisingEvents)
-                {
-                    fileSystemWatcher7.EnableRaisingEvents = false;
-                    fsPauseNumber = 7;
-                }
+                //if (fileSystemWatcher2.EnableRaisingEvents)
+                //{
+                //    fileSystemWatcher2.EnableRaisingEvents = false;
+                //    fsPauseNumber = 2;
+                //}
+                //if (fileSystemWatcher3.EnableRaisingEvents)
+                //{
+                //    fileSystemWatcher3.EnableRaisingEvents = false;
+                //    fsPauseNumber = 3;
+                //}
+                //if (fileSystemWatcher4.EnableRaisingEvents)
+                //{
+                //    fileSystemWatcher4.EnableRaisingEvents = false;
+                //    fsPauseNumber = 4;
+                //}
+                //if (fileSystemWatcher5.EnableRaisingEvents)
+                //{
+                //    fileSystemWatcher5.EnableRaisingEvents = false;
+                //    fsPauseNumber = 5;
+                //}
+                //if (fileSystemWatcher7.EnableRaisingEvents)
+                //{
+                //    fileSystemWatcher7.EnableRaisingEvents = false;
+                //    fsPauseNumber = 7;
+                //}
 
 
                 if (Pololu.Usc.ScopeFocus.Focus.DevId2 == null)
@@ -2078,26 +2096,36 @@ namespace Pololu.Usc.ScopeFocus
                 this.Refresh();
                 positionbar();
                 // added 1-12-17
-                switch (fsPauseNumber)
+                if (fsPause)
                 {
-                    case 2:
-                        fileSystemWatcher2.EnableRaisingEvents = true;
-                        break;
-                    case 3:
-                        fileSystemWatcher3.EnableRaisingEvents = true;
-                        break;
-                    case 4:
-                        fileSystemWatcher4.EnableRaisingEvents = true;
-                        break;
-                    case 5:
-                        fileSystemWatcher5.EnableRaisingEvents = true;
-                        break;
-                    case 7:
-                        fileSystemWatcher7.EnableRaisingEvents = true;
-                        break;
-                    case 0:
-                        break;
+                    fileSystemWatcher1.EnableRaisingEvents = true;
+                    fsPause = false;
                 }
+
+                // remd all below 1-13-17
+                //switch (fsPauseNumber)  
+                //{
+                //    case 1:
+                //        fileSystemWatcher1.EnableRaisingEvents = true;
+                //        break;
+                //    case 2:
+                //        fileSystemWatcher2.EnableRaisingEvents = true;
+                //        break;
+                //    case 3:
+                //        fileSystemWatcher3.EnableRaisingEvents = true;
+                //        break;
+                //    case 4:
+                //        fileSystemWatcher4.EnableRaisingEvents = true;
+                //        break;
+                //    case 5:
+                //        fileSystemWatcher5.EnableRaisingEvents = true;
+                //        break;
+                //    case 7:
+                //        fileSystemWatcher7.EnableRaisingEvents = true;
+                //        break;
+                //    case 0:
+                //        break;
+                //}
 
 
 
@@ -2444,8 +2472,9 @@ namespace Pololu.Usc.ScopeFocus
                         if (vLostStar == 3)
                         {
                             vLostStar = 0;
-                            fileSystemWatcher2.EnableRaisingEvents = false;
-                            fileSystemWatcher5.EnableRaisingEvents = false;
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17
+                            //fileSystemWatcher2.EnableRaisingEvents = false;
+                            //fileSystemWatcher5.EnableRaisingEvents = false;
                             Send("V-curve aborted, lost star?");
                             MessageBox.Show("Possible Lost Star, V-curve aborted");
                         }
@@ -2624,8 +2653,9 @@ namespace Pololu.Usc.ScopeFocus
             //V=1...skips to here.     
             if (vDone == 1)  //**********  7-27-14 seems like this is repeating...
             {
-                fileSystemWatcher2.EnableRaisingEvents = false;
-                fileSystemWatcher5.EnableRaisingEvents = false; //added to test metritHFR     
+                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17
+                //fileSystemWatcher2.EnableRaisingEvents = false;
+                //fileSystemWatcher5.EnableRaisingEvents = false; //added to test metritHFR     
 
                 for (int arraycount = 0; arraycount < vProgress; arraycount++)
                 {
@@ -2666,8 +2696,9 @@ namespace Pololu.Usc.ScopeFocus
                  //   if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable) & (backlashDetermOn == false)) // 1-10-17
                         if (((_apexHFR > (vN / 2 + vN / 4)) || (_apexHFR < (vN / 2 - vN / 4))) & (GlobalVariables.FFenable))
                     {
-                        fileSystemWatcher2.EnableRaisingEvents = false;
-                        fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
+                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17
+                        //fileSystemWatcher2.EnableRaisingEvents = false;
+                        //fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
                         DialogResult result2 = MessageBox.Show("V-Curve Not Symmetric", "Aborted - Repeat Rough V-Curve", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         if (result2 == DialogResult.OK)
                         {
@@ -2822,9 +2853,9 @@ namespace Pololu.Usc.ScopeFocus
                 if ((vDone == 1) & (GlobalVariables.FFenable))
                 {
 
-                  //  fileSystemWatcher1.EnableRaisingEvents = false;
-                    fileSystemWatcher2.EnableRaisingEvents = false;
-                    fileSystemWatcher5.EnableRaisingEvents = false; // added to test metric HFR
+                    fileSystemWatcher1.EnableRaisingEvents = false; //1-13-17
+                    //fileSystemWatcher2.EnableRaisingEvents = false;
+                  //  fileSystemWatcher5.EnableRaisingEvents = false; // added to test metric HFR
                                                                     //handle repeated fine v curves
                     if (GlobalVariables.FineVRepeat > 1)
                     {
@@ -2888,7 +2919,7 @@ namespace Pololu.Usc.ScopeFocus
                                 File.Delete(metricpath[0]);
                             //  currentmetricN = 0;
                             //return;
-                            fileSystemWatcher5.EnableRaisingEvents = false;
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 5
                             // end 10-11-16 addt
 
 
@@ -2919,8 +2950,8 @@ namespace Pololu.Usc.ScopeFocus
               //  if ((vDone == 1) & (!GlobalVariables.Tempon) & (backlashDetermOn == false) & (GlobalVariables.FFenable != true)) // 1-10-17
                     if ((vDone == 1) & (GlobalVariables.FFenable != true))
                 {
-                 //   fileSystemWatcher1.EnableRaisingEvents = false;
-                    fileSystemWatcher2.EnableRaisingEvents = false;
+                    fileSystemWatcher1.EnableRaisingEvents = false; //1-13-17
+                  //  fileSystemWatcher2.EnableRaisingEvents = false;
                     if (checkBox29.Checked == false)
                     {
 
@@ -3352,11 +3383,17 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 //    port.DiscardInBuffer();
                 //    port.DiscardOutBuffer();
-                fileSystemWatcher2.EnableRaisingEvents = false;
-                fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
-                fileSystemWatcher3.EnableRaisingEvents = true;
-          //      fileSystemWatcher1.EnableRaisingEvents = false;
-                fileSystemWatcher4.EnableRaisingEvents = false;
+               
+                //fileSystemWatcher2.EnableRaisingEvents = false;
+                //fileSystemWatcher5.EnableRaisingEvents = false; //added to test metricHFR
+                //  fileSystemWatcher3.EnableRaisingEvents = true; // remd 1-13-17
+                fsNumber = 3;
+                //if (checkBox22.Checked)     // this is handled in FSW3();
+                //    fileSystemWatcher1.Filter = "*.fit";
+                //else
+                //    fileSystemWatcher1.Filter = "*.bmp";
+                
+             //   fileSystemWatcher4.EnableRaisingEvents = false;
                 focusSampleComplete = false; // 10-13-16
                 _gotoFocusOn = true;//~line 440
                 min = 1;
@@ -3369,19 +3406,27 @@ namespace Pololu.Usc.ScopeFocus
                 abc = new double[10];
                 if (checkBox22.Checked == true)
                 {
-                    fileSystemWatcher3.Filter = "*.fit";
 
+                    fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
+                    FileLog("FSW1 *.fit enabled ");
+                    fileSystemWatcher1.EnableRaisingEvents = true;
                     //   if (clientSocket.Connected == false)
                     //   {
                     //clientSocket.Connect("127.0.0.1", SocketPort);//connects to neb
-                    NebListenStart(Handles.NebhWnd, SocketPort);
+                    //  NebListenStart(Handles.NebhWnd, SocketPort); // 1-13-17 remd
                     //   }
-
+                    if (FineFocusAbort) // 1-14-17
+                        FineFocusAbort = false;
 
                     MetricCapture();
                 }
                 else
-                    fileSystemWatcher3.Filter = "*.bmp";
+                {
+                    fileSystemWatcher1.Filter = "*.bmp"; // 1-13-17 was 3
+                    FileLog("FSW1 *.bmp enabled");
+                    fileSystemWatcher1.EnableRaisingEvents = true;
+                    
+                }
 
 
             }
@@ -3657,7 +3702,9 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-
+                MinNebSize = WindowsFormsApplication1.Properties.Settings.Default.MinNebSize;
+                textBox64.Text = MinNebSize.ToString();
+                ClipboardListen = false;
                 //5 lines below for path2 settings
                 GlobalVariables.Path2 = WindowsFormsApplication1.Properties.Settings.Default.path.ToString();
                 textBox11.Text = GlobalVariables.Path2.ToString();
@@ -3749,13 +3796,14 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (Handles.NebhWnd != 0)
                     FindNebCamera();
-
+                numericUpDown42.Value = WindowsFormsApplication1.Properties.Settings.Default.intFilterNumber;
+                intFilterNumber = (int)numericUpDown42.Value;
                 radioButton8.Checked = true;
                 textBox27.Text = user.ToString();
                 textBox13.Text = server.ToString();
                 textBox28.Text = pswd.ToString();
                 textBox36.Text = to.ToString();
-                //fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
+                fileSystemWatcher1.Path = GlobalVariables.Path2.ToString();
                 fileSystemWatcher2.Path = GlobalVariables.Path2.ToString();
                 fileSystemWatcher5.Path = GlobalVariables.Path2.ToString();//added to test metricHFR
                 fileSystemWatcher3.Path = GlobalVariables.Path2.ToString();
@@ -3816,7 +3864,7 @@ namespace Pololu.Usc.ScopeFocus
                     button36.BackColor = Color.Lime;
                     button36.Text = "DisCnct";
                     Log("Connected to PHD2 version " + result2);
-                    FileLog("Connected to PHD2 version " + result2);
+                    FileLog2("Connected to PHD2 version " + result2);
 
 
                 }
@@ -3842,7 +3890,7 @@ namespace Pololu.Usc.ScopeFocus
 
             fileSystemWatcher2.EnableRaisingEvents = false;
             fileSystemWatcher3.EnableRaisingEvents = false;
-            //fileSystemWatcher1.EnableRaisingEvents = false;
+            fileSystemWatcher1.EnableRaisingEvents = false;
             fileSystemWatcher4.EnableRaisingEvents = false;//added 3_13
             fileSystemWatcher5.EnableRaisingEvents = false;//added to test  metricHFR
             fileSystemWatcher7.EnableRaisingEvents = false;//added 12-29-16
@@ -3909,10 +3957,28 @@ namespace Pololu.Usc.ScopeFocus
             //  roughvdone = true;
 
             if (checkBox22.Checked == true)
-                fileSystemWatcher5.EnableRaisingEvents = true;//added to test metricHFR
-            else // added 12-29-16 
-                fileSystemWatcher2.EnableRaisingEvents = true;
-            fileSystemWatcher3.EnableRaisingEvents = false;
+            {
+                fsNumber = 5;
+                fileSystemWatcher1.Filter = "*.fit";
+            }
+            else
+            {
+                fileSystemWatcher1.Filter = "*.bmp";
+                fsNumber = 2;
+            }
+
+           fileSystemWatcher1.EnableRaisingEvents = true;
+
+            // remd 1-13-17 for test
+            //if (checkBox22.Checked == true)
+            //    fileSystemWatcher5.EnableRaisingEvents = true;//added to test metricHFR
+            //else // added 12-29-16 
+            //    fileSystemWatcher2.EnableRaisingEvents = true;
+            //fileSystemWatcher3.EnableRaisingEvents = false;
+
+
+
+
             //    fileSystemWatcher1.EnableRaisingEvents = false; // 1-10-17
             avgMax = 0;
             sumMax = 0;
@@ -3933,11 +3999,9 @@ namespace Pololu.Usc.ScopeFocus
             try
             {
                 aborted = false;
-                if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
-                {
-                    currentmetricN = 0;
+              if (checkBox22.Checked == true) // added 11-3-16 to remove separate metric v button
                     ClearMetricFiles();
-                    }
+             
 
               
 
@@ -4084,7 +4148,11 @@ namespace Pololu.Usc.ScopeFocus
                 }
                     if (checkBox22.Checked) // added 11-3-16
                 {
-                    fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR   // moved from above the if 12-29-16
+                    fsNumber = 5;
+                    fileSystemWatcher1.Filter = "*.fit";
+                    currentmetricN = 0;
+                    fileSystemWatcher1.EnableRaisingEvents = true; //  1-13-17
+                   // fileSystemWatcher5.EnableRaisingEvents = true;//added to test metric HFR   // moved from above the if 12-29-16
                     MetricCapture();
                 }
                 else // added 12-29-16
@@ -4092,9 +4160,11 @@ namespace Pololu.Usc.ScopeFocus
                     //  if (!backlashDetermOn && !GlobalVariables.Tempon) // 1-10-17
                     //    if (!backlashDetermOn )
                     //{
-                    
-                    fileSystemWatcher2.EnableRaisingEvents = true;
-                    fileSystemWatcher3.EnableRaisingEvents = false;
+                    fsNumber = 2;
+                    fileSystemWatcher1.Filter = "*.bmp";
+                    fileSystemWatcher1.EnableRaisingEvents = true; // added for test 1-13-17
+                  //  fileSystemWatcher2.EnableRaisingEvents = true;
+                 //   fileSystemWatcher3.EnableRaisingEvents = false; // remd 1-13-17 although doesnt matter
                 }
 
                 // if (backlashDetermOn || GlobalVariables.Tempon)
@@ -4484,6 +4554,9 @@ namespace Pololu.Usc.ScopeFocus
             //******end addt.
             */
             //    WindowsFormsApplication1.Properties.Settings.Default.port = portselected.ToString();
+            
+            WindowsFormsApplication1.Properties.Settings.Default.MinNebSize = Convert.ToInt16(textBox64.Text);
+            WindowsFormsApplication1.Properties.Settings.Default.intFilterNumber = (int)numericUpDown42.Value;
             WindowsFormsApplication1.Properties.Settings.Default.backlash = backlash;
             WindowsFormsApplication1.Properties.Settings.Default.path = GlobalVariables.Path2.ToString();
             WindowsFormsApplication1.Properties.Settings.Default.travel = travel;
@@ -4661,7 +4734,7 @@ namespace Pololu.Usc.ScopeFocus
             }
              */
             // button13.PerformClick();
-            UpdateData();  // remd 10-14-16
+        //    UpdateData();  // remd 1-15-17
 
             //below give a focus position starting point based on v-curve data.
 
@@ -5266,63 +5339,91 @@ namespace Pololu.Usc.ScopeFocus
         private void filteradvance()
         {
             // 11-8-16   TODO for clipboard and external filter
+
             if (checkBox31.Checked)
             {
+                // fix so goes to zero after highest filter number  see below....
+                if (intFilterPos == intFilterNumber)
+                    intFilterPos = 1;
+                else
                 intFilterPos++;
+                if (!ClipboardListen)
                 NebListenStart(Handles.NebhWnd, SocketPort);
+
                 Thread.Sleep(1000);
-                try
-                {
-                    if (!UseClipBoard.Checked)
-                        serverStream = clientSocket.GetStream();
-                }
-                catch (IOException e)
-                {
-                    Log("Neb socket failure " + e.ToString());
-
-                }
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n");//for testing purposes use the Ext filter sim.  
-                                                                                                              // byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetFilter " + intFilterPos + "\n");
-                try
-                {
-                    serverStream.Write(outStream, 0, outStream.Length);
-                    Log("Filter Postion set to " + intFilterPos.ToString());
-                }
-                catch
-                {
-                    MessageBox.Show("Error sending command", "scopefocus");
-                    return;
-
-                }
-                //  serverStream = clientSocket.GetStream();
                 if (!UseClipBoard.Checked)
                 {
-                    byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                    serverStream.Write(outStream2, 0, outStream2.Length);
-                    serverStream.Flush();
-                    //toolStripStatusLabel1.Text = "Sequence Done";
-                    //this.Refresh();
-                    //if (DarksOn == true)
-                    //    DarksOn = false;
-                    //currentfilter = 1;
-                    //DisplayCurrentFilter();
-                    ////      currentfilter = 0;
-                    //subCountCurrent = 0;
-                    //filterCountCurrent = 0;
-                    Thread.Sleep(3000);//prevent overlapping sounds
-                    serverStream.Close();
-                    SetForegroundWindow(Handles.NebhWnd);
-                    Thread.Sleep(1000);
-                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                    Thread.Sleep(3000);
-                    //   NebListenOn = false;
-                    // clientSocket.GetStream().Close();//added 5-17-12
-                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                    clientSocket.Close();
+                    try
+                    {
+
+                        serverStream = clientSocket.GetStream();
+
+                    }
+                    catch (IOException e)
+                    {
+                        Log("Neb socket failure " + e.ToString());
+
+                    }
+
+                    // if (!UseClipBoard.Checked)
+                   // byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n");//for testing purposes use the Ext filter sim.  
+                   byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetFilter " + intFilterPos + "\n");
+                    try
+                    {
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        Log("Filter Postion set to " + intFilterPos.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("Error sending command " + e.ToString(), "scopefocus");
+                        return;
+
+                    }
+                    //  serverStream = clientSocket.GetStream();
+                    if (!UseClipBoard.Checked)
+                    {
+                        byte[] outStream2 = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        serverStream.Write(outStream2, 0, outStream2.Length);
+                        serverStream.Flush();
+                        //toolStripStatusLabel1.Text = "Sequence Done";
+                        //this.Refresh();
+                        //if (DarksOn == true)
+                        //    DarksOn = false;
+                        //currentfilter = 1;
+                        //DisplayCurrentFilter();
+                        ////      currentfilter = 0;
+                        //subCountCurrent = 0;
+                        //filterCountCurrent = 0;
+                        Thread.Sleep(3000);//prevent overlapping sounds
+                        serverStream.Close();
+                        SetForegroundWindow(Handles.NebhWnd);
+                        Thread.Sleep(1000);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        Thread.Sleep(3000);
+                        //   NebListenOn = false;
+                        // clientSocket.GetStream().Close();//added 5-17-12
+                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        clientSocket.Close();
+
+                    }
+
+                    return;
+                }
+                else // use clipboard
+                {
+                 //   intFilterPos++;
+                 //   NebListenStart(Handles.NebhWnd, SocketPort);
+                 //   Thread.Sleep(1000);
+                    Clipboard.Clear();
+                    msdelay(500);
+                  //  Clipboard.SetDataObject("//NEB SetExtFilter " + intFilterPos.ToString()); // use ext for testing
+                    Clipboard.SetDataObject("//NEB SetFilter " + intFilterPos.ToString());
+                    msdelay(750);
+
+                    //**************  1-15-17  ?? add exit from listen  ????
+
 
                 }
-
-                return;
             }
 
             if (Filter.DevId3 != null)
@@ -5724,6 +5825,12 @@ namespace Pololu.Usc.ScopeFocus
                 //      clientSocket.Close();
                 playsound();
 
+                if (UseClipBoard.Checked)
+                {
+                    Clipboard.SetText("//NEB Listen 0");
+                    ClipboardListen = false;
+                }
+
                 return;
             }
             if (filterCountCurrent == subsperfilter)
@@ -6051,6 +6158,8 @@ namespace Pololu.Usc.ScopeFocus
                     //   filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox3.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //     FlatDone = false;
                     //     fileSystemWatcher1.EnableRaisingEvents = true;
@@ -6096,6 +6205,8 @@ namespace Pololu.Usc.ScopeFocus
                     //   filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox4.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     //  textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6137,6 +6248,8 @@ namespace Pololu.Usc.ScopeFocus
                     //    filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //    FlatDone = false;
                     //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6349,6 +6462,8 @@ namespace Pololu.Usc.ScopeFocus
                     // filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox4.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     //   textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6384,6 +6499,8 @@ namespace Pololu.Usc.ScopeFocus
                     //  filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //    FlatDone = false;
                     // textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
@@ -6580,6 +6697,8 @@ namespace Pololu.Usc.ScopeFocus
                     //  filteradvance();
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = (short)comboBox5.SelectedIndex;
+                    else // 1-15-17
+                        intFilterPos = currentfilter;
                     DisplayCurrentFilter();
                     //   FlatDone = false;
                     if (checkBox8.Checked == true)
@@ -7266,6 +7385,7 @@ namespace Pololu.Usc.ScopeFocus
                                        */
                                        //  if (NebListenOn == false)
                                        //  if (clientSocket.Connected == false)// added this line 7-1-14
+               if (!ClipboardListen)
                 NebListenStart(Handles.NebhWnd, SocketPort);
 
                 //   }
@@ -7313,33 +7433,15 @@ namespace Pololu.Usc.ScopeFocus
                 if (FlatCalcDone == true)
                     FlatCalcDone = false;
                 if (DarksOn == false)
-                {
-                    if (checkBox31.Checked)
-                    {
-                        // 11-8-16 TODO fix for clipboard use
-                        intFilterPos = currentfilter;
-                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
-                        //use the one above for testing w/ external ASCOM Filter.filterWheel
-                        //  byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
-                        try
+               {
+                    
+                        if ((!UseClipBoard.Checked) && (checkBox31.Checked)) // 11-8-15 w/ else below
                         {
-                            serverStream.Write(outStream, 0, outStream.Length);
-                            Log(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
-                            FileLog2(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
-                        }
-                        catch
-                        {
-                            MessageBox.Show("Error sending command", "scopefocus");
-                            return;
-
-                        }
-                    }
-                    else
-                    {
-                        if (!UseClipBoard.Checked) // 11-8-15 w/ else below
-                        {
-                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
-
+                            // 11-8-16 TODO fix for clipboard use
+                            intFilterPos = currentfilter;
+                         //   byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetExtFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
+                            //use the one above for testing w/ external ASCOM Filter.filterWheel
+                              byte[] outStream = System.Text.Encoding.ASCII.GetBytes("SetFilter " + intFilterPos + "\n" + "setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
                             try
                             {
                                 serverStream.Write(outStream, 0, outStream.Length);
@@ -7353,130 +7455,162 @@ namespace Pololu.Usc.ScopeFocus
 
                             }
                         }
-                        else
+
+
+
+                    if ((!UseClipBoard.Checked) && (!checkBox31.Checked)) // 11-8-15 w/ else below
+                    {
+                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("setname " + prefix + Nebname + "\n" + "setbinning " + CaptureBin + "\n" + "SetShutter 0" + "\n" + "SetDuration " + CaptureTime3 + "\n" + "Capture " + subsperfilter + "\n");
+
+                        try
                         {
+                            serverStream.Write(outStream, 0, outStream.Length);
                             Log(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
                             FileLog2(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
-                            //   int i = 0;
-                            //   msdelay(750);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Error sending command", "scopefocus");
+                            return;
+
+                        }
+                    }
+
+                    if (UseClipBoard.Checked)
+                    {
+                        if (checkBox31.Checked)
+                        {
+                            Log("Set Internal Filter to: " + intFilterPos.ToString());
+                            FileLog2("Set Internal Filter to: " + intFilterPos.ToString());
                             Clipboard.Clear();
                             msdelay(500);
-                            Clipboard.SetDataObject("//NEB SetName " + prefix + Nebname, false, 3, 500);
-                            // Clipboard.SetText("//NEB SetName " + prefix + Nebname);
+                          //  Clipboard.SetDataObject("//NEB SetExtFilter " + intFilterPos.ToString());
+                                 Clipboard.SetDataObject("//NEB SetFilter " + intFilterPos.ToString()); // use ext for testing
                             msdelay(750);
-                            // 11-12 16 added nebcommandconfirms below 
-
-
-                            //if (!NebCommandConfirm("SetName " + prefix + Nebname, 0))
-                            //    if (!clipboardRetry)
-                            //    {
-                            //        clipboardRetry = true;
-                            //        NebCapture();
-                            //    }
-                            //    else
-                            //        ClipboardFailure("set name");
-      
-                            //{
-                            //    i++;
-                            //    msdelay(100);
-                            //    if (i == 30)
-                            //    {
-                            //        Log("NebCapture Failed");
-                            //        Send("NebCapture Failed");
-                            //        return;
-                            //    }
-                            //}
-                            //i = 0;
-
-
-                            //  Clipboard.SetText("//NEB SetBinning " + CaptureBin);
-                            Clipboard.SetDataObject("//NEB SetBinning " + CaptureBin, false, 3, 500);
-                            msdelay(750);
-                            //if (!NebCommandConfirm("SetBinning " + CaptureBin, 0))
-                            //    if (!clipboardRetry)
-                            //    {
-                            //        clipboardRetry = true;
-                            //        NebCapture();
-                            //    }
-                            //    else
-                            //        ClipboardFailure("SetBinning");
-
-
-                            //while (!NebCommandConfirm("SetBinning "+ CaptureBin, 0))
-                            //{
-                            //    i++;
-                            //    msdelay(100);
-                            //    if (i == 30)
-                            //    {
-                            //        Log("NebCapture Failed");
-                            //        Send("NebCapture Failed");
-                            //        return;
-                            //    }
-                            //}
-                            //i = 0;
-                            ////    Clipboard.SetText("//NEB SetShutter 0");
-                            Clipboard.SetDataObject("//NEB SetShutter 0", false, 3, 500);
-                            msdelay(750);
-                            //if (!NebCommandConfirm("SetShutter 0", 0))
-                            //    if (!clipboardRetry)
-                            //    {
-                            //        clipboardRetry = true;
-                            //        NebCapture();
-                            //    }
-                            //    else
-                            //        ClipboardFailure("setShutter");
-                            //while (!NebCommandConfirm("SetShutter 0", 0))
-                            //{
-                            //    i++;
-                            //    msdelay(100);
-                            //    if (i == 30)
-                            //    {
-                            //        Log("NebCapture Failed");
-                            //        Send("NebCapture Failed");
-                            //        return;
-                            //    }
-                            //}
-                            //i = 0;
-                            //  Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
-                            Clipboard.SetDataObject("//NEB SetDuration " + CaptureTime3, false, 3, 500);
-                            msdelay(750);
-                            //if (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                            //    if (!clipboardRetry)
-                            //    {
-                            //        clipboardRetry = true;
-                            //        NebCapture();
-                            //    }
-                            //    else
-                                  //  ClipboardFailure("SetDuration");
-                            //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
-                            //{
-                            //    i++;
-                            //    msdelay(100);
-                            //    if (i == 30)
-                            //    {
-                            //        Log("NebCapture Failed");
-                            //        Send("NebCapture Failed");
-                            //        return;
-                            //    }
-                            //}
-
-                            //  Clipboard.SetText("//NEB Capture " + subsperfilter);
-                            Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
-                            msdelay(750);
-                            // todo confirm
-
-                            //if (!NebCommandConfirm("Exposing", 1))
-                            //    if (!clipboardRetry)
-                            //    {
-                            //        clipboardRetry = true;
-                            //        NebCapture();
-                            //    }
-                            //    else
-                            //        ClipboardFailure("Exposing");
-
-                            //Clipboard.Clear();
-                            Capturing = true; // added 11-9-16 
                         }
+
+                        Log(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
+                        FileLog2(prefix + Nebname + "  Captime " + CaptureTime3.ToString() + "    subs " + subsperfilter.ToString());
+                        //   int i = 0;
+                        //   msdelay(750);
+                        Clipboard.Clear();
+                        msdelay(500);
+                        Clipboard.SetDataObject("//NEB SetName " + prefix + Nebname, false, 3, 500);
+                        // Clipboard.SetText("//NEB SetName " + prefix + Nebname);
+                        msdelay(750);
+                        // 11-12 16 added nebcommandconfirms below 
+
+
+                        //if (!NebCommandConfirm("SetName " + prefix + Nebname, 0))
+                        //    if (!clipboardRetry)
+                        //    {
+                        //        clipboardRetry = true;
+                        //        NebCapture();
+                        //    }
+                        //    else
+                        //        ClipboardFailure("set name");
+
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
+
+
+                        //  Clipboard.SetText("//NEB SetBinning " + CaptureBin);
+                        Clipboard.SetDataObject("//NEB SetBinning " + CaptureBin, false, 3, 500);
+                        msdelay(750);
+                        //if (!NebCommandConfirm("SetBinning " + CaptureBin, 0))
+                        //    if (!clipboardRetry)
+                        //    {
+                        //        clipboardRetry = true;
+                        //        NebCapture();
+                        //    }
+                        //    else
+                        //        ClipboardFailure("SetBinning");
+
+
+                        //while (!NebCommandConfirm("SetBinning "+ CaptureBin, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
+                        ////    Clipboard.SetText("//NEB SetShutter 0");
+                        Clipboard.SetDataObject("//NEB SetShutter 0", false, 3, 500);
+                        msdelay(750);
+                        //if (!NebCommandConfirm("SetShutter 0", 0))
+                        //    if (!clipboardRetry)
+                        //    {
+                        //        clipboardRetry = true;
+                        //        NebCapture();
+                        //    }
+                        //    else
+                        //        ClipboardFailure("setShutter");
+                        //while (!NebCommandConfirm("SetShutter 0", 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+                        //i = 0;
+                        //  Clipboard.SetText("//NEB SetDuration " + CaptureTime3);
+                        Clipboard.SetDataObject("//NEB SetDuration " + CaptureTime3, false, 3, 500);
+                        msdelay(750);
+                        //if (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //    if (!clipboardRetry)
+                        //    {
+                        //        clipboardRetry = true;
+                        //        NebCapture();
+                        //    }
+                        //    else
+                        //  ClipboardFailure("SetDuration");
+                        //while (!NebCommandConfirm("SetDuration " + CaptureTime3, 0))
+                        //{
+                        //    i++;
+                        //    msdelay(100);
+                        //    if (i == 30)
+                        //    {
+                        //        Log("NebCapture Failed");
+                        //        Send("NebCapture Failed");
+                        //        return;
+                        //    }
+                        //}
+
+                        //  Clipboard.SetText("//NEB Capture " + subsperfilter);
+                        Clipboard.SetDataObject("//NEB Capture " + subsperfilter, false, 3, 500);
+                        msdelay(750);
+                        // todo confirm
+
+                        //if (!NebCommandConfirm("Exposing", 1))
+                        //    if (!clipboardRetry)
+                        //    {
+                        //        clipboardRetry = true;
+                        //        NebCapture();
+                        //    }
+                        //    else
+                        //        ClipboardFailure("Exposing");
+
+                        //Clipboard.Clear();
+                        Capturing = true; // added 11-9-16 
+
                     }
                 }
                 //tryadd setforeground ***** 3-8-13  ****
@@ -8090,6 +8224,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
         int StatusstripHandle;
+        // waitforsequencedonehere
 
         private void WaitForSequenceDone(string Statusstring, int handle)
         {
@@ -8225,7 +8360,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-                ResizeNebWindow();
+             //   ResizeNebWindow();  // remd 1-15-17  done on form load
                 idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
@@ -8515,7 +8650,12 @@ namespace Pololu.Usc.ScopeFocus
                      */
                 }
                 // if (checkBox8.Checked == true) //*******rem'd 4_5
-                fileSystemWatcher4.EnableRaisingEvents = true;
+
+                fsNumber = 4;
+                fileSystemWatcher1.Filter = "*.fit";
+                fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was  below
+
+                //fileSystemWatcher4.EnableRaisingEvents = true;
                 sequenceRunning = true;
                 DisableUpDwn();
                 //    fileSystemWatcher4.EnableRaisingEvents = true;
@@ -8861,7 +9001,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     int AvgMetric;
                     MetricSample = false;
-                    fileSystemWatcher5.EnableRaisingEvents = false;
+                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 5
                     AvgMetric = (AvgMetricHFR.Sum()) / metricN;
                     textBox25.Text = AvgMetric.ToString();
                     Log("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
@@ -9038,14 +9178,18 @@ namespace Pololu.Usc.ScopeFocus
 
                 if (UseClipBoard.Checked) // 11-8-16
                 {
-                  //  int i = 0;
-                    NebListenStart(Handles.NebhWnd, SocketPort);
-                    delay(1);
+                    //  int i = 0;
+                    if (!ClipboardListen)
+                    {
+                        NebListenStart(Handles.NebhWnd, SocketPort);
+                        delay(1);
+                    }
                     Clipboard.Clear();
                     msdelay(500);
                     //   Clipboard.SetText("//NEB SetDuration " + MetricTime);
                     Clipboard.SetDataObject("//NEB SetDuration " + MetricTime, false, 3, 500);
                   msdelay(750);
+                  //  Log("set duration");
                     //if (!NebCommandConfirm("SetDuration " + MetricTime, 0))
                     //    if (!clipboardRetry)
                     //    {
@@ -9154,13 +9298,18 @@ namespace Pololu.Usc.ScopeFocus
                 currentmetricN = 1;
                 MetricSample = true;
 
-                fileSystemWatcher5.EnableRaisingEvents = true;
+                fsNumber = 5;
+                fileSystemWatcher1.Filter = "*.fit";
+                fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was 5
                 // NetworkStream serverStream = clientSocket.GetStream();
                 if (UseClipBoard.Checked) // 11-8-16
                 {
-                  //  int i = 0;
-                    NebListenStart(Handles.NebhWnd, SocketPort);
-                    delay(1);
+                    //  int i = 0;
+                    if (!ClipboardListen)
+                    {
+                        NebListenStart(Handles.NebhWnd, SocketPort);
+                        delay(1);
+                    }
                     Clipboard.Clear();
                     msdelay(500);
                     //  Clipboard.SetText("//NEB SetDuration 5");
@@ -9581,6 +9730,8 @@ namespace Pololu.Usc.ScopeFocus
                         GlobalVariables.SolveImage = GlobalVariables.TargetImage;
                         button34.Text = "Solving"; // change the set button only...since not necessarily there (could be from prev session) 
                         button34.BackColor = System.Drawing.Color.Yellow;
+                        button33.Text = "Goto"; //since at target make goto focus button back to normal
+                        button33.UseVisualStyleBackColor = true;
                         //  textBox50.Text = GlobalVariables.SolveImage;
                         // PartialSolve();  changed to below 11-9-16
                         SettingTargetSolve = true;
@@ -10013,6 +10164,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void SolveCapture()
         {
+            if (!ClipboardListen)
             NebListenStart(Handles.NebhWnd, SocketPort);
 
             //   }
@@ -10650,8 +10802,11 @@ namespace Pololu.Usc.ScopeFocus
             }
             else // 11-8-16
             {
-                NebListenStart(Handles.NebhWnd, SocketPort);
-                delay(1);
+                if (!ClipboardListen)
+                {
+                    NebListenStart(Handles.NebhWnd, SocketPort);
+                    delay(1);
+                }
                 Clipboard.Clear();
                 msdelay(500);
                 Clipboard.SetDataObject("//NEB SetDuration " + dur.ToString(), false, 3, 500);
@@ -11124,13 +11279,22 @@ namespace Pololu.Usc.ScopeFocus
         private int retry = 0;
         private void NebListenStart(int hwnd, int port)//was blank
         {
-            FileLog2("NebListenStart");
+            FileLog2("NebListenStart " + "port " + port.ToString());
             if (retry < 3)
             {
                 try
                 {
 
-                    int hwndChild;
+                    if (retry != 0)
+                    {
+                        this.Refresh();
+                        SetForegroundWindow(Handles.NebhWnd);
+                        delay(1);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        delay(1);
+                    }
+
+                        int hwndChild;
                     int hwndChild1;
                     int hwndChild2;
                     if (IsSlave())
@@ -11188,6 +11352,7 @@ namespace Pololu.Usc.ScopeFocus
                         Clipboard.Clear();
                         Thread.Sleep(250); // added 12-29-16
                         ScriptName = "\\Listen.neb";
+                      //  ClipboardListen = true;  // moved to after confirming the commnad was sent...see below
                     }
                     if ((checkBox14.Checked == true) && (!UseClipBoard.Checked))
                     {
@@ -11215,6 +11380,7 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(1000);//******5-29 was 250
                                        //  SendKeys.SendWait("~"); // 10-25-16 changed to  send not sendwait below
                     SendKeys.Send("~");
+
                     Thread.Sleep(250); // added 10-25-16
                     SendKeys.Flush();
                     Thread.Sleep(1000);
@@ -11246,7 +11412,7 @@ namespace Pololu.Usc.ScopeFocus
                         }
                     }
 
-                    if (FineFocusAbort == true)
+                    if ((FineFocusAbort == true) && (!UseClipBoard.Checked))
                     {
                         while (working == true)
                         {
@@ -11342,21 +11508,22 @@ namespace Pololu.Usc.ScopeFocus
                         }
 
                     }
-                    //if (UseClipBoard.Checked) // 11-12-16
-                    //{
-                    //    int i = 0;
-                    //    while (!NebCommandConfirm("Listen 1", 0))
-                    //    {
-                    //        i++;
-                    //        msdelay(100);
-                    //        if (i == 30)
-                    //        {
-                    //            Log("NebListen failed");
-                    //            Send("NebListen Failed");
-                    //            return;
-                    //        }
-                    //    }
-                    //}
+                    if (UseClipBoard.Checked) //  unremd 1-15-17  if problem re-rem.  and restore Clipboardlisten = true to above 
+                    {
+                        int i = 0;
+                        while (!NebCommandConfirm("Listen 1", 0))
+                        {
+                            i++;
+                            msdelay(100);
+                            if (i == 30)
+                            {
+                                Log("NebListen failed");
+                                Send("NebListen Failed");
+                                return;
+                            }
+                        }
+                        ClipboardListen = true;
+                    }
 
                 }
                 catch (Exception ex)
@@ -11749,17 +11916,27 @@ namespace Pololu.Usc.ScopeFocus
         //    return width;
 
         //}
+        private int MinNebSize { get; set; }
 
         private void ResizeNebWindow()
         {
 
             RECT NebRect = new RECT();
-            if (GetWindowRect(Handles.NebhWnd, out NebRect) < 820)
+            GetWindowRect(Handles.NebhWnd, out NebRect);
+            if (MinNebSize < 100)  // will need to be higher no matter what
+            {
+                MessageBox.Show("Must Set Minimum Nebulosity Window Size - About Tab", "scopefocus");
+                textBox64.Focus();
+                }
+            // if (GetWindowRect(Handles.NebhWnd, out NebRect) < 820)
+            if (NebRect.right - NebRect.left < MinNebSize)
             {
                 MoveWindow(Handles.NebhWnd, NebRect.left, NebRect.top, 820, NebRect.bottom - NebRect.top, true);
                 Log("Nebulosity window resized");
                 FileLog2("Neb Window resized from width of " + (NebRect.right - NebRect.left).ToString());
             }
+            else
+                FileLog2("Neb Window Width OK at " + (NebRect.right - NebRect.left).ToString());
         }
 
 
@@ -13921,7 +14098,10 @@ namespace Pololu.Usc.ScopeFocus
 
             else
             {
-                fileSystemWatcher4.EnableRaisingEvents = true;
+                fsNumber = 4;
+                fileSystemWatcher1.Filter = "*.fit";
+                fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was below
+              //  fileSystemWatcher4.EnableRaisingEvents = true;
                 button22.UseVisualStyleBackColor = true;
                 paused = false;
                 button22.Text = "Pause";
@@ -14424,7 +14604,11 @@ namespace Pololu.Usc.ScopeFocus
             if (!IsSlave())
             {
                 subCountCurrent = subCountCurrent + (int)numericUpDown32.Value;
-                fileSystemWatcher4.EnableRaisingEvents = true;
+                fsNumber = 4;
+                fileSystemWatcher1.Filter = "*.fit";
+                fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was just below
+
+                //fileSystemWatcher4.EnableRaisingEvents = true;
 
                 checkfiltercount();// added 5-23 this is needed to end sequence if no darks selected
             }
@@ -16290,7 +16474,7 @@ namespace Pololu.Usc.ScopeFocus
                     Log("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
                     FileLog2("Solved Focus Location:  RA = " + FocusRA.ToString() + "   DEC = " + FocusDEC.ToString());
                     button32.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                    button32.BackColor = System.Drawing.Color.Yellow;
+                    button32.BackColor = System.Drawing.Color.Lime;
                     fileSystemWatcher7.EnableRaisingEvents = false;
                     //   SettingFocusSolve = false; // remd 11-9-16 and one below
 
@@ -16304,7 +16488,7 @@ namespace Pololu.Usc.ScopeFocus
                     Log("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
                     FileLog2("Solved Target Location:  RA = " + TargetRA.ToString() + "   DEC = " + TargetDEC.ToString());
                     button34.Text = "Solved"; // change the set button only...since not necessarily there (could be from prev session) 
-                    button34.BackColor = System.Drawing.Color.Yellow;
+                    button34.BackColor = System.Drawing.Color.Lime;
                     fileSystemWatcher7.EnableRaisingEvents = false;
                     //   SettingTargetSolve = false;
                 }
@@ -17079,11 +17263,14 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
-                    button36.Text = "Connect";
-                    button36.BackColor = Color.WhiteSmoke;
-                    textBoxPHDstatus.Text = "Connection Lost";
-                    Log("PHD2 Connection Lost");
-                    FileLog("PHD2Connection Lost");
+                    if (button36.Text == "DisCnct") // only do it once.  
+                    {
+                        button36.Text = "Connect";
+                        button36.BackColor = Color.WhiteSmoke;
+                        textBoxPHDstatus.Text = "Connection Lost";
+                        Log("PHD2 Connection Lost");
+                        FileLog("PHD2Connection Lost");
+                    }
                 }
 
                
@@ -17309,8 +17496,1104 @@ namespace Pololu.Usc.ScopeFocus
                 .GroupBy(f => f.Extension)
                 .Select(g => g.OrderByDescending(f => f.LastWriteTime).First());
         }
-        //automatically select last obtained capture from Neb
-        private async void fileSystemWatcher7_Created(object sender, FileSystemEventArgs e)
+
+        private int fsNumber;
+
+
+        private void FSW5()
+        {
+            if (aborted)
+            {
+                fileSystemWatcher1.EnableRaisingEvents = false; //1-12-17 // 1-13-17 was 5
+                aborted = false;
+                return;
+            }
+            //  string[] metricpath = Directory.GetFiles(path2.ToString(), "*.fit");
+
+            //   button25.PerformClick();
+            if (MetricSample == false)
+            {
+                vcurve();
+                // MetricCapture();                 
+            }
+            if (MetricSample == true)
+            {
+                int metricHFR;
+                metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
+                metricHFR = GetMetric(metricpath, roundto);
+                textBox25.Text = metricHFR.ToString();
+
+                AvgMetricHFR[currentmetricN - 1] = metricHFR;
+
+                if (currentmetricN == metricN)
+                {
+                    int AvgMetric;
+                    MetricSample = false;
+                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 5
+                    AvgMetric = (AvgMetricHFR.Sum()) / metricN;
+                    textBox25.Text = AvgMetric.ToString();
+                    Log("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
+                  
+                    if (UseClipBoard.Checked)
+                    {
+                        // delay(1);
+                        Clipboard.Clear();
+                        //delay(1);
+                        //SetForegroundWindow(Handles.NebhWnd);
+                        ////  Thread.Sleep(1000);
+                        //delay(1);
+                        //PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        //  Thread.Sleep(1000);
+
+                        msdelay(750);
+                        //Clipboard.SetText("//NEB Listen 0");
+                        //msdelay(750);
+                    }
+                    else
+                    {
+                        serverStream = clientSocket.GetStream();
+                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        serverStream.Flush();
+
+                        Thread.Sleep(3000);
+                        serverStream.Close();
+
+                        SetForegroundWindow(Handles.NebhWnd);
+                        Thread.Sleep(1000);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        Thread.Sleep(1000);
+                        //      NebListenOn = false;
+                        // clientSocket.GetStream().Close();//added 5-17-12
+                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        clientSocket.Close();
+                        //  Thread.Sleep(500);
+                        //   SendKeys.SendWait("~");
+                        //   SendKeys.Flush();
+                    }
+                    if (metricpath != null)
+                        File.Delete(metricpath[0]);
+                    currentmetricN = 0;
+                    if ((autoMetricVcurve == true) & (FilterFocusOn == false))
+                        button11.PerformClick();
+                    if ((autoMetricVcurve == true) & (FilterFocusOn == true))
+                        gotoFocus();
+                    return;
+                }
+
+            }
+            if (currentmetricN != vN - 1)
+            {
+                currentmetricN++;
+                MetricCapture();
+            }
+           
+
+
+
+        }
+
+        private void FSW4()
+        {
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher4.EnableRaisingEvents = false;
+                aborted = false;
+                return;
+            }
+            idleCount = 0;
+            //if (FlatDone == false)
+            //  {
+     //       FileLog2("SystemFileWatcher 4 changed");
+            textBox41.Refresh();
+            textBox41.Clear();
+            if (!IsSlave())
+            {
+                subCountCurrent++;
+                filterCountCurrent++;//the sub per this filter number
+                ToolStripProgressBar();
+                checkfiltercount();
+                flipCheckDone = false; //reset every sub
+
+                if (checkBox17.Checked == true)
+                    FocusPerSubCurrent++;
+            }
+
+            //   if (checkBox23.Checked == true & FlipDone == false & okToFlip == true) 
+            //      MeridianFlip();
+
+            /*
+                if (IsSlave())
+                {
+                    SendtoServer("Sub Complete");//will have the server wait for this.
+                    Thread.Sleep(500);
+                    textBox41.Refresh();
+                }
+            */
+            // Thread.Sleep(500);
+            //  }
+        }
+ 
+   
+
+
+    private void FSW2()
+        {
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher2.EnableRaisingEvents = false;
+                return;
+            }
+
+            if (vDone != 1)
+                vcurve();
+            FileLog2("FSW2 changed");
+        }
+
+        private void FSW3()
+        {
+             
+            if (aborted) // 1-12-17
+            {
+                fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was 3
+                aborted = false;
+                return;
+            }
+
+            // int nn;
+            FileLog2("fileSystemWatcher3 changed");
+            textBox41.Refresh();//dual scope status textbox
+            textBox41.Clear();
+
+            if (currentfilter == 1)
+                Filtertext = comboBox2.Text;
+            if (currentfilter == 2)
+                Filtertext = comboBox3.Text;
+            if (currentfilter == 3)
+                Filtertext = comboBox4.Text;
+            if (currentfilter == 4)
+                Filtertext = comboBox5.Text;
+            //   watchforOpenPort();
+            //   if ((portopen == 1 || usingASCOMFocus == true))
+            //   {
+
+            // int nn = 10;
+            int current;
+            int nn;
+            roundto = 1; // 10-25-16
+            if (checkBox22.Checked == true)
+                nn = (int)numericUpDown21.Value;
+            else
+                nn = (int)numericUpDown5.Value; //coarse-v N
+            if (HFRtestON == false)
+            {
+                if (vProgress < nn)
+                {
+                    int[] list = new int[nn];
+                    if (checkBox22.Checked == true)//use metric
+                    {
+                        metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
+                        current = GetMetric(metricpath, roundto);  //reads the current in-focus status from the HFR in the metric file name
+                    }
+                    else
+                    {
+                        fileSystemWatcher3.Filter = "*.bmp";
+                        string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
+                        //remd to use path2 settins    string[] filePaths = Directory.GetFiles(folderBrowserDialog1.SelectedPath, "*.bmp");         
+                        current = GetFileHFR(filePaths, roundto);
+                        //Need to add check box to select if backup below is wanted
+                        //     ****** fix  11-13-13   ******
+                        if (current > 600)//was 500, not working w/ nb filters  ******changed to 900 to override was 600*****
+                        {
+                            //***** 6-28  still seems to goto focus position twice after abort and before first metric.
+                            FineFocusAbort = true;
+                            Array.Clear(list, 0, arraysize1);
+                            Log("Focus star lost, using full frame metric");
+                            FileLog2("Focus star lost, using full frame metric");
+                            SetForegroundWindow(Handles.NebhWnd);
+                            Thread.Sleep(1000);
+                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            Thread.Sleep(2000);
+                            checkBox22.Checked = true;
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                            if (!UseClipBoard.Checked)
+                            {
+                                if (clientSocket.Client.Connected == true)
+                                    clientSocket.Client.Disconnect(true);
+                            }
+                            // lost start fix 1-13-17  //***** this doesn't work.  holds after neb listen start
+                        //   fsNumber = 3;
+                            fileSystemWatcher1.Filter = "*.fit";
+                            //      MetricCapture();
+                               gotoFocus();
+                         
+                            return;
+                            // gotoFocus();
+                            //  return;
+                            /*
+                            NebListenStart(NebhWnd, SocketPort);
+
+                            Thread.Sleep(2000);
+                            fileSystemWatcher3.Filter = "*.fit";
+                            MetricCapture();
+
+                            while (working == true)
+                            {
+                                WaitForSequenceDone("Sequnce done", NebhWnd);
+                                Log("waiting for seq done");
+                                Thread.Sleep(100);
+                            }
+                            working = true;
+
+                          //  Thread.Sleep(4000);
+                            metricpath = Directory.GetFiles(path2.ToString(), "metric*.fit");
+                            current = GetMetric(metricpath, roundto);
+                             */
+
+
+
+                        }
+
+                    }
+                    if (FineFocusAbort == false)
+                    {
+                        list[vProgress] = current;
+                        abc[vProgress] = current;
+                        sum = sum + list[vProgress];
+                        avg = sum / nn;
+                        string stdev = Math.Round(GetStandardDeviation(abc), 2).ToString();
+                        //  textBox9.Text = stdev.ToString(); // remd 10-25-16
+                        //     textBox14.Text = avg.ToString();
+                        Log("Goto Focus :\t  N " + (vProgress + 1).ToString() + "\tHFR" + abc[vProgress].ToString() + "\t  Avg " + avg.ToString() + "\t  StdDev " + stdev.ToString());
+                        FileLog2("Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString());
+                        //string strLogText = "Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString(); //changed 7-25-14
+                        //string path = textBox11.Text.ToString();
+                        //string fullpath = path + @"\log.txt";
+                        //StreamWriter log;
+                        //if (!File.Exists(fullpath))
+                        //{
+                        //    log = new StreamWriter(fullpath);
+                        //}
+                        //else
+                        //{
+                        //    log = File.AppendText(fullpath);
+                        //}
+                        //if (vProgress == 0)
+                        //{
+                        //    log.WriteLine(DateTime.Now);
+                        //    log.WriteLine("Type" + "\tHFR" + "\tAvg" + "\tN" + "\tStdDev");
+                        //}
+                        //log.WriteLine(strLogText);
+                        //log.Close();
+                        vProgress++;
+                        if ((checkBox22.Checked == true) && (vProgress != nn))
+                            MetricCapture();
+                        toolStripStatusLabel1.Text = "Finding Focus " + vProgress.ToString();//**************added 2_29 for testing
+
+                    }
+
+                }
+                if (vProgress == nn) // calculate focus point from HFR
+                {
+                    focusSampleComplete = true;
+                    //?  may need FSW3 enalbing event = false here for std dev use
+                    if (_gotoFocusOn == true)
+                    {
+
+                        if (radioButton2.Checked == true)//use upslope
+                        {
+                            // Data d = new Data();
+                            FillData();
+                            GetAvg();
+
+                            //  EnteredPID = Convert.ToInt32(textBox12.Text);
+                            //    EnteredSlopeUP = Convert.ToDouble(textBox10.Text);
+                            //      textBox14.Text = avg.ToString();
+                            BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
+
+                            //3-2-16
+                            Log("Calculated focus point = " + Math.Round(BestPos).ToString());
+                            FileLog2("Calculated focus point = " + Math.Round(BestPos).ToString());
+                            if ((int)BestPos < 0 || (int)BestPos > travel)
+                            {
+                                calcRedo++;
+                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+                                FileLog2("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+
+                                posMin = count; //reset to prev focus point
+                                BestPos = count;
+                                fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was3
+                                if (calcRedo < 4)
+                                    gotoFocus();
+                                else
+                                {
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                    BestPos = count;
+                                    calcRedo = 0;
+                                }
+
+                                return;
+                            }
+                            //check to make sure there wasn't gross miscalculation 9-9-15
+                            if (!Simulator())
+                            {
+                                if (((double)BestPos > (count + (int)numericUpDown39.Value * 2)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 10)))
+                                {
+                                    redo++;
+                                    Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                    FileLog2("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+
+                                    posMin = count; //reset to prev focus point
+                                    BestPos = count;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; //was 3
+                                    if (calcRedo < 4)
+                                        gotoFocus();
+                                    else
+                                    {
+                                        Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                        FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                        Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                        BestPos = count;
+                                        calcRedo = 0;
+                                    }
+
+                                    return;
+                                }
+
+
+
+                                else //if calculation seems ok...move to focus point then check w/ another exposure 
+                                {
+                                    if (calcRedo > 0)
+                                        calcRedo = 0;
+                                    Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // was 3 1-13-17
+                                }
+                            }
+                            else // added 10-24-16
+                            {
+                                Pololu.Usc.ScopeFocus.Focus.focuser.Move((int)BestPos);
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                            }
+                            ////9-9-15
+                            //// check to make sure HFR improved....it should always improve a little or sample point was too close to PID
+                            //string[] filePaths = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
+                            //current = GetFileHFR(filePaths, roundto);
+                            //Log("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
+                            //FileLog2("Test HFR = " + current.ToString() + " versus average smaple HFR = " + avg.ToString());
+                            //if (current > avg)
+                            //{
+                            //    Log("Focus did not improve, repeating on the other side of V-vurve");
+                            //    FileLog2("Focus did not improve, repeating on the other side of V-vurve");
+                            //    BestPos = count;
+                            //    radioButton2.Checked = false;
+                            //    radioButton3.Checked = true;
+                            //    //    redo = true;
+                            //    fileSystemWatcher3.EnableRaisingEvents = false;
+                            //    gotoFocus();
+                            //    return;
+                            //}
+
+
+                            //  gotopos(Convert.ToInt32(BestPos));//  4-24-14
+                            //Thread.Sleep(1000);
+                            //delay(1); 
+
+                            //  fileSystemWatcher3.EnableRaisingEvents = false;
+
+                            HFRtestON = true;
+
+                            _gotoFocusOn = false;
+                            Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                            FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
+                            textBox4.Text = ((int)BestPos).ToString();
+
+                            toolStripStatusLabel1.Text = "Focus Moving";
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                            //3-2-16 
+                            while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
+                            {
+                                delay(1); // 10-11-16 moved from space below on all similar x 3
+                                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                                textBox1.Text = count.ToString();
+
+                                positionbar();
+                                //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
+                            }
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                            toolStripStatusLabel1.Text = "Ready";
+
+
+                        }
+                        if (radioButton3.Checked == true)//use downslope
+                        {
+                            //Data d = new Data();
+                            FillData();
+                            GetAvg();
+
+                            //    EnteredPID = Convert.ToInt32(textBox12.Text);
+                            //    EnteredSlopeDWN = Convert.ToDouble(textBox3.Text);
+                            // textBox14.Text = avg.ToString();
+                            BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
+                            Log("Calculated focus point = " + BestPos.ToString());
+                            FileLog2("Calculated focus point = " + BestPos.ToString());
+                            //3-2-16
+                            if ((int)BestPos < 0 || (int)BestPos > travel)
+                            {
+                                calcRedo++;
+                                Log("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+                                FileLog2("The Calculated Focus Point was out of bounds -- Repeat attempt " + redo.ToString());
+
+                                posMin = count; //reset to prev focus point
+                                BestPos = count;
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                if (calcRedo < 4)
+                                    gotoFocus();
+                                else
+                                {
+                                    Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                    Send("GotoFocus Calcualtion Error - GotoFocus Aborted");
+                                    BestPos = count;
+                                    calcRedo = 0;
+                                }
+
+                                return;
+                            }
+
+
+                            //check calculation 9-9-15
+                            if (!Simulator())
+                            {
+                                if (((double)BestPos > (count + (int)numericUpDown39.Value * 10)) || ((double)BestPos < (count - (int)numericUpDown39.Value * 2)))
+                                {
+                                    calcRedo++;
+                                    Log("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+                                    FileLog2("The Calculated Focus Point was too far from sample point -- Repeat attempt " + redo.ToString());
+
+                                    posMin = count;
+                                    BestPos = count;
+                                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                    if (calcRedo < 4)
+                                        gotoFocus();
+                                    else
+                                    {
+                                        Log("The Focus Calcualtion Failed x 3 -- Aborted");
+                                        FileLog2("The Focus Calcualtion Failed x 3 -- Aborted");
+                                        Send("GotoFocus Calculation Error - GotoFocus Aborted");
+                                        BestPos = count;
+                                        calcRedo = 0;
+                                    }
+                                    return;
+                                }
+
+
+                                else
+                                {
+                                    if (calcRedo > 0)
+                                        calcRedo = 0;
+                                    fileSystemWatcher1.EnableRaisingEvents = false;  //  1-13-17 was 3
+                                    //   focuser.Move((int)BestPos);
+                                    gotopos((int)BestPos);  // 10-13-16 try so waits for focuser move to complete...while below doesn't seem to work....
+                                }
+                            }
+                            else // added 10-24-16
+                            {
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                //   focuser.Move((int)BestPos);
+                                gotopos((int)BestPos);
+                            }
+                            //3-2-16 
+
+                            //these were not prev on the downslope one....  10-13-16
+                            HFRtestON = true;
+
+                            _gotoFocusOn = false;
+                            Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                            FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
+                            textBox4.Text = ((int)BestPos).ToString();
+                            // end addt
+
+                            toolStripStatusLabel1.Text = "Focus Moving";
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.Red;
+                            while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
+                            {
+                                delay(1);
+                                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                                textBox1.Text = count.ToString();
+
+                                positionbar();
+                                //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
+                            }
+                            toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                            toolStripStatusLabel1.Text = "Ready";
+
+                        }
+                        //*****7-25-14 try moving this from below**********
+
+
+                        //if (checkBox22.Checked == true)
+                        //{
+                        //    *********moved to test area below********unrem all if doesnt' work 
+                        //        fileSystemWatcher3.EnableRaisingEvents = false; //added 7-25-14
+                        //    _gotoFocusOn = false;
+                        //    //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                        //    textBox4.Text = ((int)BestPos).ToString();
+
+                        //    serverStream = clientSocket.GetStream();
+                        //    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        //    serverStream.Write(outStream, 0, outStream.Length);
+                        //    serverStream.Flush();
+
+                        //    Thread.Sleep(3000);
+                        //    serverStream.Close();
+                        //    SetForegroundWindow(Handles.NebhWnd);
+                        //    Thread.Sleep(1000);
+                        //    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        //    Thread.Sleep(1000);
+                        //    NebListenOn = false;
+                        //    // clientSocket.GetStream().Close();//added 5-17-12
+                        //    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        //    clientSocket.Close();
+                        //    HFRtestON = true; remd 10 - 13 - 16 does nothing
+                        //}
+                        FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_"); //7-25-14
+                        string strLogText;
+                        strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_";
+
+
+                        HFRtestON = true; // added 10-13-16
+
+                        //string path = textBox11.Text.ToString();
+                        //string fullpath = path + @"\log.txt";
+                        //StreamWriter log;
+                        //if (!File.Exists(fullpath))
+                        //{
+                        //    log = new StreamWriter(fullpath);
+                        //}
+                        //else
+                        //{
+                        //    log = File.AppendText(fullpath);
+                        //}
+
+                        if (Filtertext != null)
+                            FileLog2(strLogText + Filtertext.ToString());
+                        else
+                            FileLog2(strLogText);
+
+
+                    }
+
+
+
+                }
+                if (FineFocusAbort == true)
+                {
+                    //  FineFocusAbort = false;
+                    gotoFocus();
+                }
+            }
+
+            //   } // end if (HFRtestON == false) from way above
+
+
+
+            if (!Simulator())
+            {
+                //check for improvement.... 9-9-15
+                if (HFRtestON == true)
+                {
+                    int nnn;
+                    int test;
+                    if (checkBox22.Checked == true)
+                        nnn = (int)numericUpDown21.Value;
+                    else
+                        nnn = (int)numericUpDown5.Value;
+
+                    fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was 3
+                    if ((checkBox22.Checked == true) & (vProgress == nnn))
+                    {
+                        vProgress++;
+                        fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
+                        fsNumber = 3;
+                        MetricCapture();
+                        return;
+                        //  Thread.Sleep((int)MetricTime * 1000);
+                    }
+
+                    vProgress++;
+
+                    //have it take 4 more exposures after moving then test HFR to make sure not moving
+                    //  if (vProgress > nnn)
+                    //  {
+                    //                      
+                    if (((vProgress == nnn + 4) & (checkBox22.Checked == false)) || ((checkBox22.Checked == true) & (vProgress == nnn + 2)))
+                    {
+                        if (checkBox22.Checked == true)
+                        {
+                            metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
+                            test = GetMetric(metricpath, roundto);
+                        }
+                        else
+                        {
+                            string[] filePaths2 = Directory.GetFiles(GlobalVariables.Path2.ToString(), "*.bmp");
+                            test = GetFileHFR(filePaths2, roundto);
+                        }
+
+                        Log("Test HFR = " + test.ToString() + " versus average sample HFR = " + avg.ToString());
+                        FileLog2("Test HFR = " + test.ToString() + " versus average sample HFR = " + avg.ToString());
+                        if (test > avg)
+                        {
+                            if ((redo == 1) & (checkBox22.Checked == false))  //if single star fails twice can try metric.    
+                            {
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(2000);
+                                checkBox22.Checked = true;
+                                // 10-14-16 select most recent V-curve
+                                Update();
+                                GetAvg();
+                                dataGridView1.ClearSelection();
+                                int nRowIndex = dataGridView1.Rows.Count - 2;
+                                if (nRowIndex > 0)
+                                    dataGridView1.Rows[nRowIndex].Selected = true;
+                                else
+                                {
+                                    Log("Unable to attempt Full Frame Metric focus due to no V-curve data, attempting auto V-curve");
+                                    // BestPos = count;
+                                    redo = 0;
+                                    //  posMin = Convert.ToInt32(BestPos);
+                                    autoMetricVcurve = true;
+                                    HFRtestON = false;
+                                    fileSystemWatcher1.EnableRaisingEvents = false;// 1-13-17 was 3
+                                    if (!checkBox22.Checked) // added 11-13-16
+                                        checkBox22.Checked = true;
+                                    button3.PerformClick(); // 11-3-16 was buton 25 "metric V" (**** untested ****)
+                                    return;
+                                }
+                                //
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                if (!UseClipBoard.Checked)
+                                {
+                                    if (clientSocket.Client.Connected == true)
+                                        clientSocket.Client.Disconnect(true);
+                                }
+                                checkBox22.Checked = true;
+                                Log("Repeat Focus did not improve - Attemping full frame metric");
+                                FileLog2("Repeat Focus did not improve - Attemped full frame metric");
+                                Send("Repeat Focus did not improve - Attemping full frame metric");
+                                BestPos = count;
+                                redo = 0;
+                                posMin = Convert.ToInt32(BestPos);
+                                HFRtestON = false;
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                gotoFocus();
+                                return;
+
+                            }
+                            if (redo == 1)
+                            {
+                                Log("Repeat Focus did not improve - Aborting");
+                                FileLog2("Repeat Focus did not improve - Aborting");
+                                Send("Repeat Focus did not improve - Aborting");
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                                HFRtestON = false;
+                                BestPos = count;
+                                redo = 0;
+                                return;
+                            }
+                            Log("Focus did not improve, attempting sample repeat on the other side of V-curve");
+                            FileLog2("Focus did not improve, repeat on the other side of V-curve");
+                            Send("GotoFocus Improvement Test Failed - trying other side of V-curve");
+                            redo = 1;
+                            BestPos = count; //reset to prev position
+                            // switch slopes
+                            if (radioButton3.Checked == true)
+                            {
+                                radioButton3.Checked = false;
+                                radioButton2.Checked = true;
+                            }
+                            else
+                            {
+                                radioButton2.Checked = false;
+                                radioButton3.Checked = true;
+                            }
+                            //    redo = true;
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3
+                            HFRtestON = false;
+                            if (checkBox22.Checked == true)
+                            {
+                                fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3   //added 7-25-14
+                                _gotoFocusOn = false;
+                                //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                                textBox4.Text = ((int)BestPos).ToString();
+
+                                // 11-8-16
+                                if (!UseClipBoard.Checked)
+                                {
+
+                                    serverStream = clientSocket.GetStream();
+                                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                    serverStream.Write(outStream, 0, outStream.Length);
+                                    serverStream.Flush();
+
+                                    Thread.Sleep(3000);
+                                    serverStream.Close();
+                                    SetForegroundWindow(Handles.NebhWnd);
+                                    Thread.Sleep(1000);
+                                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                    Thread.Sleep(1000);
+                                    //   NebListenOn = false;
+                                    // clientSocket.GetStream().Close();//added 5-17-12
+                                    //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                    clientSocket.Close();
+                                }
+
+                                else
+                                {
+                                    //  delay(1);
+                                    Clipboard.Clear();
+                                    //  delay(1);
+                                    //  SetForegroundWindow(Handles.NebhWnd);
+                                    //  delay(1);
+                                    ////  Thread.Sleep(1000);
+                                    //  PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                    delay(1);
+                                    //Clipboard.SetText("//NEB Listen 0");
+                                    //msdelay(750);
+                                }
+                            }
+                            //  posMin = Convert.ToInt32(BestPos);   // no this keeps the previous focus position....which might be worth trying on the other side of 
+                            //  ...of the curve but it's not the previou foucs point.  will leave as the old focus point and try on other side of curve.  
+                            Log("Using previous focus position - " + posMin.ToString());
+                            FileLog2("Using previous focus position - " + posMin.ToString()); //may not be right
+                            textBox4.Text = posMin.ToString();  // 10-13-16
+                            gotoFocus();
+                            return;
+                        }
+                        HFRtestON = false;
+
+                        Log("Focus Improved at " + Convert.ToInt32(BestPos).ToString());
+                        FileLog2("Focus Improved - Final Focus Position = " + Convert.ToInt32(BestPos).ToString());
+                        redo = 0;
+                        posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
+                        fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3   // added 9-9-15 due to testing above. 
+
+                        // try add 10-13-16
+                        //FilterFocusOn = false;
+                        //if (!IsSlave())
+                        //{
+
+                        //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                        //NebCapture();
+
+                        //}
+                        // end add
+
+
+
+
+                        if (checkBox22.Checked == true)
+                        {
+                            fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3   //added 7-25-14
+                            _gotoFocusOn = false;
+                            //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                            textBox4.Text = ((int)BestPos).ToString();
+                            if (!UseClipBoard.Checked)
+                            {
+                                serverStream = clientSocket.GetStream();
+                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                                serverStream.Write(outStream, 0, outStream.Length);
+                                serverStream.Flush();
+
+                                Thread.Sleep(3000);
+                                serverStream.Close();
+                                SetForegroundWindow(Handles.NebhWnd);
+                                Thread.Sleep(1000);
+                                PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                Thread.Sleep(1000);
+                                //  NebListenOn = false;
+                                // clientSocket.GetStream().Close();//added 5-17-12
+                                //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                                clientSocket.Close();
+                            }
+
+                            else
+                            {
+                                // delay(1);
+                                Clipboard.Clear();
+                                //SetForegroundWindow(Handles.NebhWnd);
+                                //delay(1);
+                                ////Thread.Sleep(1000);
+                                //PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                                //// Thread.Sleep(1000);
+                                delay(1);
+                                //delay(1);
+                                //Clipboard.SetText("//NEB Listen 0");
+                                //msdelay(750);
+                            }
+                        }
+                    }
+
+
+                }
+            }
+            else
+            {
+                if (focusSampleComplete)
+                {
+                    Log("Simulator -- quality check disabled");
+                    FileLog2("Simulator -- quality check disabled");
+
+                    // added 10-24-16 
+
+
+                    // ********  11-8-16 seems to do this even if not done 
+
+                    HFRtestON = false;
+                    //    focusSampleComplete = false; // 11-8-16 was true
+                    posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
+                    fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3   // added 9-9-15 due to testing above. 
+
+                    // try add 10-13-16
+                    //FilterFocusOn = false;
+                    //if (!IsSlave())
+                    //{
+
+                    //fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                    //NebCapture();
+
+                    //}
+                    // end add
+
+                }
+
+
+                if (checkBox22.Checked == true)
+                {
+                    fileSystemWatcher1.EnableRaisingEvents = false;  // 1-13-17 was 3 //added 7-25-14
+                    _gotoFocusOn = false;
+                    //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                    textBox4.Text = ((int)BestPos).ToString();
+
+                    //11-8-16
+                    if (!UseClipBoard.Checked)
+                    {
+                        serverStream = clientSocket.GetStream();
+                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                        serverStream.Write(outStream, 0, outStream.Length);
+                        serverStream.Flush();
+
+                        Thread.Sleep(3000);
+                        serverStream.Close();
+                        SetForegroundWindow(Handles.NebhWnd);
+                        Thread.Sleep(1000);
+                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        Thread.Sleep(1000);
+                        //    NebListenOn = false;
+                        // clientSocket.GetStream().Close();//added 5-17-12
+                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                        clientSocket.Close();
+                    }
+                    else
+                    {
+                        // delay(1);
+                        Clipboard.Clear();
+                        // delay(1);
+                        // SetForegroundWindow(Handles.NebhWnd);
+                        // delay(1);
+                        //// Thread.Sleep(1000);
+                        // PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                        //// Thread.Sleep(1000);
+
+                        // delay(1);
+                        //Clipboard.SetText("//NEB Listen 0");
+                        //msdelay(750);
+                    }
+                }
+            }
+
+
+
+            // end test for improvement addition
+
+
+
+            // 10-13-16 this was copied from above 
+            if ((FilterFocusOn == true) & (HFRtestON == false) & (focusSampleComplete == true)) // 10-13-16 add focusSampleComplete 
+            {
+
+                if (checkBox22.Checked == true)
+                {
+                    /*//  all below remd 7-1-14 this fixed the problem w/metric in  filterfocus.
+
+                  //   ShowWindow(Handles.NebhWnd, SW_SHOW);
+                     //  ShowWindow(NebhWnd, SW_RESTORE);
+                     SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                   //  Thread.Sleep(1000);
+                      delay(1);//may not need 3-4 both (below too) were 1000 6-1
+                     SetForegroundWindow(Handles.Aborthwnd);
+                     PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    // Thread.Sleep(1000);
+                     delay(1);//was 1000
+                   //  NebListenOn = false;
+                     */
+
+                    if (metricpath[0] != null)
+                        File.Delete(metricpath[0]);
+
+                }
+
+
+                if (checkBox22.Checked == false) //not using metric   
+                {
+                    //  HFRtestON = true; // added 10-13-16
+                    //  FilterFocusOn = false;move to while belwo
+                    ShowWindow(Handles.NebhWnd, SW_SHOW);
+                    //  ShowWindow(NebhWnd, SW_RESTORE);
+                    SetForegroundWindow(Handles.NebhWnd);//? may not need 3-4
+                    Thread.Sleep(500);//may not need 3-4 both (below too) were 1000 6-1
+                    SetForegroundWindow(Handles.Aborthwnd);
+                    PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                    Thread.Sleep(500);//was 1000
+                                      //   NebListenOn = false;
+                                      //     if (FineFocusAbort == true)
+                                      //       FineFocusAbort = false;
+
+                }
+
+                if (checkBox10.Checked == false)//cb10 is focus in image frame, if not needs to slew back
+                {
+                    FileLog2("Slew to target");
+                    toolStripStatusLabel1.Text = "Slewing to Target";
+                    this.Refresh();
+
+                    // toolStripStatusLabel1.Text = "Slewing to Target Location";
+                    //   this.Refresh();
+                    //    FocusDoneTargetReturn();
+                    //   Thread.Sleep(1000);
+                    //  MessageBox.Show("simulate Slew");
+
+                    GotoTargetLocation();
+
+                    //while (MountMoving == true)
+                    //{
+                    //    Thread.Sleep(50); // pause for 1/20 second
+                    //    System.Windows.Forms.Application.DoEvents();
+                    //}
+                    //if (MountMoving == false)
+                    //{
+                    button35.Text = "At Target";
+                    button35.BackColor = System.Drawing.Color.Lime;
+                    button33.Text = "Goto";
+                    button33.UseVisualStyleBackColor = true;
+                    //   }
+                    //    Thread.Sleep(SlewDelay);
+
+                    //if (Handles.PHDVNumber == 2)  //resumes in GotoTargetLocation()
+                    //    resumePHD2();
+                    //else
+                    //ResumePHD();
+                    //    GotoTargetLocation(); //   *****rem for debugging*****
+                    //   Thread.Sleep(SlewDelay);
+                    //    ResumePHD();
+                }
+                //   SetForegroundWindow(NebhWnd);
+                //   Thread.Sleep(1000);
+
+                //    PostMessage(Aborthwnd, BN_CLICKED, 0, 0);
+                /*
+                if (clientSocket != null)
+                {
+
+                    clientSocket.GetStream().Close();//added 5-17-12
+                    clientSocket.Client.Disconnect(true);//added 5-17-12
+                }
+                */
+                //if (checkBox19.Checked == true)
+                //    if (Handles.PHDVNumber == 2)
+                //        resumePHD2();
+                //    else
+                //    ResumePHD();
+
+
+                if (!IsSlave() && (checkBox22.Checked == false))
+                {
+                    if (!UseClipBoard.Checked)
+                    {
+                        clientSocket.GetStream().Close();
+                        clientSocket.Close();// rem'd 5-17-12                                    
+                    }
+                }
+
+                if (IsSlave())
+                {
+                    // ***** TODO fix for clipboard and slave
+                    clientSocket2.GetStream().Close();
+                    clientSocket2.Close();
+                }
+
+
+                delay(1);
+                //    SlavePaused = true;
+
+
+
+                if (IsServer())
+                {
+                    Log("Waiting for slave focus");
+                    toolStripStatusLabel1.Text = "Waiting for slave focus";
+                    this.Refresh();
+                    while (working == true)
+                    {
+                        WaitForSequenceDone("Fine focus done", GlobalVariables.NebSlavehwnd);
+                        //  Thread.Sleep(50);
+                    }
+                    working = true;
+                    Log("Slave focus done");
+                }
+
+                // remd 10-12-16 moved to the very end
+                // unremd 10-13-16
+                FilterFocusOn = false;
+                if (!IsSlave())
+                {
+                    focusSampleComplete = false; // added 11-12-16
+                    fsNumber = 4;
+                    fileSystemWatcher1.Filter = "*.fit";
+                    fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was  below
+
+//                    fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                    NebCapture();
+                    FileLog2("FSW4 - enabled, NebCapture started from FSW3");
+
+                    //*************un remd 3_4
+                    /*
+                    if (backgroundWorker2.IsBusy != true)
+                    {
+                        // Start the asynchronous operation.
+                        backgroundWorker2.RunWorkerAsync();
+                    }
+*/
+                }
+
+
+
+            }
+            // end copy/paste
+
+
+
+
+        }
+
+    
+
+    //automatically select last obtained capture from Neb
+    private async void fileSystemWatcher7_Created(object sender, FileSystemEventArgs e)
         {
             if (aborted) // 1-12-17
             {
@@ -17661,33 +18944,41 @@ namespace Pololu.Usc.ScopeFocus
 
         private void ComboBoxFill()
         {
-            comboBox1.Items.Clear();
-            comboBox2.Items.Clear();
-            comboBox3.Items.Clear();
-            comboBox4.Items.Clear();
-            comboBox5.Items.Clear();
-            comboBox8.Items.Clear();
            
-            foreach (string filter in Filter.filterWheel.Names)
-            {
-                comboBox2.Items.Add(filter);
-                comboBox3.Items.Add(filter);
-                comboBox4.Items.Add(filter);
-                comboBox5.Items.Add(filter);
-                comboBox1.Items.Add(filter);
-                comboBox8.Items.Add(filter);
 
+            if (!checkBox31.Checked) // only do this for ascom filters which then populates as specified.  o/w use generic picklist
+            {
+                comboBox1.Items.Clear();
+                comboBox2.Items.Clear();
+                comboBox3.Items.Clear();
+                comboBox4.Items.Clear();
+                comboBox5.Items.Clear();
+                comboBox8.Items.Clear();
+
+                foreach (string filter in Filter.filterWheel.Names)
+                {
+                    comboBox2.Items.Add(filter);
+                    comboBox3.Items.Add(filter);
+                    comboBox4.Items.Add(filter);
+                    comboBox5.Items.Add(filter);
+                    comboBox1.Items.Add(filter);
+                    comboBox8.Items.Add(filter);
+
+                }
+                comboBox7.Items.Add("Dark 1");
+                comboBox8.Items.Add("Dark 1");
+                comboBox8.Items.Add("Dark 2");
+                comboBox1.Items.Add("Dark 1");
+                comboBox2.SelectedIndex = 0;
+                comboBox3.SelectedIndex = 1;
+                comboBox4.SelectedIndex = 2;
+                comboBox5.SelectedIndex = 3;
+                comboBox1.SelectedIndex = 5;
+                comboBox8.SelectedIndex = 6;
             }
-        
-            comboBox8.Items.Add("Dark 1");
-            comboBox8.Items.Add("Dark 2");
-            comboBox1.Items.Add("Dark 1");
-            comboBox2.SelectedIndex = 0;
-            comboBox3.SelectedIndex = 1;
-            comboBox4.SelectedIndex = 2;
-            comboBox5.SelectedIndex = 3;
-            comboBox1.SelectedIndex = 5;
-            comboBox8.SelectedIndex = 6;
+
+
+
 
         }
 
@@ -17854,7 +19145,7 @@ namespace Pololu.Usc.ScopeFocus
             checkBox15.Checked = false;
             checkBox17.Checked = false;
             checkBox8.Checked = false;
-
+            EnableAllUpDwn();
 
         }
 
@@ -18405,8 +19696,15 @@ namespace Pololu.Usc.ScopeFocus
 
             private void checkBox31_CheckedChanged(object sender, EventArgs e)
             {
-                if (checkBox31.Checked)
-                    MessageBox.Show("Make sure your internal filter is set to the lowest number starting position (0 or 1)", "scopefocus");
+            if (checkBox31.Checked)
+            {
+
+                MessageBox.Show("Make sure your internal filter is set to the lowest number starting position (0 or 1)" , "scopefocus");
+                ComboBoxFill();
+                buttonFilterConnect.BackColor = Color.Yellow;
+                buttonFilterConnect.Text = "Internal";
+
+            }
             }
 
             private void textBox8_Leave(object sender, EventArgs e)
@@ -18900,6 +20198,75 @@ namespace Pololu.Usc.ScopeFocus
                 // if (textBoxPHDstatus.Text == "Connect Ver ")
                 //  textBoxPHDstatus.Text = ph.show("PHDVersion");
             }
+
+        private void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
+        {
+            if (aborted)
+            {
+                fileSystemWatcher1.EnableRaisingEvents = false;
+                aborted = false;
+                return;
+            }
+
+            switch (fsNumber)
+            {
+                case 2:
+                    FSW2();
+                    break;
+                case 3:
+                    FSW3();
+                    break;
+                case 4:
+                    FSW4();
+                    break;
+                case 5:
+                    FSW5();
+                    break;
+               
+            }
+            FileLog2("FileSystemWatcher1_Changed" + "  fsNumber " + fsNumber.ToString());
+          
+        }
+
+        private void numericUpDown42_ValueChanged(object sender, EventArgs e)
+        {
+            intFilterNumber = (int)numericUpDown42.Value;
+        }
+
+        private void UseClipBoard_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!UseClipBoard.Checked)
+            {
+                Clipboard.SetText("//NEB Listen 0");
+                ClipboardListen = false;
+            }
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            // set Min Neb screen size
+            RECT NebRect = new RECT();
+            GetWindowRect(Handles.NebhWnd, out NebRect);
+
+            // if (GetWindowRect(Handles.NebhWnd, out NebRect) < 820)
+            textBox64.Text = (NebRect.right - NebRect.left).ToString();
+            MinNebSize = Convert.ToUInt16(textBox64.Text);
+            //MoveWindow(Handles.NebhWnd, NebRect.left, NebRect.top, 820, NebRect.bottom - NebRect.top, true);
+            Log("Nebulosity Minimum Size set to " + MinNebSize.ToString());
+            FileLog2("Nebulosity Minimum Size set to " + MinNebSize.ToString());
+            //FileLog2("Neb Window resized from width of " + (NebRect.right - NebRect.left).ToString());
+
+
+        }
+
+        //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   
+        //{
+        //    NebListenStart(Handles.NebhWnd, SocketPort);
+        //    msdelay(750);
+        //    Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
+         
+        //}
 
         private void button51_Click_1(object sender, EventArgs e)
         {

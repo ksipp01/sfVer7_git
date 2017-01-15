@@ -39,7 +39,7 @@ namespace Pololu.Usc.ScopeFocus
             get { return _capTotal; }
             set { _capTotal = value; }
         }
-
+       
 
         private static int _nebSlavehwnd;
         public static int NebSlavehwnd

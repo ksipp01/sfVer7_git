@@ -102,7 +102,7 @@ namespace Pololu.Usc.ScopeFocus
         internal string apikey = "ckylhfaafccqhumf";  // ? to settings
         internal string session = "";
         private string URI = "http://nova.astrometry.net";
-        //   private string URI = "http://127.0.0.1:8081"; // 10-21-16
+       //   private string URI = "http://127.0.0.1:8081"; // 10-21-16
 
       //  private string path = "test";
         private string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
@@ -323,11 +323,11 @@ namespace Pololu.Usc.ScopeFocus
             JsonObject obj = new JsonObject();
             JsonObject jsonObject = getLoginJSON(apikey);
             String input = "&request-json=" + jsonObject.ToString();
-         //   Log("Astrometry.net login started");
-         //   FileLog2("Astrometry.net login started - apikey: " + apikey);
-         
-            string baseAddress = "http://nova.astrometry.net/api/login";
-         //   string baseAddress = "http://127.0.0.1:8081/api/login"; // 10-21-16
+            //   Log("Astrometry.net login started");
+            //   FileLog2("Astrometry.net login started - apikey: " + apikey);
+
+               string baseAddress = "http://nova.astrometry.net/api/login";
+          //  string baseAddress = "http://127.0.0.1:8081/api/login"; // 10-21-16
             try
             {
                 using (var httpClient = new HttpClient())
@@ -346,16 +346,18 @@ namespace Pololu.Usc.ScopeFocus
                 if (session != "")
                 {
 
-                   Log("Astrometry.net login successful");
-                   FileLog2("Astrometry.net login successful,  Session: " + session);
-                   // PostFile(session, GlobalVariables.SolveImage, cts);
+                    Log("Astrometry.net login successful");
+                    FileLog2("Astrometry.net login successful,  Session: " + session);
+                    // PostFile(session, GlobalVariables.SolveImage, cts);
                     PostFile(session, GlobalVariables.SolveImage);
                 }
             }
             catch (Exception e)
             {
-                    FileLog("Get session error: " + e.ToString());
+                FileLog("Get session error: " + e.ToString());
             }
+
+
         }
 
         internal static JsonObject getUploadJson(string session)
@@ -379,7 +381,7 @@ namespace Pololu.Usc.ScopeFocus
             JsonObject jsonObject = getUploadJson(session);
             String input = jsonObject.ToString();  // was &json-request...
             string baseAddress = "http://nova.astrometry.net/api/upload";
-          //string baseAddress = "http://127.0.0.1:8081/api/upload"; // 10-21-16
+       //   string baseAddress = "http://127.0.0.1:8081/api/upload"; // 10-21-16
             using (var httpClient = new HttpClient())
             {
                 httpClient.Timeout = TimeSpan.FromMinutes(3);
@@ -622,7 +624,7 @@ namespace Pololu.Usc.ScopeFocus
             StringBuilder sb = new StringBuilder();
             string result;
             string url = "http://nova.astrometry.net/api/submissions/" + subid;
-        //    string url = "http://127.0.0.1:8081/api/submissions/" + subid; // 10-21-16
+          //  string url = "http://127.0.0.1:8081/api/submissions/" + subid; // 10-21-16
             var httpClient = new HttpClient();
             try
             {
