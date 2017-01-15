@@ -114,6 +114,7 @@
 // 1-9-17 fixed error if PHD2 closes
 // 1-10-17 removed backlash determiniation and tempcal.  they don't work and arent used/  backlash can be foun by diff between upslope and dwnslope foucs points. 
 // 1-13-17 and 1-14-17 consolidated filesystemwatcher to 2.  2,3,4,5 into #1 and #7 stayed separate.   
+// 1-15-17 worked on internal filterwheel,other fixes.
 
 
 ///  to do:
