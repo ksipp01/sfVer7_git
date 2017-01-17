@@ -2776,6 +2776,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
+             
+
                 disableCloseWarning.Checked = WindowsFormsApplication1.Properties.Settings.Default.disableCloseWArning;
                 MinNebSize = WindowsFormsApplication1.Properties.Settings.Default.MinNebSize;
                 textBox64.Text = MinNebSize.ToString();
@@ -2943,6 +2945,20 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 }
+                //keep stuff disable until connected via ascom
+                //  groupBox9.Enabled = false;
+               // checkBox8.Enabled = false;  // cant any focusing until focuser connected
+              //  checkBox17.Enabled = false;
+                //  groupBox10.Enabled = false;
+                tabPage1.Enabled = false;
+                groupBox7.Enabled = false;
+                groupBox5.Enabled = false;
+                groupBox22.Enabled = false;
+                groupBox14.Enabled = false;
+                groupBox15.Enabled = false;
+
+
+
 
 
             }
@@ -3419,7 +3435,7 @@ namespace Pololu.Usc.ScopeFocus
         }
 
 
-        public void button8_Click_2(object sender, EventArgs e)
+        public void button8_Click_2(object sender, EventArgs e) // focuser
         {
             try
             {
@@ -3442,6 +3458,9 @@ namespace Pololu.Usc.ScopeFocus
                     }
                      */
                     numericUpDown6.Value = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                    tabPage1.Enabled = true;
+                    groupBox17.Enabled = true;
+
                 }
                 else
                 {
@@ -3451,6 +3470,8 @@ namespace Pololu.Usc.ScopeFocus
                     Pololu.Usc.ScopeFocus.Focus.focuser.Dispose();
                     Log(Pololu.Usc.ScopeFocus.Focus.DevId2 + " disconnected");
                     Pololu.Usc.ScopeFocus.Focus.DevId2 = "";
+                    tabPage1.Enabled = false;
+                    groupBox17.Enabled = false;
                 }
             }
             catch (Exception ex)
@@ -14752,6 +14773,10 @@ namespace Pololu.Usc.ScopeFocus
                     }
                     usingASCOM = true;
                     button49.BackColor = System.Drawing.Color.Lime;
+                    groupBox5.Enabled = true;
+                    groupBox22.Enabled = true;
+
+
                 }
             }
             else
@@ -14761,6 +14786,8 @@ namespace Pololu.Usc.ScopeFocus
                 Mount.scope.Dispose();
                 Log(Mount.DevId + " disconnected");
                 Mount.DevId = "";
+                groupBox5.Enabled = false;
+                groupBox22.Enabled = false;
             }
         }
         // added 3-12-16 for online solve  
@@ -17952,6 +17979,7 @@ namespace Pololu.Usc.ScopeFocus
                     if (!checkBox31.Checked)
                         Filter.filterWheel.Position = 0;
                     DisplayCurrentFilter();
+                    groupBox15.Enabled = true;
                 }
                 if (!checkBox31.Checked)
                 {
@@ -17960,7 +17988,7 @@ namespace Pololu.Usc.ScopeFocus
                     comboBox6.SelectedItem = Filter.filterWheel.Position;
                     ComboBoxFill();
                 }
-
+                
             }
 
             else
@@ -17971,6 +17999,7 @@ namespace Pololu.Usc.ScopeFocus
                 Filter.filterWheel.Dispose();
                 Log(Filter.DevId3 + " disconnected");
                 Filter.DevId3 = "";
+                groupBox15.Enabled = false;
             }
         }
 
@@ -18148,6 +18177,7 @@ namespace Pololu.Usc.ScopeFocus
                     Log(Pololu.Usc.ScopeFocus.Flap.DevId4 + " disconnected");
                     button12.BackColor = System.Drawing.Color.WhiteSmoke;
                     Pololu.Usc.ScopeFocus.Flap.DevId4 = "";
+                    groupBox14.Enabled = false;
                     return;
                 }
 
@@ -18169,6 +18199,7 @@ namespace Pololu.Usc.ScopeFocus
                         button12.BackColor = System.Drawing.Color.Lime;
                     Log("connected to " + Pololu.Usc.ScopeFocus.Flap.DevId4);
                     FileLog2("connected to " + Pololu.Usc.ScopeFocus.Flap.DevId4);
+                    groupBox14.Enabled = true;
                 }
 
             }
