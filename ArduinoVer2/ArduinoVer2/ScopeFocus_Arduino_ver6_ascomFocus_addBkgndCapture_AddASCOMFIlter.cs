@@ -2405,7 +2405,7 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(100);
                     count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
-                    Log("Taking up backlash");
+                  //  Log("Taking up backlash");
                     FileLog2("Move to " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                     if (!ContinuousHoldOn)
                         Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
@@ -2431,7 +2431,7 @@ namespace Pololu.Usc.ScopeFocus
                     Thread.Sleep(100);
                     count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
-                    Log("Taking up backlash");
+                  //  Log("Taking up backlash");
                     FileLog2("Move to: " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                     if (!ContinuousHoldOn)
                         Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
@@ -4641,7 +4641,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     Filtertext = comboBox2.Text;
-                if (checkBox31.Checked)
+                if (checkBox31.Checked) // Int filterwheel
                 {
                     if (currentfilter == 1)
                         Filtertext = comboBox2.Text;
@@ -4755,7 +4755,7 @@ namespace Pololu.Usc.ScopeFocus
                     toolStripStatusLabel3.Text = _equip.ToString();
                     //end filter/equip sync addition
                     toolStripStatusLabel4.Text = Filtertext.ToString();
-                    toolStripStatusLabel2.Text = "Total Subs " + subCountCurrent.ToString() + " of " + TotalSubs().ToString();
+                    toolStripStatusLabel2.Text = "Total Subs " + subCountCurrent.ToString() + " of " + totalSubs.ToString();
                     //next line filters gridview by equip
                     //   Data d = new Data();
                     ((DataTable)this.dataGridView1.DataSource).DefaultView.RowFilter = "Equip =" + "'" + toolStripStatusLabel3.Text.ToString() + "'";
@@ -4793,14 +4793,14 @@ namespace Pololu.Usc.ScopeFocus
             //  try
             //   {
             //first 3 line duplicate w/ radio 7 enable, may be able to delete
-
+            FileLog2("CheckFilterCount: subCountCurrent = " + subCountCurrent.ToString() +  " of " + totalSubs.ToString());
 
             //  subsperfilter = totalsubs / filternumber;
             //textBox19.Text = subsperfilter.ToString();
             //   textBox27.Text = Filtertext;
             //    textBox21.Text = "Pos" + currentfilter.ToString() + Filtertext;
 
-            textBox23.Text = TotalSubs().ToString();
+            textBox23.Text = totalSubs.ToString();
             if (subCountCurrent == 0)//starts for first one
             {
                 NebCapture();
@@ -4815,7 +4815,7 @@ namespace Pololu.Usc.ScopeFocus
                  */
 
             }
-            if ((subCountCurrent == TotalSubs()) & (subCountCurrent != 0))//signifies end of sequence
+            if ((subCountCurrent == totalSubs) & (subCountCurrent != 0))//signifies end of sequence
             {
                 //adioButton7.Checked = false;
                 fileSystemWatcher1.EnableRaisingEvents = false; // 1-15-17 was 4
@@ -4829,6 +4829,7 @@ namespace Pololu.Usc.ScopeFocus
                     toolStripStatusLabel1.Text = "Sequence Done";
                     toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
                     FileLog2("Sequence Done");
+                    fileSystemWatcher1.EnableRaisingEvents = false; // added 1-17-17
                     this.Refresh();
                     if (DarksOn == true)
                         DarksOn = false;
@@ -4865,6 +4866,9 @@ namespace Pololu.Usc.ScopeFocus
                     toolStripStatusLabel1.Text = "Sequence Done";
                     toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
                     FileLog2("Sequence Done");
+
+                    fileSystemWatcher1.EnableRaisingEvents = false; // added 1-17-17
+
                     this.Refresh();
                     if (DarksOn == true)
                         DarksOn = false;
@@ -5081,85 +5085,90 @@ namespace Pololu.Usc.ScopeFocus
         //add filter
 
 
-        private int CountFilterTotal()//this may not be needed.  seems to just check for non-zero at sequencego
-        {
-            int filter1used;
-            int filter2used;
-            int filter3used;
-            int filter4used;
-            int filter5used;
-            int filternumber;
-            int filter6used;
-            if (checkBox1.Checked == true)
-                filter1used = 1;
-            else
-                filter1used = 0;
-            if (checkBox2.Checked == true)
-                filter2used = 1;
-            else
-                filter2used = 0;
-            if (checkBox3.Checked == true)
-                filter3used = 1;
-            else
-                filter3used = 0;
-            if (checkBox4.Checked == true)
-                filter4used = 1;
-            else
-                filter4used = 0;
-            if (checkBox5.Checked == true)
-                filter5used = 1;
-            else
-                filter5used = 0;
-            if (checkBox9.Checked == true)
-                filter6used = 1;
-            else
-                filter6used = 0;
+        //private int CountFilterTotal()//this may not be needed.  seems to just check for non-zero at sequencego
+        //{
+        //    int filter1used;
+        //    int filter2used;
+        //    int filter3used;
+        //    int filter4used;
+        //    int filter5used;
+        //    int filternumber;
+        //    int filter6used;
+        //    if (checkBox1.Checked == true)
+        //        filter1used = 1;
+        //    else
+        //        filter1used = 0;
+        //    if (checkBox2.Checked == true)
+        //        filter2used = 1;
+        //    else
+        //        filter2used = 0;
+        //    if (checkBox3.Checked == true)
+        //        filter3used = 1;
+        //    else
+        //        filter3used = 0;
+        //    if (checkBox4.Checked == true)
+        //        filter4used = 1;
+        //    else
+        //        filter4used = 0;
+        //    if (checkBox5.Checked == true)
+        //        filter5used = 1;
+        //    else
+        //        filter5used = 0;
+        //    if (checkBox9.Checked == true)
+        //        filter6used = 1;
+        //    else
+        //        filter6used = 0;
 
-            return filternumber = filter4used + filter3used + filter2used + filter1used + filter5used + filter6used;//calculate total number of filters
+        //    return filternumber = filter4used + filter3used + filter2used + filter1used + filter5used + filter6used;//calculate total number of filters
 
-        }
+        //}
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+          //  CountFilterTotal();
+
             if (checkBox1.Checked == false)//put zeros in if unchecked
             {
                 numericUpDown11.Value = 0;
                 numericUpDown12.Value = 0;
             }
-         //   checkboxChanged = true;//prevents re checking all boxes based on start up selection of filter set..
+            TotalSubsCalc();
+            //   checkboxChanged = true;//prevents re checking all boxes based on start up selection of filter set..
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+           // CountFilterTotal();
             if (checkBox2.Checked == false)
             {
                 numericUpDown13.Value = 0;
                 numericUpDown16.Value = 0;
             }
+            TotalSubsCalc();
          //   checkboxChanged = true;
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+          //  CountFilterTotal();
             if (checkBox3.Checked == false)
             {
                 numericUpDown14.Value = 0;
                 numericUpDown17.Value = 0;
             }
+            TotalSubsCalc();
          //   checkboxChanged = true;
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+           // CountFilterTotal();
             if (checkBox4.Checked == false)
             {
                 numericUpDown15.Value = 0;
                 numericUpDown18.Value = 0;
             }
-          //  checkboxChanged = true;
+            //  checkboxChanged = true;
+            TotalSubsCalc();
         }
 
 
@@ -5167,7 +5176,7 @@ namespace Pololu.Usc.ScopeFocus
         //filtersequencehere
         private void FilterSequence()
         {
-            FileLog2("filtersequcene called");
+            FileLog2("filtersequcene called - Current Filter = " + currentfilter.ToString());
             //   System.Object lockThis = new System.Object();
             // try
             // {
@@ -5192,15 +5201,15 @@ namespace Pololu.Usc.ScopeFocus
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
                 //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)//flat every filter
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown24.Value;
                     DoFlat();
-
-
-
                 }
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
+                    
                 if (checkBox2.Checked == true)
                 {
                     currentfilter = 2;
@@ -5264,7 +5273,7 @@ namespace Pololu.Usc.ScopeFocus
                     //hread.Sleep(4000);
                     if (checkBox8.Checked == true)
                     {
-
+                     
                         FilterFocus();
                     }
                     if (checkBox17.Checked == false)
@@ -5389,14 +5398,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 if (checkBox9.Checked == true)//Dark 2 allows for different time or bin
                 {
-                    if (comboBox8.SelectedItem.ToString() == "Dark 2")
+                    if ((comboBox8.SelectedItem.ToString() == "Dark 2") || (comboBox8.SelectedItem.ToString() == "Dark 1")) // 1-17-17 was just dark 2
                     {
                         currentfilter = 6;
                         DarksOn = true;
                         //no advance already at 1
                         Thread.Sleep(1000);
                         Handles.Editfound = 0;
-                        Nebname = "Dark2";
+                        //Nebname = "Dark2";
+                        Nebname = comboBox8.SelectedItem.ToString();
                         subsperfilter = (int)numericUpDown29.Value;
                         CaptureTime = (int)numericUpDown30.Value * 1000;
                         CaptureBin = (int)numericUpDown31.Value;
@@ -5497,13 +5507,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
-                //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)
+                                                //should continue to cycle here until FFGC + FG[1]
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown25.Value;
                     DoFlat();
                 }
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
                 if (checkBox3.Checked == true)
                 {
 
@@ -5635,7 +5647,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     currentfilter = 6;
 
-                    if (comboBox8.SelectedItem.ToString() == "Dark 2")
+                    if ((comboBox8.SelectedItem.ToString() == "Dark 2") || (comboBox8.SelectedItem.ToString() == "Dark 1")) // 1-17-17 was just dark 2
                     {
 
                         DarksOn = true;
@@ -5643,7 +5655,8 @@ namespace Pololu.Usc.ScopeFocus
                         //no advance already at 1
                         Thread.Sleep(1000);
                         Handles.Editfound = 0;
-                        Nebname = "Dark2";
+                        // Nebname = "Dark2";
+                        Nebname = comboBox8.SelectedItem.ToString();
                         subsperfilter = (int)numericUpDown29.Value;
                         CaptureTime = (int)numericUpDown30.Value * 1000;
                         CaptureBin = (int)numericUpDown31.Value;
@@ -5733,13 +5746,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
-                //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)
+                                                //should continue to cycle here until FFGC + FG[1]
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown26.Value;
                     DoFlat();
                 }
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
                 if (checkBox4.Checked == true)
                 {
                     currentfilter = 4;
@@ -5835,7 +5850,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     currentfilter = 6;
 
-                    if (comboBox8.SelectedItem.ToString() == "Dark 2")
+                    if ((comboBox8.SelectedItem.ToString() == "Dark 2") || (comboBox8.SelectedItem.ToString() == "Dark 1")) // 1-17-17 was just dark 2
                     {
 
                         DarksOn = true;
@@ -5843,7 +5858,8 @@ namespace Pololu.Usc.ScopeFocus
                         //no advance already at 1
                         Thread.Sleep(1000);
                         Handles.Editfound = 0;
-                        Nebname = "Dark2";
+                        //  Nebname = "Dark2";
+                        Nebname = comboBox8.SelectedItem.ToString();
                         subsperfilter = (int)numericUpDown29.Value;
                         CaptureTime = (int)numericUpDown30.Value * 1000;
                         CaptureBin = (int)numericUpDown31.Value;
@@ -5935,13 +5951,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
-                //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)
+                                                //should continue to cycle here until FFGC + FG[1]
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown27.Value;
                     DoFlat();
                 }
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
                 if (checkBox5.Checked == true)
                 {
                     currentfilter = 5;
@@ -6145,20 +6163,22 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
-                //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)
+                                                //should continue to cycle here until FFGC + FG[1]
+                 //  if ((checkBox18.Checked == true) && (Filtertext != "Dark")) // 1-17-17 no need for flats with darks on
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown27.Value;
                     DoFlat();
                 }
-
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
 
                 if (checkBox9.Checked == true)//Dark 2 allows for different time or bin
                 {
                     currentfilter = 6;
 
-                    if (comboBox8.SelectedItem.ToString() == "Dark 2")
+                    if ((comboBox8.SelectedItem.ToString() == "Dark 2") || (comboBox8.SelectedItem.ToString() == "Dark 1")) // 1-17-17 was just dark 2
                     {
 
                         DarksOn = true;
@@ -6166,7 +6186,7 @@ namespace Pololu.Usc.ScopeFocus
                         //no advance already at 1
                         Thread.Sleep(1000);
                         Handles.Editfound = 0;
-                        Nebname = "Dark2";
+                        Nebname = comboBox8.SelectedItem.ToString();
                         subsperfilter = (int)numericUpDown29.Value;
                         CaptureTime = (int)numericUpDown30.Value * 1000;
                         CaptureBin = (int)numericUpDown31.Value;
@@ -6254,13 +6274,16 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                     FilterFocusGroupCurrent = 0;//must be equal to nuber of groups so reset and move to next filter
-                //should continue to cycle here until FFGC + FG[1]
-                if (checkBox18.Checked == true)
+                                                //should continue to cycle here until FFGC + FG[1]
+                // if ((checkBox18.Checked == true)  && (Filtertext != "Dark"))
+                if ((checkBox18.Checked == true) && (!DarksOn))//flat every filter  // added !Darkson 1-17-17
                 {
                     CaptureTime3 = FlatExp;
                     CaptureBin = (int)numericUpDown27.Value;
                     DoFlat();
                 }
+                if (DarksOn)  // it's left on after dark catpure only to prevent flats from being done...once past the DoFlat() then reset to darksOn = false;
+                    DarksOn = false;
                 if ((checkBox13.Checked == true) & (checkBox18.Checked == false))
                 {
                     currentfilter = 7;
@@ -6674,8 +6697,8 @@ namespace Pololu.Usc.ScopeFocus
                         try
                         {
                             serverStream.Write(outStream2, 0, outStream2.Length);
-                            Log("Darks On  Cap time " + CaptureTime3.ToString());
-                            FileLog2("Darks On  Cap time " + CaptureTime3.ToString());
+                            Log("Darks On  Exposure time = " + CaptureTime3.ToString());
+                            FileLog2("Darks On  Exposure time = " + CaptureTime3.ToString());
                         }
                         catch
                         {
@@ -6688,7 +6711,9 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         //  int i= 0;
                         //  msdelay(750);
-                        FileLog2("nebCapture Darks on = true");
+                        // FileLog2("nebCapture Darks on = true");
+                        Log("Darks On  Exposure time = " + CaptureTime3.ToString());
+                        FileLog2("Darks On  Exposure time = " + CaptureTime3.ToString());
                         Clipboard.Clear();
                         msdelay(500);
                         //  Clipboard.SetText("//NEB setname " + prefix + Nebname);
@@ -6799,7 +6824,7 @@ namespace Pololu.Usc.ScopeFocus
                         Clipboard.Clear();
                     }
                     // serverStream.Write(outStream2, 0, outStream2.Length);
-                    DarksOn = false;
+                 //   DarksOn = false;  // remd 1-17-17  move to later in filtersequence to prevent flats  
                 }
                 // if (IsSlave())
                 //    SendtoServer("Slave Capturing");//tell server capturing and wait for "sub complete"
@@ -7321,12 +7346,12 @@ namespace Pololu.Usc.ScopeFocus
 
         private void ToolStripProgressBar()
         {
-            toolStripProgressBar1.Maximum = TotalSubs();
+            toolStripProgressBar1.Maximum = totalSubs;
             toolStripProgressBar1.Minimum = 0;
             toolStripProgressBar1.Increment(1);
 
             toolStripProgressBar1.Value = subCountCurrent;
-            toolStripStatusLabel2.Text = "Total Subs " + subCountCurrent.ToString() + " of " + TotalSubs().ToString(); // 11-8-16 added "total"
+            toolStripStatusLabel2.Text = "Total Subs " + subCountCurrent.ToString() + " of " + totalSubs.ToString(); // 11-8-16 added "total"
 
         }
         private void EnableAllUpDwn()
@@ -7409,7 +7434,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-             //   ResizeNebWindow();  // remd 1-15-17  done on form load
+                 ResizeNebWindow();  // remd 1-15-17  done on form load, ***1-17-17, unremd....should check periodically 
                 idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
@@ -7494,21 +7519,21 @@ namespace Pololu.Usc.ScopeFocus
                     button26.BackColor = System.Drawing.Color.Lime;
                 }
                  */
-                TotalSubs();
+                TotalSubsCalc();
                 //totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
                 ToolStripProgressBar();
 
                 // subsperfilter = totalsubs / filternumber;
                 // textBox19.Text = subsperfilter.ToString();
-                if (CountFilterTotal() == 0)
-                {
-                    DialogResult result2 = MessageBox.Show("Must Select filters prior to enable", "scopefocus - Filter Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (result2 == DialogResult.OK)
-                    {
-                        //checkBox22.Checked = false;
-                        return;
-                    }
-                }
+                //if (CountFilterTotal() == 0)  remd 1-17-17 
+                //{
+                //    DialogResult result2 = MessageBox.Show("Must Select filters prior to enable", "scopefocus - Filter Control", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //    if (result2 == DialogResult.OK)
+                //    {
+                //        //checkBox22.Checked = false;
+                //        return;
+                //    }
+                //}
 
 
                 /*
@@ -7750,9 +7775,9 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
             }
-            TotalSubs();
+            TotalSubsCalc();
             // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
-            textBox23.Text = TotalSubs().ToString();
+            textBox23.Text = totalSubs.ToString();
 
 
 
@@ -7773,11 +7798,13 @@ namespace Pololu.Usc.ScopeFocus
                         numericUpDown18.Value = numericUpDown11.Value;
                     if (checkBox5.Checked == true)
                         numericUpDown19.Value = numericUpDown11.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown30.Value = numericUpDown11.Value;
                 }
             }
-            TotalSubs();
+          //  TotalSubsCalc(); // remd 1-17-17 doesnt change this so why recalcuate
             //  totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
-            textBox23.Text = TotalSubs().ToString();
+            textBox23.Text = totalSubs.ToString();
             //****5-11 trying to be able to change sub number   
         }
 
@@ -7789,12 +7816,13 @@ namespace Pololu.Usc.ScopeFocus
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+          //  CountFilterTotal();
             if (checkBox5.Checked == false)
             {
                 numericUpDown19.Value = 0;
                 numericUpDown20.Value = 0;
             }
+            TotalSubsCalc();
         }
         /*
         //filter pos sync to 1
@@ -7873,9 +7901,11 @@ namespace Pololu.Usc.ScopeFocus
                     numericUpDown18.Value = numericUpDown16.Value;
                 if (checkBox5.Checked == true)
                     numericUpDown19.Value = numericUpDown16.Value;
+                if (checkBox9.Checked == true)
+                    numericUpDown30.Value = numericUpDown16.Value;
             }
-            TotalSubs();
-            // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
+         //   TotalSubsCalc();
+        //    // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
 
         }
 
@@ -7891,8 +7921,10 @@ namespace Pololu.Usc.ScopeFocus
                     numericUpDown18.Value = numericUpDown17.Value;
                 if (checkBox5.Checked == true)
                     numericUpDown19.Value = numericUpDown17.Value;
+                if (checkBox9.Checked == true)
+                    numericUpDown30.Value = numericUpDown17.Value;
             }
-            TotalSubs();
+           // TotalSubsCalc();
             // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
 
         }
@@ -7909,8 +7941,10 @@ namespace Pololu.Usc.ScopeFocus
                     numericUpDown11.Value = numericUpDown18.Value;
                 if (checkBox5.Checked == true)
                     numericUpDown19.Value = numericUpDown18.Value;
+                if (checkBox9.Checked == true)
+                    numericUpDown30.Value = numericUpDown18.Value;
             }
-            TotalSubs();
+          //  TotalSubsCalc();
 
             // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
 
@@ -7928,8 +7962,10 @@ namespace Pololu.Usc.ScopeFocus
                     numericUpDown18.Value = numericUpDown19.Value;
                 if (checkBox1.Checked == true)
                     numericUpDown11.Value = numericUpDown19.Value;
+                if (checkBox9.Checked == true)
+                    numericUpDown30.Value = numericUpDown19.Value;
             }
-            TotalSubs();
+         //   TotalSubsCalc();
         }
 
         private void numericUpDown13_ValueChanged(object sender, EventArgs e)
@@ -7949,7 +7985,7 @@ namespace Pololu.Usc.ScopeFocus
                         numericUpDown20.Value = numericUpDown13.Value;
                 }
             }
-            TotalSubs();
+            TotalSubsCalc();
         }
 
         private void numericUpDown14_ValueChanged(object sender, EventArgs e)
@@ -7969,7 +8005,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
             }
-            TotalSubs();
+            TotalSubsCalc();
         }
 
         private void numericUpDown15_ValueChanged(object sender, EventArgs e)
@@ -7988,7 +8024,7 @@ namespace Pololu.Usc.ScopeFocus
                         numericUpDown20.Value = numericUpDown15.Value;
                 }
             }
-            TotalSubs();
+            TotalSubsCalc();
         }
 
         private void numericUpDown20_ValueChanged(object sender, EventArgs e)
@@ -8007,7 +8043,7 @@ namespace Pololu.Usc.ScopeFocus
                         numericUpDown12.Value = numericUpDown20.Value;
                 }
             }
-            TotalSubs();
+            TotalSubsCalc();
         }
 
 
@@ -9817,7 +9853,8 @@ namespace Pololu.Usc.ScopeFocus
                 FileLog2("filterfocus called");
                 if ((IsServer()) & (checkBox8.Checked == true))
                     SlaveFocus();
-
+                Log("Focusing for " + Filtertext);
+                FileLog2("Focusing for " + Filtertext);
                 //if ((radioButton14.Checked == false) && (radioButton15.Checked == false) && (radioButton16.Checked == false))
                 //{
                 //    MessageBox.Show("Must select PHD pause method", "scopefocus");
@@ -10946,7 +10983,8 @@ namespace Pololu.Usc.ScopeFocus
             //12-7-16
             ph.StopCapture();
 
-            Log("guiding paused");
+            Log("Guiding paused");
+            Log("Guiding paused");
             //            try
             //            {
             //                if (radioButton14.Checked == true || radioButton16.Checked == true)
@@ -11266,7 +11304,8 @@ namespace Pololu.Usc.ScopeFocus
 
                 //   if (radioButton15.Checked == true)
                 //  {
-
+                Log("Guiding Resumed");
+                FileLog2("Guiding Resumed");
                ph.Guide();
 // remd 12-7-16  replaced with above. 
 
@@ -11520,12 +11559,13 @@ namespace Pololu.Usc.ScopeFocus
         */
         private void checkBox9_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+           // CountFilterTotal();
             if (checkBox9.Checked == false)
             {
                 numericUpDown29.Value = 0;
                 numericUpDown30.Value = 0;
             }
+            TotalSubsCalc();
             //if (checkBox5.Checked == false)
             //{
             //    MessageBox.Show("Use Dark 5 for single dark frame", "scopefocus");
@@ -12892,12 +12932,13 @@ namespace Pololu.Usc.ScopeFocus
 
         private void checkBox13_CheckedChanged(object sender, EventArgs e)
         {
-            CountFilterTotal();
+          //  CountFilterTotal();
             if (checkBox13.Checked == false)
             {
                 numericUpDown32.Value = 0;
                 numericUpDown34.Value = 0;
             }
+            TotalSubsCalc();
         }
 
 
@@ -13176,11 +13217,12 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        int checkboxs;
-        public int TotalSubs()
+        public int totalSubs { get; set; }
+        public void TotalSubsCalc()
         {
-            int totalsubs;
-            checkboxs = 0;
+            int checkboxs = 0; // 1-17-17 was outside the method 
+         //   int totalsubs;
+           // checkboxs = 0;
             if (checkBox1.Checked == true)
                 checkboxs++;
             if (checkBox2.Checked == true)
@@ -13193,29 +13235,29 @@ namespace Pololu.Usc.ScopeFocus
                 if (comboBox1.SelectedItem.ToString() != "Dark 1")
                     checkboxs++;
             if (checkBox9.Checked == true)//*** 4-8-14 was 6 ****
-                if ((comboBox8.SelectedItem.ToString() != "Dark 1") || (comboBox1.SelectedItem.ToString() != "Dark 2")) // changed to 'or' 11-16-16
+                if (!((comboBox8.SelectedItem.ToString() != "Dark 1") || (comboBox8.SelectedItem.ToString() != "Dark 2"))) // changed to 'or' 11-16-16
                     checkboxs++;
             if (checkBox18.Checked == true)
-                totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + ((int)numericUpDown32.Value * checkboxs);
+                totalSubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + ((int)numericUpDown32.Value * checkboxs);
             else
-                totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
-            textBox23.Text = totalsubs.ToString();
+                totalSubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
+            textBox23.Text = totalSubs.ToString();
+            FileLog2("Totalsubs = " + totalSubs.ToString());
             
-            return totalsubs;
         }
 
         private void numericUpDown32_ValueChanged(object sender, EventArgs e)
         {
             if (numericUpDown32.Value > 0)
                 checkBox13.Checked = true;
-            TotalSubs();
+            TotalSubsCalc();
             // checkBox13.Checked = true;
         }
 
 
         private void numericUpDown29_ValueChanged(object sender, EventArgs e)
         {
-            TotalSubs();
+            TotalSubsCalc();
 
         }
 
@@ -13628,9 +13670,9 @@ namespace Pololu.Usc.ScopeFocus
                     return;
                 }
                 numericUpDown36.Enabled = false;
-                TotalSubs();//recalculate totalsubs
+             //   TotalSubsCalc();//recalculate totalsubs
             }
-
+            TotalSubsCalc();
 
         }
         //for verion number on about tab
@@ -19170,6 +19212,164 @@ namespace Pololu.Usc.ScopeFocus
             //FileLog2("Neb Window resized from width of " + (NebRect.right - NebRect.left).ToString());
 
 
+        }
+
+        private void numericUpDown12_Leave(object sender, EventArgs e)
+        {
+            //if ((currentfilter == 1) && (subCountCurrent > 0)) // remd 1-17-17
+            //    numericUpDown12.Enabled = false;
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox2.Checked == true)
+                        numericUpDown13.Value = numericUpDown12.Value;
+                    if (checkBox3.Checked == true)
+                        numericUpDown14.Value = numericUpDown12.Value;
+                    if (checkBox4.Checked == true)
+                        numericUpDown15.Value = numericUpDown12.Value;
+                    if (checkBox5.Checked == true)
+                        numericUpDown20.Value = numericUpDown12.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown29.Value = numericUpDown12.Value;
+
+                }
+            }
+            TotalSubsCalc();
+            // totalsubs = (int)numericUpDown12.Value + (int)numericUpDown13.Value + (int)numericUpDown14.Value + (int)numericUpDown15.Value + (int)numericUpDown20.Value + (int)numericUpDown29.Value + (int)numericUpDown32.Value;
+            textBox23.Text = totalSubs.ToString();
+        }
+
+        private void numericUpDown13_Leave(object sender, EventArgs e)
+        {
+
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox1.Checked == true)
+                        numericUpDown12.Value = numericUpDown13.Value;
+                    if (checkBox3.Checked == true)
+                        numericUpDown14.Value = numericUpDown13.Value;
+                    if (checkBox4.Checked == true)
+                        numericUpDown15.Value = numericUpDown13.Value;
+                    if (checkBox5.Checked == true)
+                        numericUpDown20.Value = numericUpDown13.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown29.Value = numericUpDown13.Value;
+                }
+            }
+            TotalSubsCalc();
+        }
+
+        private void numericUpDown14_Leave(object sender, EventArgs e)
+        {
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox2.Checked == true)
+                        numericUpDown13.Value = numericUpDown14.Value;
+                    if (checkBox1.Checked == true)
+                        numericUpDown12.Value = numericUpDown14.Value;
+                    if (checkBox4.Checked == true)
+                        numericUpDown15.Value = numericUpDown14.Value;
+                    if (checkBox5.Checked == true)
+                        numericUpDown20.Value = numericUpDown14.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown29.Value = numericUpDown14.Value;
+
+                }
+            }
+            TotalSubsCalc();
+        }
+
+        private void numericUpDown15_Leave(object sender, EventArgs e)
+        {
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox2.Checked == true)
+                        numericUpDown13.Value = numericUpDown15.Value;
+                    if (checkBox3.Checked == true)
+                        numericUpDown14.Value = numericUpDown15.Value;
+                    if (checkBox1.Checked == true)
+                        numericUpDown12.Value = numericUpDown15.Value;
+                    if (checkBox5.Checked == true)
+                        numericUpDown20.Value = numericUpDown15.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown29.Value = numericUpDown15.Value;
+                }
+            }
+            TotalSubsCalc();
+        }
+
+        private void numericUpDown20_Leave(object sender, EventArgs e)
+        {
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox2.Checked == true)
+                        numericUpDown13.Value = numericUpDown20.Value;
+                    if (checkBox3.Checked == true)
+                        numericUpDown14.Value = numericUpDown20.Value;
+                    if (checkBox4.Checked == true)
+                        numericUpDown15.Value = numericUpDown20.Value;
+                    if (checkBox1.Checked == true)
+                        numericUpDown12.Value = numericUpDown20.Value;
+                    if (checkBox9.Checked == true)
+                        numericUpDown29.Value = numericUpDown20.Value;
+                }
+            }
+            TotalSubsCalc();
+        }
+
+        private void numericUpDown29_Leave(object sender, EventArgs e)
+        {
+            if (subCountCurrent == 0)
+            {
+                if (checkBox6.Checked == true)
+                {
+                    if (checkBox2.Checked == true)
+                        numericUpDown13.Value = numericUpDown29.Value;
+                    if (checkBox3.Checked == true)
+                        numericUpDown14.Value = numericUpDown29.Value;
+                    if (checkBox4.Checked == true)
+                        numericUpDown15.Value = numericUpDown29.Value;
+                    if (checkBox1.Checked == true)
+                        numericUpDown12.Value = numericUpDown29.Value;
+                    if (checkBox5.Checked == true)
+                        numericUpDown20.Value = numericUpDown29.Value;
+                }
+            }
+            TotalSubsCalc();
+        }
+
+        private void numericUpDown32_Leave(object sender, EventArgs e)
+        {
+            if (numericUpDown32.Value > 0)
+                checkBox13.Checked = true;
+            TotalSubsCalc();
+            // checkBox13.Checked = true;
+        }
+
+        private void numericUpDown30_ValueChanged(object sender, EventArgs e)
+        {
+            if (checkBox7.Checked == true)
+            {
+                if (checkBox2.Checked == true)
+                    numericUpDown16.Value = numericUpDown30.Value;
+                if (checkBox3.Checked == true)
+                    numericUpDown17.Value = numericUpDown30.Value;
+                if (checkBox4.Checked == true)
+                    numericUpDown18.Value = numericUpDown30.Value;
+                if (checkBox1.Checked == true)
+                    numericUpDown11.Value = numericUpDown30.Value;
+                if (checkBox5.Checked == true)
+                    numericUpDown19.Value = numericUpDown30.Value;
+            }
         }
 
         //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   
