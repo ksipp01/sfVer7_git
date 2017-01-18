@@ -2946,10 +2946,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
                 //keep stuff disable until connected via ascom
-                //  groupBox9.Enabled = false;
-               // checkBox8.Enabled = false;  // cant any focusing until focuser connected
-              //  checkBox17.Enabled = false;
-                //  groupBox10.Enabled = false;
+             // 1-17-17 enable w/ pertinent connect button, then disable if disconnected
                 tabPage1.Enabled = false;
                 groupBox7.Enabled = false;
                 groupBox5.Enabled = false;
@@ -7455,7 +7452,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-                 ResizeNebWindow();  // remd 1-15-17  done on form load, ***1-17-17, unremd....should check periodically 
+                 ResizeNebWindow();  // remd 1-15-17  done on form load, ***1-17-17, unremd....should check prior to sequence start
                 idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
