@@ -2482,7 +2482,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
-                    FileLog("FSW1 *.fit enabled ");
+                    FileLog2("FSW1 *.fit enabled ");
                     fileSystemWatcher1.EnableRaisingEvents = true;
                     //   if (clientSocket.Connected == false)
                     //   {
@@ -2497,7 +2497,7 @@ namespace Pololu.Usc.ScopeFocus
                 else
                 {
                     fileSystemWatcher1.Filter = "*.bmp"; // 1-13-17 was 3
-                    FileLog("FSW1 *.bmp enabled");
+                    FileLog2("FSW1 *.bmp enabled");
                     fileSystemWatcher1.EnableRaisingEvents = true;
                     
                 }
@@ -8262,7 +8262,7 @@ namespace Pololu.Usc.ScopeFocus
                 MetricTime = Convert.ToDouble(textBox43.Text);
                 currentmetricN = 1;
                 MetricSample = true;
-
+                FileLog2("sample metric");
                 fsNumber = 5;
                 fileSystemWatcher1.Filter = "*.fit";
                 fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was 5
@@ -16487,7 +16487,7 @@ namespace Pololu.Usc.ScopeFocus
                 return;
             }
             //  string[] metricpath = Directory.GetFiles(path2.ToString(), "*.fit");
-
+         //   FileLog2("FSW5 started");
             //   button25.PerformClick();
             if (MetricSample == false)
             {
@@ -16500,7 +16500,8 @@ namespace Pololu.Usc.ScopeFocus
                 metricpath = Directory.GetFiles(GlobalVariables.Path2.ToString(), "metric*.fit");
                 metricHFR = GetMetric(metricpath, roundto);
                 textBox25.Text = metricHFR.ToString();
-
+                Log("Metric HFR= " + metricHFR.ToString());
+                FileLog2("Metric HFR= " + metricHFR.ToString());
                 AvgMetricHFR[currentmetricN - 1] = metricHFR;
 
                 if (currentmetricN == metricN)
@@ -16511,7 +16512,8 @@ namespace Pololu.Usc.ScopeFocus
                     AvgMetric = (AvgMetricHFR.Sum()) / metricN;
                     textBox25.Text = AvgMetric.ToString();
                     Log("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
-                  
+                    FileLog2("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
+
                     if (UseClipBoard.Checked)
                     {
                         // delay(1);
@@ -16639,7 +16641,7 @@ namespace Pololu.Usc.ScopeFocus
             }
 
             // int nn;
-            FileLog("fileSystemWatcher3 changed");
+            FileLog2("FSW3 Triggered");
             textBox41.Refresh();//dual scope status textbox
             textBox41.Clear();
 
@@ -17318,8 +17320,8 @@ namespace Pololu.Usc.ScopeFocus
                     }
 
 
-                }
-            }
+                } // if HFRTestOn = true
+            } // if (!Simulator)
             else
             {
                 if (focusSampleComplete)
@@ -17348,55 +17350,55 @@ namespace Pololu.Usc.ScopeFocus
                     //}
                     // end add
 
+                    //   }  remd 1-19-17  it was stopping for metrin N > 1
+
+
+                    if (checkBox22.Checked == true)
+                    {
+                        fileSystemWatcher1.EnableRaisingEvents = false;  // 1-13-17 was 3 //added 7-25-14
+                        _gotoFocusOn = false;
+                        //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
+                        textBox4.Text = ((int)BestPos).ToString();
+
+                        //11-8-16
+                        if (!UseClipBoard.Checked)
+                        {
+                            serverStream = clientSocket.GetStream();
+                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
+                            serverStream.Write(outStream, 0, outStream.Length);
+                            serverStream.Flush();
+
+                            Thread.Sleep(3000);
+                            serverStream.Close();
+                            SetForegroundWindow(Handles.NebhWnd);
+                            Thread.Sleep(1000);
+                            PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            Thread.Sleep(1000);
+                            //    NebListenOn = false;
+                            // clientSocket.GetStream().Close();//added 5-17-12
+                            //  clientSocket.Client.Disconnect(true);//added 5-17-12
+                            clientSocket.Close();
+                        }
+                        else
+                        {
+                            // delay(1);
+                            Clipboard.Clear();
+                            // delay(1);
+                            // SetForegroundWindow(Handles.NebhWnd);
+                            // delay(1);
+                            //// Thread.Sleep(1000);
+                            // PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
+                            //// Thread.Sleep(1000);
+
+                            // delay(1);
+                            //Clipboard.SetText("//NEB Listen 0");
+                            //msdelay(750);
+                        }
+                    }
                 }
 
 
-                if (checkBox22.Checked == true)
-                {
-                    fileSystemWatcher1.EnableRaisingEvents = false;  // 1-13-17 was 3 //added 7-25-14
-                    _gotoFocusOn = false;
-                    //    Log("Goto Focus Position: " + Convert.ToInt32(BestPos).ToString());  // this is redundant
-                    textBox4.Text = ((int)BestPos).ToString();
-
-                    //11-8-16
-                    if (!UseClipBoard.Checked)
-                    {
-                        serverStream = clientSocket.GetStream();
-                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes("listenport 0" + "\n");
-                        serverStream.Write(outStream, 0, outStream.Length);
-                        serverStream.Flush();
-
-                        Thread.Sleep(3000);
-                        serverStream.Close();
-                        SetForegroundWindow(Handles.NebhWnd);
-                        Thread.Sleep(1000);
-                        PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                        Thread.Sleep(1000);
-                        //    NebListenOn = false;
-                        // clientSocket.GetStream().Close();//added 5-17-12
-                        //  clientSocket.Client.Disconnect(true);//added 5-17-12
-                        clientSocket.Close();
-                    }
-                    else
-                    {
-                        // delay(1);
-                        Clipboard.Clear();
-                        // delay(1);
-                        // SetForegroundWindow(Handles.NebhWnd);
-                        // delay(1);
-                        //// Thread.Sleep(1000);
-                        // PostMessage(Handles.Aborthwnd, BN_CLICKED, 0, 0);
-                        //// Thread.Sleep(1000);
-
-                        // delay(1);
-                        //Clipboard.SetText("//NEB Listen 0");
-                        //msdelay(750);
-                    }
-                }
             }
-
-
-
             // end test for improvement addition
 
 
@@ -17561,7 +17563,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-            }
+            }  //     //  if ((FilterFocusOn == true) & (HFRtestON == false) & (focusSampleComplete == true)) // 10-13-16 add focusSampleComplete 
             // end copy/paste
 
 
@@ -18940,7 +18942,7 @@ namespace Pololu.Usc.ScopeFocus
             //    MessageBox.Show("Value cannot be zero", "scopefoucs");
             //if (numericUpDown38.Value < 4) // remd 10-24-16
             //    MessageBox.Show("Confrim low refocus per sub value of " + numericUpDown38.Value.ToString(), "scopefocus");
-            if (!checkBox17.Checked) // rest if unchecked.  
+            if (!checkBox17.Checked) // reset if unchecked.  
             {
                 FocusPerSubGroupCount = 0;
                 for (int i=0; i<6; i++)
@@ -18964,6 +18966,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos. 1 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[0] = (int)numericUpDown12.Value / (int)FocusGroup[0];
@@ -18985,6 +18988,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos. 2 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[1] = (int)numericUpDown13.Value / (int)FocusGroup[1];
@@ -19006,6 +19010,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos.3 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[2] = (int)numericUpDown14.Value / (int)FocusGroup[2];
@@ -19027,6 +19032,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[3] = (int)numericUpDown15.Value / (int)FocusGroup[3];
@@ -19048,6 +19054,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[4] = (int)numericUpDown20.Value / (int)FocusGroup[4];
@@ -19069,6 +19076,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         MessageBox.Show("Total pos. 4 subs must be multiple of Focus per sub", "scopefocus");
                         numericUpDown38.Value = 1;
+                        return; //1-18-17
                     }
                     else
                         SubsPerFocus[5] = (int)numericUpDown29.Value / (int)FocusGroup[5];
