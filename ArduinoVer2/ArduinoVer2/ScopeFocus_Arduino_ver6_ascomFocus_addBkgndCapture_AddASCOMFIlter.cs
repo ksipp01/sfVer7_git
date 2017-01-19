@@ -3456,7 +3456,7 @@ namespace Pololu.Usc.ScopeFocus
                      */
                     numericUpDown6.Value = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     tabPage1.Enabled = true;
-                    groupBox17.Enabled = true;
+                    groupBox7.Enabled = true;
 
                 }
                 else
@@ -3468,7 +3468,7 @@ namespace Pololu.Usc.ScopeFocus
                     Log(Pololu.Usc.ScopeFocus.Focus.DevId2 + " disconnected");
                     Pololu.Usc.ScopeFocus.Focus.DevId2 = "";
                     tabPage1.Enabled = false;
-                    groupBox17.Enabled = false;
+                    groupBox7.Enabled = false;
                 }
             }
             catch (Exception ex)
