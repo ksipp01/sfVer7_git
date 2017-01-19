@@ -439,7 +439,7 @@ namespace Pololu.Usc.ScopeFocus
         private static bool solveRequested = false;
 
 
-        private bool ClipboardListen { get; set; }
+      //  private bool ClipboardListen { get; set; }
         //  int EnteredPID;
         //   double EnteredSlopeUP;
         //   double EnteredSlopeDWN;
@@ -2781,7 +2781,7 @@ namespace Pololu.Usc.ScopeFocus
                 disableCloseWarning.Checked = WindowsFormsApplication1.Properties.Settings.Default.disableCloseWArning;
                 MinNebSize = WindowsFormsApplication1.Properties.Settings.Default.MinNebSize;
                 textBox64.Text = MinNebSize.ToString();
-                ClipboardListen = false;
+             //   ClipboardListen = false;
                 //5 lines below for path2 settings
                 GlobalVariables.Path2 = WindowsFormsApplication1.Properties.Settings.Default.path.ToString();
                 textBox11.Text = GlobalVariables.Path2.ToString();
@@ -4450,7 +4450,7 @@ namespace Pololu.Usc.ScopeFocus
                     intFilterPos = 1;
                 else
                 intFilterPos++;
-                if (!ClipboardListen)
+             //   if (!ClipboardListen)
                 NebListenStart(Handles.NebhWnd, SocketPort);
 
                 Thread.Sleep(1000);
@@ -4935,7 +4935,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (UseClipBoard.Checked)
                 {
                     Clipboard.SetText("//NEB Listen 0");
-                    ClipboardListen = false;
+                  //  ClipboardListen = false;
                 }
 
                 return;
@@ -6475,7 +6475,7 @@ namespace Pololu.Usc.ScopeFocus
                                        */
                                        //  if (NebListenOn == false)
                                        //  if (clientSocket.Connected == false)// added this line 7-1-14
-               if (!ClipboardListen)
+           //    if (!ClipboardListen)
                 NebListenStart(Handles.NebhWnd, SocketPort);
 
                 //   }
@@ -8144,11 +8144,11 @@ namespace Pololu.Usc.ScopeFocus
                 if (UseClipBoard.Checked) // 11-8-16
                 {
                     //  int i = 0;
-                    if (!ClipboardListen)
-                    {
+                  //  if (!ClipboardListen)
+                  //  {
                         NebListenStart(Handles.NebhWnd, SocketPort);
                         delay(1);
-                    }
+                 //   }
                     Clipboard.Clear();
                     msdelay(500);
                     //   Clipboard.SetText("//NEB SetDuration " + MetricTime);
@@ -8270,11 +8270,11 @@ namespace Pololu.Usc.ScopeFocus
                 if (UseClipBoard.Checked) // 11-8-16
                 {
                     //  int i = 0;
-                    if (!ClipboardListen)
-                    {
+                //    if (!ClipboardListen)
+              //      {
                         NebListenStart(Handles.NebhWnd, SocketPort);
                         delay(1);
-                    }
+               //     }
                     Clipboard.Clear();
                     msdelay(500);
                     //  Clipboard.SetText("//NEB SetDuration 5");
@@ -9129,7 +9129,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void SolveCapture()
         {
-            if (!ClipboardListen)
+          //  if (!ClipboardListen)
             NebListenStart(Handles.NebhWnd, SocketPort);
 
             //   }
@@ -9767,11 +9767,11 @@ namespace Pololu.Usc.ScopeFocus
             }
             else // 11-8-16
             {
-                if (!ClipboardListen)
-                {
+              //  if (!ClipboardListen)
+              //  {
                     NebListenStart(Handles.NebhWnd, SocketPort);
                     delay(1);
-                }
+              //  }
                 Clipboard.Clear();
                 msdelay(500);
                 Clipboard.SetDataObject("//NEB SetDuration " + dur.ToString(), false, 3, 500);
@@ -10488,7 +10488,7 @@ namespace Pololu.Usc.ScopeFocus
                                 return;
                             }
                         }
-                        ClipboardListen = true;
+                      //  ClipboardListen = true;
                     }
 
                 }
@@ -13092,6 +13092,7 @@ namespace Pololu.Usc.ScopeFocus
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
             if (result == DialogResult.OK)
             {
+              //  ClipboardListen = false;
                 backgroundWorker2.CancelAsync();// added 1-23-13
 
 
@@ -16638,7 +16639,7 @@ namespace Pololu.Usc.ScopeFocus
             }
 
             // int nn;
-            FileLog2("fileSystemWatcher3 changed");
+            FileLog("fileSystemWatcher3 changed");
             textBox41.Refresh();//dual scope status textbox
             textBox41.Clear();
 
@@ -19220,7 +19221,7 @@ namespace Pololu.Usc.ScopeFocus
             if (!UseClipBoard.Checked)
             {
                 Clipboard.SetText("//NEB Listen 0");
-                ClipboardListen = false;
+             //   ClipboardListen = false;
             }
 
         }
