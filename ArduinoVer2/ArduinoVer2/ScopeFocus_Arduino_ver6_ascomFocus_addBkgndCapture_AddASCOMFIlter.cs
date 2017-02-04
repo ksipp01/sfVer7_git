@@ -1447,7 +1447,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         testMetricHFR = GetMetric(metricpath, roundto);
                         textBox25.Text = testMetricHFR.ToString();
-                        //  Log("MetricHFR" + testMetricHFR.ToString());
+                         // Log("MetricHFR" + testMetricHFR.ToString());
                     }
                     catch (Exception e)
                     {
@@ -2369,6 +2369,8 @@ namespace Pololu.Usc.ScopeFocus
             double m2 = (Yc - Yd) / (Xc - Xd);
             return (((m1 * Xa) - (m2 * Xc) + Yc - Ya) / (m1 - m2));
         }
+        bool gotoFocusDitherWait = false;
+
 
         //gotofocushere
         //goes to near focus point uses std dev routine, takes 'Course N' exposures, calculates best focus and goes there
@@ -2482,7 +2484,7 @@ namespace Pololu.Usc.ScopeFocus
                 {
 
                     fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
-                    FileLog2("FSW1 *.fit enabled ");
+                    FileLog2("FSW1 *.fit enabled fsnumber=3");
                     fileSystemWatcher1.EnableRaisingEvents = true;
                     //   if (clientSocket.Connected == false)
                     //   {
@@ -2492,6 +2494,25 @@ namespace Pololu.Usc.ScopeFocus
                     if (FineFocusAbort) // 1-14-17
                         FineFocusAbort = false;
 
+
+                    // 2-3-17 add
+                    Capturing = true;
+                    while (Capturing)
+                    {
+                        // wait for sequence done in Neb status bar before proceeding....
+                        MonitorNebStatus();
+                        delay(1);
+                    }
+
+                    //wait here for dither to complete ???? 2-3-17
+                    //while (gotoFocusDitherWait)
+                    //{
+                    //    MonitorNebStatus();
+                    //    toolStripStatusLabel1.Text = "Waiting for Dither";
+                    //    msdelay(200);
+                    //}
+                    Log("Dither Complete");
+                    toolStripStatusLabel1.Text = "Dither Complete";
                     MetricCapture();
                 }
                 else
@@ -5210,8 +5231,55 @@ namespace Pololu.Usc.ScopeFocus
                     subsperfilter = SubsPerFocus[0];
                     FilterFocusGroupCurrent++;
                     Nebname = comboBox2.Text + "_" + FilterFocusGroupCurrent.ToString();
-                    FilterFocus();
 
+
+                    // ******(not waiting ofr smaplemetric to complete so the measured HFR is not correct.  need background?
+                    //  *** thread sleep waiting for textbox to be fill just hangs.....
+
+                    // ***************try usgin the NEb status bar wait routine....that should work !!!
+
+
+                    if (checkBox27.Checked)
+                    {
+                        Log("Checking if refocus needed");
+                        FileLog2("Checking if refocus needed");
+                        toolStripStatusLabel1.BackColor = Color.Yellow;
+                        toolStripStatusLabel1.Text = "Checking focus";
+
+                        ClearMetricFiles();
+                        SampleMetric();
+                        Capturing = true;
+                        while (Capturing)
+                        {
+                            MonitorNebStatus();
+                            delay(1);
+                        }
+
+                        if (Convert.ToInt16(textBox25.Text) < baselineHFR * (1 + HFRtol))
+                        {
+                            Log("HFR within tolerance - no refocus needed");
+                            focusSampleComplete = false; // added 11-12-16
+                            fsNumber = 4;
+                            fileSystemWatcher1.Filter = "*.fit";
+                            fileSystemWatcher1.EnableRaisingEvents = true; // 1-13-17 was  below
+                                                                           //  Log("FSW4 - enabled, NebCapture started from Filtersequence()");
+                            FileLog2("FSW4 - enabled, NebCapture started from Filtersequence()");
+                            //                    fileSystemWatcher4.EnableRaisingEvents = true;//move this to last 3-4 from under abort/sleep
+                            NebCapture();
+
+                            return;
+
+                        }
+                        else
+                        {
+                            Log("HFR tolerance not met - Refocusing");
+                            FilterFocus();
+                        }
+                    }
+                    else
+                    { 
+                        FilterFocus();
+                    }
                     //    NebCapture();  //remd fixes prob 8-26-13
 
                     return;//may not be needed???
@@ -7152,25 +7220,45 @@ namespace Pololu.Usc.ScopeFocus
                 string[] captions = sh.Captions;
                 if (captions[0] != "")
                 {
+
+                    //if (captions[0].Substring(0, 8) == "Returned")
+                    //{
+                    //    if (_gotoFocusOn)
+                    //    {
+                    //        gotoFocusDitherWait = true;
+                            
+                    //    }
+                    //}
+
+
                     //if (captions[0].Contains("..."))
                     //{
                     //    MessageBox.Show("NebStatusMonitor error - try increasing the width of the Nebulosity window");
                     //}
-                   // FileLog2("Cap[0]: " + captions[0] + "    Cap[1]: " + captions[1]);
+                    // FileLog2("Cap[0]: " + captions[0] + "    Cap[1]: " + captions[1]);
                     if (UseClipBoard.Checked)
                     {
                         if (captions[0] == "Script done")
                         {
+                           
                             Capturing = false;
                             backgroundWorker2.CancelAsync();
+                            
                         }
                     }
                     else
                     {
                         if (captions[0] == "Sequence done")
                         {
+                            //if ((_gotoFocusOn) && (gotoFocusDitherWait))
+                            //{
+                            //    gotoFocusDitherWait = false;
+                                
+                            //}
                             Capturing = false;
                             backgroundWorker2.CancelAsync();
+                          
+                            
                         }
                     }
                     // if (captions[0].Length > 8) 11-8-16
@@ -7183,8 +7271,10 @@ namespace Pololu.Usc.ScopeFocus
                         {
                             if (captions[0].Substring(0, 7) == "Running")
                             {
+                                
                                 Capturing = false;
                                 backgroundWorker2.CancelAsync();
+                               
                             }
                         }
 
@@ -7197,6 +7287,7 @@ namespace Pololu.Usc.ScopeFocus
                         {
                             toolStripStatusLabel1.Text = "Waiting for Dither";
                             //toolStripStatusLabel1.BackColor = Color.Yellow;
+                            
                         }
                     }
                     //11-8-16 try this
@@ -7221,17 +7312,19 @@ namespace Pololu.Usc.ScopeFocus
                             GlobalVariables.CapTotal = Convert.ToInt16(captions[0].Substring(markerSlash + 1, lengthTotal));
                             //  int capTotal = captions[0].Substring()
                             toolStripStatusLabel1.Text = captions[3] + " " + GlobalVariables.CapCurrent.ToString() + "/" + GlobalVariables.CapTotal.ToString();
-                            Capturing = true; // ***  added 11-20-16 for timer2_tick and idle monitor this could screw things up
+                           
+                            // Capturing = true; // ***  added 11-20-16 for timer2_tick and idle monitor this could screw things up
                         }
                     }
-                    
+                  
                 }
+               
 
             }
             catch (Exception e)
             {
                 Log("NebStatusMonitor error - try increasing the width of the Nebulosity window");
-            //    FileLog("NebStatusMonitor error " + e.ToString());
+                //    FileLog("NebStatusMonitor error " + e.ToString());
                 FileLog2("NebStatusMonitor error " + e.ToString());
             }
         }
@@ -9861,6 +9954,10 @@ namespace Pololu.Usc.ScopeFocus
                 }
          */
         //filterfocushere
+        int baselineHFR = 0;
+        bool MonitorOn = false;
+        bool MonitorTolMet = false;
+        double HFRtol;
         private void FilterFocus()
         {
             //  System.Object lockThis = new System.Object();
@@ -9868,7 +9965,49 @@ namespace Pololu.Usc.ScopeFocus
 
             try
             {
-                FileLog2("filterfocus called");
+
+                //if (checkBox27.Checked)
+                //{
+
+
+                //    //  is this first time
+                //    if (MonitorOn == false)
+                //    {
+                //        MonitorOn = true;
+                //        Log("Checking Full Frame Metric prior to re-focus");
+                //        FileLog2("Checking Full Frame Metric prior to re-focus");
+                //        baselineHFR = Convert.ToInt16(textBox25.Text); // use last one as baseline before replaced in SampleMetric();
+                //                                                       //  int tol = Convert.ToInt16(textBox63.Text) / 100;
+                //        ClearMetricFiles();
+                //        textBox25.Text = "";
+                //        SampleMetric();
+                //        return;
+                //    }
+
+                //    else
+                //    {
+                //        if (MonitorTolMet)
+                //        {
+
+                //            Log("Current Focus is within tolerance");
+                //            FileLog2("Current Focus is within tolerance");
+                //            //MonitorOn = false;
+                //            //MonitorTolMet = false;
+                //            return;
+                //        }
+                //        Log("Current Focus is not within tolerance  - refocusing");
+                //        FileLog2("Current Focus is not within tolerance  - refocusing");
+                //        //if (Convert.ToUInt16(textBox25.Text) < baselineHFR * (1 + tol))
+                //        //{
+                //        //    Log("Current Focus is within tolerance");
+                //        //    FileLog2("Current Focus is within tolerance");
+                //        //    return;
+                //        //}
+                //        MonitorOn = false;
+                //        MonitorTolMet = false;
+                //    }
+                //}
+                    FileLog2("filterfocus called");
                 if ((IsServer()) & (checkBox8.Checked == true))
                     SlaveFocus();
                 Log("Focusing for " + Filtertext);
@@ -14240,6 +14379,8 @@ namespace Pololu.Usc.ScopeFocus
         {
             EquipRefresh();
             ClearMetricFiles();
+            if (checkBox22.Checked)
+                checkBox10.Checked = true;
             //this stuff not used w/ full frame metric
             //   checkBox10.Checked = false;  rem'd 8-26-13.  this should stay checked o/w will try to slew to target when not needed.
             //   checkBox10.Enabled = false;
@@ -16478,8 +16619,25 @@ namespace Pololu.Usc.ScopeFocus
         private int fsNumber;
 
 
+
+        //private bool FocusToleranceMet()
+        //{
+        //    if (!checkBox27.Checked)
+        //        return false;
+        //    else
+        //    {
+               
+
+        //        return true;
+        //    }
+
+        //}
+
+
+        
         private void FSW5()
         {
+           
             if (aborted)
             {
                 fileSystemWatcher1.EnableRaisingEvents = false; //1-12-17 // 1-13-17 was 5
@@ -16513,6 +16671,19 @@ namespace Pololu.Usc.ScopeFocus
                     textBox25.Text = AvgMetric.ToString();
                     Log("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
                     FileLog2("Avg Metric HFR= " + AvgMetric.ToString() + " N =  " + metricN.ToString());
+
+                    //if ((checkBox27.Checked) && (MonitorOn))
+                    //{
+                    //    if (Convert.ToUInt16(textBox25.Text) < baselineHFR * (1 + tol))
+                    //    {
+                    //        MonitorTolMet = true;  // no need to refocus                         
+                    //    }
+                    //    else                        
+                    //        MonitorTolMet = false;
+
+                    //    FilterFocus();
+                    //}
+
 
                     if (UseClipBoard.Checked)
                     {
@@ -16558,6 +16729,15 @@ namespace Pololu.Usc.ScopeFocus
                         button11.PerformClick();
                     if ((autoMetricVcurve == true) & (FilterFocusOn == true))
                         gotoFocus();
+                    if (checkBox27.Checked)
+                    {
+                        if (baselineHFR == 0)
+                        {
+                            baselineHFR = Convert.ToInt16(textBox25.Text);
+                            HFRtol = Convert.ToDouble(textBox63.Text) / 100;
+                            Log("BaselineHFR = " + baselineHFR.ToString() + "  HFR tolerance set to " + (HFRtol * 100).ToString());
+                        }
+                    }
                     return;
                 }
 
@@ -16568,8 +16748,6 @@ namespace Pololu.Usc.ScopeFocus
                 MetricCapture();
             }
            
-
-
 
         }
 
@@ -16786,12 +16964,12 @@ namespace Pololu.Usc.ScopeFocus
                             // Data d = new Data();
                             FillData();
                             GetAvg();
-
+                            textBox25.Text = avg.ToString();
                             //  EnteredPID = Convert.ToInt32(textBox12.Text);
                             //    EnteredSlopeUP = Convert.ToDouble(textBox10.Text);
                             //      textBox14.Text = avg.ToString();
                             BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
-
+                            
                             //3-2-16
                             Log("Calculated focus point = " + Math.Round(BestPos).ToString());
                             FileLog2("Calculated focus point = " + Math.Round(BestPos).ToString());
@@ -17083,7 +17261,7 @@ namespace Pololu.Usc.ScopeFocus
 
             if (!Simulator())
             {
-                //check for improvement.... 9-9-15
+                //go to the focus position and check for improvement.... 9-9-15
                 if (HFRtestON == true)
                 {
                     int nnn;
@@ -17125,7 +17303,7 @@ namespace Pololu.Usc.ScopeFocus
 
                         Log("Test HFR = " + test.ToString() + " versus average sample HFR = " + avg.ToString());
                         FileLog2("Test HFR = " + test.ToString() + " versus average sample HFR = " + avg.ToString());
-                        if (test > avg)
+                        if (test > avg) 
                         {
                             if ((redo == 1) & (checkBox22.Checked == false))  //if single star fails twice can try metric.    
                             {
@@ -17262,7 +17440,13 @@ namespace Pololu.Usc.ScopeFocus
                         redo = 0;
                         posMin = (int)BestPos;  //   10-13-16  posmin as last good focus position in case next round of focus fails
                         fileSystemWatcher1.EnableRaisingEvents = false; // 1-13-17 was 3   // added 9-9-15 due to testing above. 
+                        if (checkBox27.Checked) // 1-23-17 // **** this is untested since simulator doesn't recheck focus.  
+                        {
+                            Log("BaselinHFR reset to current value of " + test.ToString());
+                            FileLog2("BaselinHFR reset to current value of " + test.ToString());
+                            baselineHFR = test; // this compensates for focus drift.....
 
+                        }
                         // try add 10-13-16
                         //FilterFocusOn = false;
                         //if (!IsSlave())
@@ -17764,11 +17948,20 @@ namespace Pololu.Usc.ScopeFocus
                         return;
                     else
                     {
+                        textBox25.Clear();
                         SampleMetric();
                         //  Thread.Sleep(Convert.ToInt16(textBox43.Text) * 2 *(int)numericUpDown21.Value); //wait twice the exposure length x N
                         //    baselineMetricHFR = Convert.ToInt32(textBox25.Text);
+                        //while (textBox25.Text == "")
+                        //    Thread.Sleep(200);
                     }
-
+                }
+                else
+                {
+                    baselineHFR = Convert.ToInt16(textBox25.Text);
+                    HFRtol = Convert.ToDouble(textBox63.Text) / 100;
+                    Log("BaselineHFR set to " + baselineHFR.ToString() + "   HFRTolerance set to " + (HFRtol * 100).ToString());
+                    FileLog2("BaselineHFR set to " + baselineHFR.ToString() + "   HFRTolerance set to " + (HFRtol * 100).ToString());
 
                 }
 
