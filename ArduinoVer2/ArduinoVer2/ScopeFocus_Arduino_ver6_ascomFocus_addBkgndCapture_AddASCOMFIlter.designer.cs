@@ -427,6 +427,7 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.button10 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown21)).BeginInit();
@@ -4449,6 +4450,7 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.button10);
             this.tabPage3.Controls.Add(this.disableCloseWarning);
             this.tabPage3.Controls.Add(this.textBox64);
             this.tabPage3.Controls.Add(this.button5);
@@ -4691,6 +4693,16 @@
             this.fileSystemWatcher1.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher1.SynchronizingObject = this;
             this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(575, 30);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(101, 23);
+            this.button10.TabIndex = 16;
+            this.button10.Text = "View Header";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // MainWindow
             // 
@@ -5223,6 +5235,7 @@
         private System.Windows.Forms.TextBox textBox64;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.CheckBox disableCloseWarning;
+        private System.Windows.Forms.Button button10;
     }
 }
 

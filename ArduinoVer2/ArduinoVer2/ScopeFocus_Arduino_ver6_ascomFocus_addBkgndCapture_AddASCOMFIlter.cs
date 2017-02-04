@@ -15533,13 +15533,16 @@ namespace Pololu.Usc.ScopeFocus
 
                     if (usingASCOM == false)
                     {
-                        MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
-                        return;
+                        // MessageBox.Show("must be connected to ASCOM telescope to use, aborting");
+                        Log("No mount connected, plate solve only");
+                        //  return;
                     }
+                    else
+                    {
 
-
-                    CurrentRA = Mount.scope.RightAscension;
-                    CurrentDEC = Mount.scope.Declination;
+                        CurrentRA = Mount.scope.RightAscension;
+                        CurrentDEC = Mount.scope.Declination;
+                    }
                     //    var destDir = @"c:\cygwin\home\astro";
                     //    var destDir = @"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\bin"; // 10-22-16
                     //   var destDir = @"%localappdata%\cygwin_ansvr\bin"; // 10-22-16
@@ -15880,7 +15883,7 @@ namespace Pololu.Usc.ScopeFocus
                 //    }
                 //}
 
-                if ((!SettingFocusSolve) && (!SettingTargetSolve))
+                if ((!SettingFocusSolve) && (!SettingTargetSolve) && (usingASCOM))
                 {
                     string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString();
                     DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew/Set", "Snyc", "Ignore");
@@ -16640,7 +16643,7 @@ namespace Pololu.Usc.ScopeFocus
 
                         foreach (var files in new DirectoryInfo(destDir).GetFiles("*.*"))
                         {
-                            if (files.Name != "tablist.exe")
+                            if ((files.Name != "tablist.exe") || (files.Name != "wcsinfo.exe"))
                                 files.Delete();//empty the directory
                         }
                         //  File.Copy(solveImage, Path.Combine(destDir, Path.GetFileName(solveImage)));
@@ -19654,6 +19657,147 @@ namespace Pololu.Usc.ScopeFocus
                 if (checkBox5.Checked == true)
                     numericUpDown19.Value = numericUpDown30.Value;
             }
+        }
+        string orientation;
+        private void button10_Click(object sender, EventArgs e)
+        {
+            string file;
+            string path;
+            //if (!File.Exists((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp\" + "wcsinfo.exe")))
+            //{
+            //    MessageBox.Show("you must place wcsinfo.exe in " + @"c:\users\'username'\appdata\local\cygwin_ansvr\tmp");
+            //    return;
+            //}
+
+            openFileDialog2.Filter = "All files (*.*)|*.*";
+            //     DialogResult result = openFileDialog2.ShowDialog();
+            if (openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+
+                file = openFileDialog2.FileName.ToString();
+                path = Path.GetDirectoryName(file);
+                if (Path.GetDirectoryName(file) != (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp"))
+                    File.Copy(file, (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp" + Path.GetFileName(file)), true);
+
+
+
+                // *****  need to change to wcsinfo
+           //     tablistViewer(Path.GetFileName(file));
+                //  cramersRule();
+                Log("tableWCS.txt saved to " + (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr"));
+            }
+            else
+                return;
+
+
+
+
+            // change this for wcsinfo.......
+
+            // this is tablistviewer
+            //  string commandXY = "./wcsinfo " + file;
+            //   string commandXY = "./wcsinfo test.wcs";
+            string commandXY = "./wcsinfo " + Path.GetFileName(file);
+
+            //    string commandXY = "./wcsinfo C:\\Users\\ksipp_000\\AppData\\Local\\cygwin_ansvr\\tmp\\test.wcs"; // doesn't work w/ full path
+
+            //      tabList(commandXY);
+
+
+            // this is tablist()
+            Process proc = new Process();
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.CreateNoWindow = true;
+            //   proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe"; // remd 10-22-16
+            //  proc.StartInfo.FileName = @"\cygwin_ansvr\bin\mintty.exe";
+            // @"c:/cygwin/bin/mintty.exe";
+            string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
+            proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
+            proc.StartInfo.Arguments = "--log /tableWCS.txt -i /Cygwin-Terminal.ico -";
+            //creates text file of the cygwin terminal.  
+            //parse the needed info from the txt file
+            proc.Start();
+
+            StreamWriter sw = proc.StandardInput;
+            StreamReader reader = proc.StandardOutput;
+            //  StreamReader sr = proc.StandardOutput;
+            StreamReader se = proc.StandardError;
+            //C:\cygwin\lib\astrometry\bin
+            sw.AutoFlush = true;
+            Thread.Sleep(2000);
+            //    string command = "./tablist " +  "solve.xyls";
+            //     SendKeys.Send("cd" + " " + "/home/astro"); // remd 10-22-16
+            SendKeys.Send("cd" + " " + "/tmp");
+            Thread.Sleep(200);
+            SendKeys.Send("~");
+            Thread.Sleep(200);
+            // SendKeys.Send("solve-field" + " " + "--sigma" + " " + "100" + " " + "-L" + " " + "0.5" + " " + "-H" + " " + "2" + " " + Path.GetFileName(solveImage));
+            SendKeys.Send(commandXY);
+            Thread.Sleep(200);
+            SendKeys.SendWait("~");
+            SendKeys.Send("exit");
+            SendKeys.Send("~");
+            sw.Close();
+            se.Close();
+            reader.Dispose();
+            reader.Close();
+            proc.WaitForExit();
+            proc.Close();
+
+
+            // read the txt file
+
+            StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt"); // 10-22-16
+
+
+            string line;
+            // while ((line = reader.ReadToEnd()) != null) {
+            line = reader2.ReadToEnd();
+            string[] items = line.Split('\n');
+            string FieldLine = null;
+            foreach (string item in items)
+            {
+                //try parsing a different line in .txt file
+
+             //   if (item.EndsWith("pix.\r"))
+                if ((item.StartsWith("orientation")) &&(!item.StartsWith("orientation_center")))
+                {
+
+                    //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
+
+                  //  FieldLine = item;
+                    Log(item);
+                  //  orientation = item.Substring(12, item.Length-2);
+                    orientation = item.Substring(12, item.Length -12);
+                    //     int FirstComma = item.IndexOf(","); 
+                    //int SecondComma = IndexOfSecond(item, ",");
+                    //int Start = item.IndexOf("(");
+                    //int End = item.IndexOf(")");
+                    ////   int EqualsIndex = FieldLine.IndexOf(@"=");
+                    //string ParsedRA = "";
+                    //string ParsedDEC = "";
+                    //int RAend = SecondComma - Start;
+                    //int DECend = End - SecondComma;
+                    //ParsedRA = FieldLine.Substring(Start + 1, RAend);
+                    //ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
+
+                    //ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
+                    //ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
+
+                    //Log("Parsed DEC = " + ParsedDEC);
+                    //DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
+                    //RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
+                    Log("Orientation = " + orientation);
+
+                }
+            }
+            reader.Close();
+
+
+
         }
 
         //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   
