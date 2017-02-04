@@ -2496,11 +2496,12 @@ namespace Pololu.Usc.ScopeFocus
 
 
                     // 2-3-17 add
-                    Capturing = true;
+                   // Capturing = true;
                     while (Capturing)
-                    {
-                        // wait for sequence done in Neb status bar before proceeding....
-                        MonitorNebStatus();
+                    {//added 2-3-17
+                     // wait for sequence done in Neb status bar before proceeding....
+                     //MonitorNebStatus();
+                        toolStripStatusLabel1.Text = "Waiting for Dither";
                         delay(1);
                     }
 
@@ -2517,6 +2518,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
+
+                    while (Capturing)
+                    {//added 2-3-17
+                     // wait for sequence done in Neb status bar before proceeding....
+                     //MonitorNebStatus();
+                        toolStripStatusLabel1.Text = "Waiting for Dither";
+                        delay(1);
+                    }
+
                     fileSystemWatcher1.Filter = "*.bmp"; // 1-13-17 was 3
                     FileLog2("FSW1 *.bmp enabled");
                     fileSystemWatcher1.EnableRaisingEvents = true;
@@ -2954,18 +2964,18 @@ namespace Pololu.Usc.ScopeFocus
 
                 EquipRefresh();
 
-                // auto connect to PHD
-                string result2 = ph.Connect();
-                if (result2 != "Failed")
-                {
-                    textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
-                    button36.BackColor = Color.Lime;
-                    button36.Text = "DisCnct";
-                    Log("Connected to PHD2 version " + result2);
-                    FileLog2("Connected to PHD2 version " + result2);
+                // auto connect to PHD   ***** remd 2-4-17  **** don't like autoconnect.  takes over PHD when might not be ready for it
+                //string result2 = ph.Connect();
+                //if (result2 != "Failed")
+                //{
+                //    textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
+                //    button36.BackColor = Color.Lime;
+                //    button36.Text = "DisCnct";
+                //    Log("Connected to PHD2 version " + result2);
+                //    FileLog2("Connected to PHD2 version " + result2);
 
 
-                }
+                //}
                 //keep stuff disable until connected via ascom
              // 1-17-17 enable w/ pertinent connect button, then disable if disconnected
                 tabPage1.Enabled = false;
@@ -6920,8 +6930,16 @@ namespace Pololu.Usc.ScopeFocus
 
                 //don't want this for slave cannot hit abort if using
                 // ***********remd 6-6
-                if (FilterFocusOn == false)
-                {
+
+
+
+//remd 2-4-17
+                //if (FilterFocusOn == false)
+                //{
+
+
+
+
                     /*//  *****  this was remd 6-21  seems to work ok w/out.  minimal testing done
                     if (IsSlave())
                     {
@@ -6942,7 +6960,10 @@ namespace Pololu.Usc.ScopeFocus
                     //************** 3-8-13 for meridian flip...cant monitor anyting w/ this while statement is going ******
                     //************  may need to change so sytemfilewatch4 monitors subs and counts rathing than waiting for neb status change ****                   
                     //  List<string> lastKnown = new List<string>();
-                    string[] lastKnown = System.IO.Directory.GetFiles(GlobalVariables.Path2, "*.fit", System.IO.SearchOption.TopDirectoryOnly);
+                    
+                    //remd 2-4-17
+                //    string[] lastKnown = System.IO.Directory.GetFiles(GlobalVariables.Path2, "*.fit", System.IO.SearchOption.TopDirectoryOnly);
+          
                     //  foreach (string file in files)
                     //    Log("files at start of capture" + file);
 
@@ -7094,7 +7115,7 @@ namespace Pololu.Usc.ScopeFocus
                     //     }  /***** remd 11-23-13
                     // }
 
-                }
+            //   }
 
                 if (!UseClipBoard.Checked) // 11-8-16
                     serverStream.Flush();
@@ -7208,7 +7229,7 @@ namespace Pololu.Usc.ScopeFocus
 
         //monitornebstatushere
 
-        private void MonitorNebStatus()
+        private string MonitorNebStatus()
         {
             try
             {
@@ -7318,7 +7339,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                   
                 }
-               
+                return captions[0];
 
             }
             catch (Exception e)
@@ -7326,7 +7347,9 @@ namespace Pololu.Usc.ScopeFocus
                 Log("NebStatusMonitor error - try increasing the width of the Nebulosity window");
                 //    FileLog("NebStatusMonitor error " + e.ToString());
                 FileLog2("NebStatusMonitor error " + e.ToString());
+                return "NebStatusMonitor Error";
             }
+
         }
         //******** add 3-8-13  *****
         /*
@@ -7545,7 +7568,35 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-                 ResizeNebWindow();  // remd 1-15-17  done on form load, ***1-17-17, unremd....should check prior to sequence start
+
+                // 2-4-17 add PHD connect here
+                if (button36.Text == "Connect")
+                {
+                    string result = ph.Connect();
+                    if (result != "Failed")
+                    {
+                        textBoxPHDstatus.Text = "Connect Ver " + ph.Connect();
+                        button36.BackColor = Color.Lime;
+                        button36.Text = "DisCnct";
+                        Log("Connected to PHD2 version " + result);
+                        FileLog("Connected to PHD2 version " + result);
+
+
+                    }
+                    else
+                    {
+                        textBoxPHDstatus.Text = "No Connection";
+                        button36.BackColor = Color.WhiteSmoke;
+                        button36.Text = "Connect";
+                        Log("PHD2 Connection failed");
+
+                    }
+                }
+
+
+
+
+                ResizeNebWindow();  // remd 1-15-17  done on form load, ***1-17-17, unremd....should check prior to sequence start
                 idleCount = 0;
                 FocusGroupCalc();  //redo in case restarting a previously aborted sequence.   11-11-16
                 FileLog2("Sequence Go");
@@ -14820,7 +14871,8 @@ namespace Pololu.Usc.ScopeFocus
                 //  NebCapture();
                 while (Capturing == true)
                 {
-                    MonitorNebStatus();
+                    //2-4-17
+                    FileLog2("NebStatus: " + MonitorNebStatus());
                     msdelay(750);
 
                 }
@@ -16924,7 +16976,7 @@ namespace Pololu.Usc.ScopeFocus
                         //  textBox9.Text = stdev.ToString(); // remd 10-25-16
                         //     textBox14.Text = avg.ToString();
                         Log("Goto Focus :\t  N " + (vProgress + 1).ToString() + "\tHFR" + abc[vProgress].ToString() + "\t  Avg " + avg.ToString() + "\t  StdDev " + stdev.ToString());
-                        FileLog2("Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString());
+                        FileLog2("Goto Focus" + "\t  " + "CurrentHFR: "  + abc[vProgress].ToString() + "\t  " + "AvgHFR: " +avg.ToString() + "\t" + "N: " + (vProgress + 1).ToString() + "\t" + "StdDev:" +stdev.ToString());
                         //string strLogText = "Goto Focus" + "\t  " + abc[vProgress].ToString() + "\t  " + avg.ToString() + "\t" + (vProgress + 1).ToString() + "\t" + stdev.ToString(); //changed 7-25-14
                         //string path = textBox11.Text.ToString();
                         //string fullpath = path + @"\log.txt";
@@ -16971,8 +17023,8 @@ namespace Pololu.Usc.ScopeFocus
                             BestPos = count - (avg / _enteredSlopeUP) + (_enteredPID / 2);
                             
                             //3-2-16
-                            Log("Calculated focus point = " + Math.Round(BestPos).ToString());
-                            FileLog2("Calculated focus point = " + Math.Round(BestPos).ToString());
+                            Log("Calculated focus point = " + Math.Round(BestPos,0).ToString());
+                            FileLog2("Calculated focus point = " + Math.Round(BestPos, 0).ToString());
                             if ((int)BestPos < 0 || (int)BestPos > travel)
                             {
                                 calcRedo++;
@@ -17096,8 +17148,8 @@ namespace Pololu.Usc.ScopeFocus
                             //    EnteredSlopeDWN = Convert.ToDouble(textBox3.Text);
                             // textBox14.Text = avg.ToString();
                             BestPos = count - (avg / _enteredSlopeDWN) - (_enteredPID / 2);
-                            Log("Calculated focus point = " + BestPos.ToString());
-                            FileLog2("Calculated focus point = " + BestPos.ToString());
+                            Log("Calculated focus point = " + Math.Round(BestPos, 0).ToString());
+                            FileLog2("Calculated focus point = " + Math.Round(BestPos,0).ToString());
                             //3-2-16
                             if ((int)BestPos < 0 || (int)BestPos > travel)
                             {
@@ -17170,8 +17222,8 @@ namespace Pololu.Usc.ScopeFocus
                             HFRtestON = true;
 
                             _gotoFocusOn = false;
-                            Log("Goto Focus Position: " + ((int)BestPos).ToString());
-                            FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
+                       //     Log("Goto Focus Position: " + ((int)BestPos).ToString());
+                       //     FileLog2("Goto Focus Position: " + ((int)BestPos).ToString());
                             textBox4.Text = ((int)BestPos).ToString();
                             // end addt
 
@@ -17218,7 +17270,9 @@ namespace Pololu.Usc.ScopeFocus
                         //    clientSocket.Close();
                         //    HFRtestON = true; remd 10 - 13 - 16 does nothing
                         //}
-                        FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_"); //7-25-14
+
+                        //remd 2-4-17
+                     //   FileLog2("Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_"); //7-25-14
                         string strLogText;
                         strLogText = "Goto Focus Position " + ((int)BestPos).ToString() + " Current Filter_";
 
