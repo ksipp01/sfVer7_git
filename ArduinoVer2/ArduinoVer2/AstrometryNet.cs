@@ -497,8 +497,8 @@ namespace Pololu.Usc.ScopeFocus
 
                         if ((raCenter != 0) || (decCenter != 0))
                         {
-                           Log("Calibration data success:  RAcenter: " + raCenter/15 + "    DECcenter: " + decCenter);
-                           FileLog2("Calibration data:  RA: " + raCenter/15 + "    DEC: " + decCenter + "    " + DateTime.Now);
+                           Log("Calibration data success:  RAcenter: " + raCenter/15 + "    DECcenter: " + decCenter + "    Orientation: " + orientation);
+                           FileLog2("Calibration data:  RA: " + raCenter/15 + "    DEC: " + decCenter + "    " + "    Orientation: " + orientation + DateTime.Now);
                           //  if (File.Exists(GlobalVariables.Path2 + "\\axy.fits"))
                             //    File.Delete(GlobalVariables.Path2 + "\\axy.fits");
                           //  if (File.Exists(GlobalVariables.Path2 + "\\rdls.fits"))
