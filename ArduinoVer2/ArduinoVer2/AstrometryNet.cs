@@ -776,7 +776,7 @@ namespace Pololu.Usc.ScopeFocus
            // Fits f = new Fits(GlobalVariables.Path2 + "\\corr.fits"); // original
            Fits f = new Fits(pathToCorr);
             BinaryTableHDU h = (BinaryTableHDU)f.GetHDU(1);
-
+            
             //   Object[] row23 = h.GetRow(23);
             Object col_x = h.GetColumn(0);
             Object col_y = h.GetColumn(1);

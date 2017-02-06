@@ -19706,6 +19706,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (checkBox5.Checked == true)
                     numericUpDown19.Value = numericUpDown30.Value;
             }
+
         }
 
 
@@ -19857,56 +19858,65 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private double GetOrientation (string file)
+        private double GetOrientation(string file)
         {
-          //  string pathToCorr = "";
-            //if (GlobalVariables.LocalPlateSolve)
-            //    pathToCorr = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tmp\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr"; // 10-22-16
-            //// pathToCorr = @"c:\cygwin\home\astro\" + Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".corr";
-            ////pathToCorr = @"c:\cygwin\home\astro\solve.corr";
-            //else
-          //  pathToCorr = GlobalVariables.Path2 + "\\test.wcs";
-            //   StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\test.wcs"); // 10-22-16
-            // Fits f = new Fits(GlobalVariables.Path2 + "\\corr.fits"); // original
-
-            //  Fits f = new Fits(pathToCorr);
+                      
             double pi = 4 * Math.Atan(1);
-            nom.tam.util.BufferedFile wcs = new nom.tam.util.BufferedFile(file);
-            nom.tam.util.BufferedDataStream read = new nom.tam.util.BufferedDataStream(wcs);
-            Header hdr = new Header(read);
-            //   BinaryTableHDU h = (BinaryTableHDU)f.GetHDU(0);
-            double ra = hdr.GetDoubleValue("CRVAL1");
-            double ded = hdr.GetDoubleValue("CRVAL2");
-            //    double or = hdr.GetDoubleValue("orientation");
-            float CD11 = hdr.GetFloatValue("CD1_1");
-            float CD12 = hdr.GetFloatValue("CD1_2");
-            float CD21 = hdr.GetFloatValue("CD2_1");
-            float CD22 = hdr.GetFloatValue("CD2_2");
-            double positionAngle;
-           // read.Flush();
-           // wcs.Flush();
+            try
+            {
+                double positionAngle;
 
-         //   read.Close();
-         //   read.Dispose();
-        //    wcs.Close();
-         //   wcs.Dispose();
-            
-            if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 >= 0))
-              return positionAngle = 270 + (Math.Atan(CD22 / CD21)) * (180 / pi);
-            if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 < 0))
-               return positionAngle = 90 + (Math.Atan(CD22 / CD21)) * (180 / pi);
-            if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 >= 0))
-               return positionAngle = (Math.Atan(CD21 / CD22)) * (180 / pi);
-            if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 < 0))
-                return positionAngle = 180 + (Math.Atan(CD21 / CD22)) * (180 / pi);
-            else
+                nom.tam.util.BufferedFile bf = new nom.tam.util.BufferedFile(file, FileAccess.ReadWrite, FileShare.None);
+                Header hdr = new Header();
+                hdr = Header.ReadHeader(bf);
+             
+                double ra = hdr.GetDoubleValue("CRVAL1");
+                    double ded = hdr.GetDoubleValue("CRVAL2");
+                    //    double or = hdr.GetDoubleValue("orientation");
+                    float CD11 = hdr.GetFloatValue("CD1_1");
+                    float CD12 = hdr.GetFloatValue("CD1_2");
+                    float CD21 = hdr.GetFloatValue("CD2_1");
+                    float CD22 = hdr.GetFloatValue("CD2_2");
+                    
+           
+                 bf.Close();  // throws null reference exception!!!!
+                      
+                    //   read.Dispose();
+                    //    wcs.Close();
+                    //   wcs.Dispose();
+
+                    if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 >= 0))
+                       return positionAngle = 270 + (Math.Atan(CD22 / CD21)) * (180 / pi);
+                   if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 < 0))
+                       return positionAngle = 90 + (Math.Atan(CD22 / CD21)) * (180 / pi);
+                   if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 >= 0))
+                       return positionAngle = (Math.Atan(CD21 / CD22)) * (180 / pi);
+                   if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 < 0))
+                       return positionAngle = 180 + (Math.Atan(CD21 / CD22)) * (180 / pi);
+
+                    else 
+                       return 0;
+              //  }
+               //     return positionAngle;
+                
+
+              //  }
+            }
+            catch (Exception e)
+            {
+                
+                Log("GetOrientation Error: " + e.ToString());
                 return 0;
+            }
         }
-
-
         private void button19_Click(object sender, EventArgs e)
         {
            
+        }
+
+        private void button10_Click_2(object sender, EventArgs e)
+        {
+          // Log(GetOrientation(@"C:\\Users\ksipp_000\AppData\Local\cygwin_ansvr\tmp\test2.wcs").ToString());
         }
 
         //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   
