@@ -178,6 +178,7 @@
     <Compile Include="PHD2comm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rot.cs" />
     <Compile Include="ScopeFocus_Arduino_ver6_ascomFocus_addBkgndCapture_AddASCOMFIlter.cs">
       <SubType>Form</SubType>
     </Compile>

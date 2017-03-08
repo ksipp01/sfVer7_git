@@ -15833,6 +15833,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 orientation = GetOrientation(complete);
+                textBox68.Text = orientation.ToString(); // 3-7-17
                // Log("Orientation Angle = " + positionAngle.ToString());
                 Log("Orientation Angle = " + orientation.ToString());
 
@@ -16495,7 +16496,10 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
 
-               
+
+                if (RotatorIsConnected)
+                    textBox66.Text = Rot.Rotate.Position.ToString();
+
                     //*********** this results in error when closing ***********
                     //may need 'if scope.connected'
                     //    scope = new ASCOM.DriverAccess.Telescope(devId);
@@ -18511,9 +18515,16 @@ namespace Pololu.Usc.ScopeFocus
 
             }
         }
+        private bool RotatorIsConnected
+        {
+            get
+            {
+                return ((Pololu.Usc.ScopeFocus.Rot.Rotate != null) && (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true));
+            }
 
+        }
 
-            private bool SwitchIsConnected
+        private bool SwitchIsConnected
             {
                 get
                 {
@@ -19918,6 +19929,58 @@ namespace Pololu.Usc.ScopeFocus
         {
           // Log(GetOrientation(@"C:\\Users\ksipp_000\AppData\Local\cygwin_ansvr\tmp\test2.wcs").ToString());
         }
+        // 3-7-17
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button10_Click_3(object sender, EventArgs e)
+        {
+            if (RotatorIsConnected)
+            {
+                Pololu.Usc.ScopeFocus.Rot.Rotate.Connected = false;
+                Log(Pololu.Usc.ScopeFocus.Rot.DevId5 + " disconnected");
+                button10.BackColor = System.Drawing.Color.WhiteSmoke;
+                Pololu.Usc.ScopeFocus.Rot.DevId5 = "";
+                groupBox25.Enabled = false;
+                return;
+            }
+
+          
+            else
+            {
+                Rot.Chooser();
+                if (RotatorIsConnected)
+                    button10.BackColor = System.Drawing.Color.Lime;
+                Log("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
+                FileLog2("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
+                groupBox25.Enabled = true;
+            }
+
+        }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            Rot.Rotate.MoveAbsolute(Convert.ToSingle(textBox9.Text));
+        }
+
+        private void button24_Click(object sender, EventArgs e) //Rotator CCW
+        {
+            Rot.Rotate.Move(Convert.ToSingle(textBox67.Text)*-1);
+        }
+
+        private void button19_Click_1(object sender, EventArgs e) //Rotaotr CW
+        {
+            Rot.Rotate.Move(Convert.ToSingle(textBox67.Text));
+        }
+
+        private void button53_Click(object sender, EventArgs e)
+        {
+            Rot.Rotate.Action("Home", "");
+            // add turn button green if home found 
+        }
+
 
         //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   
         //{
@@ -19926,7 +19989,7 @@ namespace Pololu.Usc.ScopeFocus
         //    Clipboard.SetDataObject("//NEB CaptureSingle metric", false, 3, 500);
 
         //}
-
+        // end 3-7-17
         private void button51_Click_1(object sender, EventArgs e)
         {
             Handles H = new Handles();
