@@ -16196,6 +16196,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
+
                 if (GlobalVariables.LocalPlateSolve)
                     Solve();
                 else
@@ -16498,7 +16499,9 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 if (RotatorIsConnected)
-                    textBox66.Text = Rot.Rotate.Position.ToString();
+                    textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
+                if (Rot.SkyAngleCorrection != 0)
+                    textBox68.Text = Math.Round(Rot.Rotate.Position - Rot.SkyAngleCorrection, 2).ToString();
 
                     //*********** this results in error when closing ***********
                     //may need 'if scope.connected'
@@ -19979,6 +19982,28 @@ namespace Pololu.Usc.ScopeFocus
         {
             Rot.Rotate.Action("Home", "");
             // add turn button green if home found 
+        }
+
+
+        
+        private void button52_Click(object sender, EventArgs e)
+        {
+            Rot.SkyAngleCorrection =  Rot.Rotate.Position - (float)orientation;
+            textBox69.Text = Math.Round(Rot.SkyAngleCorrection,2).ToString();
+            button52.BackColor = System.Drawing.Color.Lime;
+           
+        }
+
+        private void button54_Click(object sender, EventArgs e)
+        {
+            float targetPos = Convert.ToSingle(textBox70.Text);
+            float degreesToMove = targetPos - (float)orientation;
+            float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
+            if (absTarget < 0)
+                absTarget = absTarget + 360;
+            if (absTarget > 360)
+                absTarget = absTarget - 360;
+            Rot.Rotate.MoveAbsolute(absTarget);
         }
 
 
