@@ -16502,8 +16502,8 @@ namespace Pololu.Usc.ScopeFocus
                     textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
                 if (Rot.SkyAngleCorrection != 0)
                     textBox68.Text = Math.Round(Rot.Rotate.Position - Rot.SkyAngleCorrection, 2).ToString();
-
-                    //*********** this results in error when closing ***********
+                //if (RotatorIsConnected)
+                //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
                     //may need 'if scope.connected'
                     //    scope = new ASCOM.DriverAccess.Telescope(devId);
 
