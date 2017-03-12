@@ -401,6 +401,7 @@
             this.label73 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox25 = new System.Windows.Forms.GroupBox();
+            this.button56 = new System.Windows.Forms.Button();
             this.label102 = new System.Windows.Forms.Label();
             this.button54 = new System.Windows.Forms.Button();
             this.textBox70 = new System.Windows.Forms.TextBox();
@@ -4498,10 +4499,11 @@
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(738, 222);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "About";
+            this.tabPage3.Text = "Rotator/About";
             // 
             // groupBox25
             // 
+            this.groupBox25.Controls.Add(this.button56);
             this.groupBox25.Controls.Add(this.label102);
             this.groupBox25.Controls.Add(this.button54);
             this.groupBox25.Controls.Add(this.textBox70);
@@ -4526,6 +4528,16 @@
             this.groupBox25.TabIndex = 16;
             this.groupBox25.TabStop = false;
             this.groupBox25.Text = "Rotator ";
+            // 
+            // button56
+            // 
+            this.button56.Location = new System.Drawing.Point(179, 73);
+            this.button56.Name = "button56";
+            this.button56.Size = new System.Drawing.Size(52, 23);
+            this.button56.TabIndex = 19;
+            this.button56.Text = "Stop";
+            this.button56.UseVisualStyleBackColor = true;
+            this.button56.Click += new System.EventHandler(this.button56_Click);
             // 
             // label102
             // 
@@ -5462,6 +5474,7 @@
         private System.Windows.Forms.Label label102;
         private System.Windows.Forms.Button button54;
         private System.Windows.Forms.TextBox textBox70;
+        private System.Windows.Forms.Button button56;
     }
 }
 

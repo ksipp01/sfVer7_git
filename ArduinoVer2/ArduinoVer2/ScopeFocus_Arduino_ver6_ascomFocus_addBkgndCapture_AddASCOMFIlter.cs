@@ -1065,12 +1065,16 @@ namespace Pololu.Usc.ScopeFocus
         }
         //gotoposhere
         //  bool moveOut;
+
+            private bool fsPause = false;
+        private bool focusMoveRequested = false;
         void gotopos(Int32 value)
         {
 
             try
             {
-               bool fsPause = false; // added 1-12-17
+                focusMoveRequested = true;
+               // added 1-12-17
               if (fileSystemWatcher1.EnableRaisingEvents) // remd 1-13-17 
                {
                     fileSystemWatcher1.EnableRaisingEvents = false;
@@ -1147,34 +1151,46 @@ namespace Pololu.Usc.ScopeFocus
                 //************added 11-3-13 may not be needed  ************
                 //     BUT     *************seems like ascom focusers need some delay while moving  
                 //*****  4-22-14 if IsMoving causes problems add a checkbox to allow disable. 
-                while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
-                {
-                  //  delay(1);
-                    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
-                    textBox1.Text = count.ToString();
 
-                    //  positionbar();   //**** remd 1-12-17
+
+                // remd 3-12-17
+                // replaced w/ focusPoll() below.   this is to allow for halt to be used.  o/w stuck in while 
+
+                //while (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
+                //{
+                //  //  delay(1);
+                //    count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                //    textBox1.Text = count.ToString();
+
+                //    //  positionbar();   //**** remd 1-12-17
                   
 
-                    //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
-                }
+                //    //  Log(Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving.ToString());
+                //}
                 // end add
-                delay(1);
-                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
-                textBox1.Text = count.ToString();
-                //   textBox1.Text = focuser.Position.ToString();
-                if (!ContinuousHoldOn)
-                    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
-                toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
-                toolStripStatusLabel1.Text = "Ready";
-                this.Refresh();
-                positionbar();
-                // added 1-12-17
-                if (fsPause)
-                {
-                    fileSystemWatcher1.EnableRaisingEvents = true;
-                    fsPause = false;
-                }
+
+
+
+                //delay(1);
+                //count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                //textBox1.Text = count.ToString();
+                ////   textBox1.Text = focuser.Position.ToString();
+                //if (!ContinuousHoldOn)
+                //    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+                //toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                //toolStripStatusLabel1.Text = "Ready";
+                //this.Refresh();
+                //positionbar();
+                //// added 1-12-17
+                //if (fsPause)
+                //{
+                //    fileSystemWatcher1.EnableRaisingEvents = true;
+                //    fsPause = false;
+                //}
+
+
+                // end 3-12-17 rem
+
 
                 // remd all below 1-13-17
                 //switch (fsPauseNumber)  
@@ -1213,6 +1229,37 @@ namespace Pololu.Usc.ScopeFocus
 
             }
         }
+      //  private int focusTarget = 0;
+        private void FocusPoll()
+        {
+            if (Pololu.Usc.ScopeFocus.Focus.focuser.IsMoving)
+            {
+                   count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                   textBox1.Text = count.ToString();
+            }
+            else
+            {
+                delay(1);
+                count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
+                textBox1.Text = count.ToString();
+                //   textBox1.Text = focuser.Position.ToString();
+                if (!ContinuousHoldOn)
+                    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+                toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
+                toolStripStatusLabel1.Text = "Ready";
+                this.Refresh();
+                positionbar();
+                // added 1-12-17
+                if (fsPause)
+                {
+                    fileSystemWatcher1.EnableRaisingEvents = true;
+                    fsPause = false;
+                }
+                focusMoveRequested = false;
+            }
+
+        }
+
 
         public static double GetStandardDeviation(double[] numb)
         {
@@ -2807,7 +2854,7 @@ namespace Pololu.Usc.ScopeFocus
         {
             try
             {
-             
+               
 
                 disableCloseWarning.Checked = WindowsFormsApplication1.Properties.Settings.Default.disableCloseWArning;
                 MinNebSize = WindowsFormsApplication1.Properties.Settings.Default.MinNebSize;
@@ -2985,8 +3032,9 @@ namespace Pololu.Usc.ScopeFocus
                 groupBox14.Enabled = false;
                 groupBox15.Enabled = false;
 
-
-
+                // moved from mount connect 3-12-17
+                timer2.Enabled = true;
+                timer2.Start();
 
 
             }
@@ -14957,11 +15005,12 @@ namespace Pololu.Usc.ScopeFocus
                     Log("connected to " + Mount.DevId);
                     FileLog2("connected to " + Mount.DevId);
                     Mount.scope.Connected = true;
-                   if (Mount.scope.Connected)
-                    {
-                        timer2.Enabled = true;
-                        timer2.Start();
-                    }
+                    // remd 3-12-17
+                   //if (Mount.scope.Connected)
+                   // {
+                   //     timer2.Enabled = true;
+                   //     timer2.Start();
+                   // }
                     usingASCOM = true;
                     button49.BackColor = System.Drawing.Color.Lime;
                     groupBox5.Enabled = true;
@@ -16461,6 +16510,9 @@ namespace Pololu.Usc.ScopeFocus
             // inteval set at 1 second
             try
             {
+
+                if (focusMoveRequested)
+                    FocusPoll();
                 //  Log("Idle Count " + idleCount.ToString());
                 //11-20-16  try to add idle monitor
                 if (checkBox34.Checked)
@@ -16504,56 +16556,62 @@ namespace Pololu.Usc.ScopeFocus
                     textBox68.Text = Math.Round(Rot.Rotate.Position - Rot.SkyAngleCorrection, 2).ToString();
                 //if (RotatorIsConnected)
                 //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
-                    //may need 'if scope.connected'
-                    //    scope = new ASCOM.DriverAccess.Telescope(devId);
+                //may need 'if scope.connected'
+                //    scope = new ASCOM.DriverAccess.Telescope(devId);
+
+                if (usingASCOM) // added 3-12-17  used this as seems less intensive than calling mount.connected.  and this is set true upon connect
+                {
+
 
                     //*****this times out...?? less frequent sampling*********
                     textBox53.Text = Math.Round(Mount.scope.SiderealTime, 4).ToString();
-                textBox54.Text = Math.Round(Mount.scope.RightAscension, 4).ToString();
-                textBox55.Text = Math.Round(Mount.scope.Declination, 4).ToString();
-                TimeToFlip = Math.Round(Math.Abs(Mount.scope.SiderealTime - Mount.scope.RightAscension), 2);
-                textBox57.Text = TimeToFlip.ToString();
-                //if (TimeToFlip < 0)
-                //    FlipNeeded = true;
-                //else
-                //    FlipNeeded = false;
+                    textBox54.Text = Math.Round(Mount.scope.RightAscension, 4).ToString();
+                    textBox55.Text = Math.Round(Mount.scope.Declination, 4).ToString();
+                    TimeToFlip = Math.Round(Math.Abs(Mount.scope.SiderealTime - Mount.scope.RightAscension), 2);
+                    textBox57.Text = TimeToFlip.ToString();
+                    //if (TimeToFlip < 0)
+                    //    FlipNeeded = true;
+                    //else
+                    //    FlipNeeded = false;
 
-                if (Mount.scope.SideOfPier == Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination))
-                    FlipNeeded = false;
-                else
-                {
-                    FlipNeeded = true;
-                    if (textBox48.Text == "false")
+                    if (Mount.scope.SideOfPier == Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination))
+                        FlipNeeded = false;
+                    else
                     {
-                        //this way on ly logs/send once because the it hasn't been changed yet 
-                        Log("Flip pending in " + TimeToFlip.ToString());
-                        FileLog2("Flip pending in " + TimeToFlip.ToString());
-                        Send("Flip pending in " + TimeToFlip.ToString());
+                        FlipNeeded = true;
+                        if (textBox48.Text == "false")
+                        {
+                            //this way on ly logs/send once because the it hasn't been changed yet 
+                            Log("Flip pending in " + TimeToFlip.ToString());
+                            FileLog2("Flip pending in " + TimeToFlip.ToString());
+                            Send("Flip pending in " + TimeToFlip.ToString());
+                        }
                     }
-                }
 
                     textBox5.Text = Mount.scope.SideOfPier.ToString();
-                textBox45.Text = Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination).ToString();//see if the slewing to the - 
-                                                                                                                 //current location would warrant a flip
-                                                                                                                 //  textBoxPHDstatus.Text = ph.getAppState();
-            //    ph.PHDgetAppState();
-
-               
+                    textBox45.Text = Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination).ToString();//see if the slewing to the - 
+                                                                                                                                       //current location would warrant a flip
+                                                                                                                                       //  textBoxPHDstatus.Text = ph.getAppState();
+                                                                                                                                       //    ph.PHDgetAppState();
 
 
-                // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
-                TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
-                string TF;
-                int D = ts.Days;
-                int H = Math.Abs(ts.Hours);
-                int M = Math.Abs(ts.Minutes);
-                int S = Math.Abs(ts.Seconds);
-                if (ts.Hours < 0 || ts.Minutes < 0 || ts.Seconds < 0)
-                    TF = "-" + H.ToString() + ":" + M.ToString() + ":" + S.ToString();
-                else
-                    TF = H.ToString() + ":" + M.ToString() + ":" + S.ToString();
-                textBox56.Text = (TF);
-                textBox48.Text = FlipNeeded.ToString();
+
+
+                    // TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(scope.SiderealTime));
+                    TimeSpan ts = TimeSpan.FromHours(TimeToFlip);
+                    string TF;
+                    int D = ts.Days;
+                    int H = Math.Abs(ts.Hours);
+                    int M = Math.Abs(ts.Minutes);
+                    int S = Math.Abs(ts.Seconds);
+                    if (ts.Hours < 0 || ts.Minutes < 0 || ts.Seconds < 0)
+                        TF = "-" + H.ToString() + ":" + M.ToString() + ":" + S.ToString();
+                    else
+                        TF = H.ToString() + ":" + M.ToString() + ":" + S.ToString();
+                    textBox56.Text = (TF);
+                    textBox48.Text = FlipNeeded.ToString();
+
+                }
                 if (solveRequested)
                 {
                     if (AstrometryNet.OperationCancelled == true)
@@ -20004,6 +20062,11 @@ namespace Pololu.Usc.ScopeFocus
             if (absTarget > 360)
                 absTarget = absTarget - 360;
             Rot.Rotate.MoveAbsolute(absTarget);
+        }
+
+        private void button56_Click(object sender, EventArgs e)
+        {
+            Rot.Rotate.Halt();
         }
 
 
