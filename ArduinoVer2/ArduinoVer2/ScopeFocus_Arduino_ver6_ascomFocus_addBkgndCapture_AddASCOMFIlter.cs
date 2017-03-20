@@ -16553,7 +16553,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (RotatorIsConnected)
                     textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
                 if (Rot.SkyAngleCorrection != 0)
-                    textBox68.Text = Math.Round(Rot.Rotate.Position - Rot.SkyAngleCorrection, 2).ToString();
+                    textBox68.Text = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2).ToString();
                 //if (RotatorIsConnected)
                 //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
                 //may need 'if scope.connected'
@@ -19978,6 +19978,7 @@ namespace Pololu.Usc.ScopeFocus
             {
                 
                 Log("GetOrientation Error: " + e.ToString());
+                FileLog2("GetOrientation Error: " + e.ToString());
                 return 0;
             }
         }
@@ -20046,10 +20047,19 @@ namespace Pololu.Usc.ScopeFocus
         
         private void button52_Click(object sender, EventArgs e)
         {
-            Rot.SkyAngleCorrection =  Rot.Rotate.Position - (float)orientation;
-            textBox69.Text = Math.Round(Rot.SkyAngleCorrection,2).ToString();
-            button52.BackColor = System.Drawing.Color.Lime;
-           
+            DialogResult result1;
+            result1 = MessageBox.Show("Set Current CCD orientation to that of the last plate solved image?", "scopefocus",
+                 MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+            if (result1 == DialogResult.OK)
+            {
+
+                Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)orientation;
+                textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
+                button52.BackColor = System.Drawing.Color.Lime;
+            }
+            else
+                return;
+
         }
 
         private void button54_Click(object sender, EventArgs e)
