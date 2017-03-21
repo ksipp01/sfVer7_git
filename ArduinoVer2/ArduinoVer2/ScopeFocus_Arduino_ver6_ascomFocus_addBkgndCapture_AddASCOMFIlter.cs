@@ -15882,7 +15882,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
                 orientation = GetOrientation(complete);
-                textBox68.Text = orientation.ToString(); // 3-7-17
+           //     textBox68.Text = orientation.ToString(); // 3-7-17
                // Log("Orientation Angle = " + positionAngle.ToString());
                 Log("Orientation Angle = " + orientation.ToString());
 
@@ -20048,24 +20048,29 @@ namespace Pololu.Usc.ScopeFocus
         private void button52_Click(object sender, EventArgs e)
         {
             DialogResult result1;
-            result1 = MessageBox.Show("Set Current CCD orientation to that of the last plate solved image?", "scopefocus",
+            result1 = MessageBox.Show("Set Current Rotator/CCD orientation to " + textBox68.Text + "?", "scopefocus",
                  MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
             if (result1 == DialogResult.OK)
             {
-
-                Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)orientation;
+                skyAngle = Convert.ToDouble(textBox68.Text);
+                Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
                 textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
                 button52.BackColor = System.Drawing.Color.Lime;
+                button52.Text = "Synced";
+                timer2.Enabled = true;
             }
             else
+            {
+                timer2.Enabled = true;
                 return;
+            }
 
         }
 
         private void button54_Click(object sender, EventArgs e)
         {
             float targetPos = Convert.ToSingle(textBox70.Text);
-            float degreesToMove = targetPos - (float)orientation;
+            float degreesToMove = targetPos - (float)skyAngle;
             float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
             if (absTarget < 0)
                 absTarget = absTarget + 360;
@@ -20077,6 +20082,41 @@ namespace Pololu.Usc.ScopeFocus
         private void button56_Click(object sender, EventArgs e)
         {
             Rot.Rotate.Halt();
+        }
+
+        private void textBox68_Leave(object sender, EventArgs e)
+        {
+            //DialogResult result1;
+            //result1 = MessageBox.Show("The Sky Angle will be changed to " + textBox68.Text, "scopefocus", MessageBoxButtons.OKCancel);
+            //if (result1 == DialogResult.OK)
+            //    orientation = Convert.ToSingle(textBox68.Text);
+            //else
+            //    return;
+
+        }
+
+        private void textBox68_Enter(object sender, EventArgs e)
+        {
+            timer2.Enabled = false;
+
+        }
+        public double skyAngle;
+
+        private void textBox68_Leave_1(object sender, EventArgs e)
+        {
+
+            skyAngle = Convert.ToDouble(textBox68.Text);
+            button52.UseVisualStyleBackColor = true;
+            button52.Text = "Sync";
+            Log("Sky Angle changed to " + textBox68.Text + " Re-sync if needed");
+        }
+
+        private void textBox68_TextChanged(object sender, EventArgs e)
+        {
+            //skyAngle = Convert.ToDouble(textBox68.Text);
+            //button52.UseVisualStyleBackColor = true;
+            //button52.Text = "Sync";
+            //Log("Sky Angle changed to " + textBox68.Text +  " Re-sync if needed");
         }
 
 
