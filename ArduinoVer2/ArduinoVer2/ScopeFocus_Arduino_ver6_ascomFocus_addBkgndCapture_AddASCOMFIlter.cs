@@ -15043,7 +15043,12 @@ namespace Pololu.Usc.ScopeFocus
             get { return _dEC; }
             set { _dEC = value; }
         }
-
+        private static double _orientation;
+        public static double Orientation
+        {
+            get { return _orientation; }
+            set { _orientation = value; }
+        }
 
 
 
@@ -15639,53 +15644,64 @@ namespace Pololu.Usc.ScopeFocus
 
                     ExecuteCommand();
 
+                    string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp";
+                    string wcsfile = Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".wcs";
+                    string complete = Path.Combine(path, wcsfile);
 
+
+                    GetSolveData(complete);
 
                     // StreamReader reader = new StreamReader(@"c:\cygwin\text.txt"); //read the cygwin log file
                     //  reader = FileInfo.OpenText("filename.txt");
                     //    StreamReader reader = new StreamReader(@"C:\Users\ksipp_000\AppData\Local\cygwin_ansvr\text.txt"); // 10-22-16
+
+
+//3-22-17 begin rem since replaced with GetSolveData
+
+
                     StreamReader reader = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\text.txt"); // 10-22-16
 
 
-                    string line;
-                    // while ((line = reader.ReadToEnd()) != null) {
-                    line = reader.ReadToEnd();
-                    string[] items = line.Split('\n');
-                    string FieldLine = null;
-                    foreach (string item in items)
-                    {
-                        //try parsing a different line in .txt file
+                    //string line;
+                    //// while ((line = reader.ReadToEnd()) != null) {
+                    //line = reader.ReadToEnd();
+                    //string[] items = line.Split('\n');
+                    //string FieldLine = null;
+                    //foreach (string item in items)
+                    //{
+                    //    //try parsing a different line in .txt file
 
-                        if (item.EndsWith("pix.\r"))
-                        {
+                    //    if (item.EndsWith("pix.\r"))
+                    //    {
 
-                            //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
+                    //        //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
 
-                            FieldLine = item;
-                            Log(FieldLine);
-                            //     int FirstComma = item.IndexOf(","); 
-                            int SecondComma = IndexOfSecond(item, ",");
-                            int Start = item.IndexOf("(");
-                            int End = item.IndexOf(")");
-                            //   int EqualsIndex = FieldLine.IndexOf(@"=");
-                            string ParsedRA = "";
-                            string ParsedDEC = "";
-                            int RAend = SecondComma - Start;
-                            int DECend = End - SecondComma;
-                            ParsedRA = FieldLine.Substring(Start + 1, RAend);
-                            ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
+                    //        FieldLine = item;
+                    //        Log(FieldLine);
+                    //        //     int FirstComma = item.IndexOf(","); 
+                    //        int SecondComma = IndexOfSecond(item, ",");
+                    //        int Start = item.IndexOf("(");
+                    //        int End = item.IndexOf(")");
+                    //        //   int EqualsIndex = FieldLine.IndexOf(@"=");
+                    //        string ParsedRA = "";
+                    //        string ParsedDEC = "";
+                    //        int RAend = SecondComma - Start;
+                    //        int DECend = End - SecondComma;
+                    //        ParsedRA = FieldLine.Substring(Start + 1, RAend);
+                    //        ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
 
-                            ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
-                            ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
+                    //        ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
+                    //        ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
 
-                            Log("Parsed DEC = " + ParsedDEC);
-                            DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
-                            RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
-                            Log("Parsed RA = " + RA.ToString());
+                    //        Log("Parsed DEC = " + ParsedDEC);
+                    //        DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
+                    //        RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
+                    //        Log("Parsed RA = " + RA.ToString());
 
-                        }
-                    }
-                    reader.Close();
+                    //    }
+                    //}
+                    //reader.Close();
+                    // end rem 3-22-17
 
                 }
                 if (SettingFocusSolve)
@@ -15839,9 +15855,13 @@ namespace Pololu.Usc.ScopeFocus
 
                 }
               //  string path = Path.GetDirectoryName(GlobalVariables.SolveImage);
-              string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp";
-                string wcsfile = Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".wcs";
-                string complete = Path.Combine(path, wcsfile);
+
+
+
+                // 3-22-17 was orig location moved up....
+              //string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp";
+              //  string wcsfile = Path.GetFileNameWithoutExtension(GlobalVariables.SolveImage) + ".wcs";
+              //  string complete = Path.Combine(path, wcsfile);
 
                 //double pi = 4 * Math.Atan(1);
                 //nom.tam.util.BufferedFile wcs = new nom.tam.util.BufferedFile(complete);
@@ -15881,11 +15901,12 @@ namespace Pololu.Usc.ScopeFocus
 
 
 
-                orientation = GetOrientation(complete);
+                //  orientation = GetOrientation(complete);  this uses mintty and wcsinfor.exe, writes to a text file then parses.below calculate from fits header info (better) 
+              //  _orientation = CalcOrientation(complete); prev working prior to 3-22-17 change
            //     textBox68.Text = orientation.ToString(); // 3-7-17
                // Log("Orientation Angle = " + positionAngle.ToString());
-                Log("Orientation Angle = " + orientation.ToString());
-
+                Log("Orientation Angle = " + _orientation.ToString());
+             //   Log("oldOrientation " + (OldOrientation(complete).ToString()));
 
 
                 toolStripStatusLabel1.Text = "Ready";
@@ -16368,10 +16389,19 @@ namespace Pololu.Usc.ScopeFocus
                                                       //   proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal; // new 10-22-16
 
 
-                string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
-                                                                       //  proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //orig working
+                  string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
+                  proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //****** orig working *******
+
+                // 3-22-17 remd to try below
                 proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
                 proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
+
+
+                // 3-22-17 try....
+                //string filename = @"\cygwin_ansvr\bin\bash.exe"; 
+                // proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
+                // proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
+
 
 
 
@@ -16411,6 +16441,13 @@ namespace Pololu.Usc.ScopeFocus
 
                 //  string command = "solve-field --sigma " + sigma.ToString() + " -L " + Low.ToString() + " -H " + High.ToString() + " solve.fit";
                 //  SendKeys.Send("cd" + " " + "/home/astro");  changed 10-22-16
+
+
+
+
+
+
+                // remd 3-22-17
                 SendKeys.Send("cd" + " " + "/tmp");
                 Thread.Sleep(200);
                 SendKeys.Send("~");
@@ -16424,7 +16461,7 @@ namespace Pololu.Usc.ScopeFocus
                 //  Thread.Sleep(5000);
                 SendKeys.Send("exit");
                 SendKeys.Send("~");
-
+                // end rem
 
 
 
@@ -19782,7 +19819,7 @@ namespace Pololu.Usc.ScopeFocus
         }
 
 
-        private double orientation;
+     //   private double orientation;
     
         private void button10_Click(object sender, EventArgs e)
         {
@@ -19930,153 +19967,10 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private void parseWCStext()
-        {
-
-            Stream stream = new FileStream((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            //  StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt"); // 10-22-16
-            StreamReader reader2 = new StreamReader(stream);
-
-            string line;
-            // while ((line = reader.ReadToEnd()) != null) {
-            line = reader2.ReadToEnd();
-            string[] items = line.Split('\n');
-            string FieldLine = null;
-            foreach (string item in items)
-            {
-                //try parsing a different line in .txt file
-
-                //   if (item.EndsWith("pix.\r"))
-                if ((item.StartsWith("orientation")) && (!item.StartsWith("orientation_center")))
-                {
-
-                    //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
-
-                    //  FieldLine = item;
-                    //    Log(item);
-                    //  orientation = item.Substring(12, item.Length-2);
-                    orientation = Convert.ToDouble(item.Substring(12, item.Length - 12));
-                    //     int FirstComma = item.IndexOf(","); 
-                    //int SecondComma = IndexOfSecond(item, ",");
-                    //int Start = item.IndexOf("(");
-                    //int End = item.IndexOf(")");
-                    ////   int EqualsIndex = FieldLine.IndexOf(@"=");
-                    //string ParsedRA = "";
-                    //string ParsedDEC = "";
-                    //int RAend = SecondComma - Start;
-                    //int DECend = End - SecondComma;
-                    //ParsedRA = FieldLine.Substring(Start + 1, RAend);
-                    //ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
-
-                    //ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
-                    //ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
-
-                    //Log("Parsed DEC = " + ParsedDEC);
-                    //DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
-                    //RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
-               //     Log("Orientation = " + orientation);
-
-                }
-            }
-            reader2.Close();
-        }
+      
 
 
-        private double GetOrientation(string file)
-        {
-            try
-            {
-                writeWCStext(file);
-                delay(1);
-                parseWCStext();
-                //Stream stream = new FileStream((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            
-                //StreamReader reader2 = new StreamReader(stream);
-
-                //string line;
-                //// while ((line = reader.ReadToEnd()) != null) {
-                //line = reader2.ReadToEnd();
-                //string[] items = line.Split('\n');
-                //string FieldLine = null;
-                //foreach (string item in items)
-                //{
-                  
-                //    if ((item.StartsWith("orientation")) && (!item.StartsWith("orientation_center")))
-                //    {
-
-                //        orientation = Convert.ToDouble(item.Substring(12, item.Length - 12));
-                    
-                //        Log("Orientation = " + orientation);
-
-                //    }
-                //}
-                //reader2.Close();
-                // parseWCStext();
-                return orientation;
-
-            }
-
-
-
-
-
-
-            // remd 3-21-17          
-            //double pi = 4 * Math.Atan(1);
-            //try
-            //{
-            //    double positionAngle;
-
-            //    nom.tam.util.BufferedFile bf = new nom.tam.util.BufferedFile(file, FileAccess.ReadWrite, FileShare.None);
-            //    Header hdr = new Header();
-            //    hdr = Header.ReadHeader(bf);
-
-            //    double ra = hdr.GetDoubleValue("CRVAL1");
-            //        double ded = hdr.GetDoubleValue("CRVAL2");
-            //        //    double or = hdr.GetDoubleValue("orientation");
-            //        float CD11 = hdr.GetFloatValue("CD1_1");
-            //        float CD12 = hdr.GetFloatValue("CD1_2");
-            //        float CD21 = hdr.GetFloatValue("CD2_1");
-            //        float CD22 = hdr.GetFloatValue("CD2_2");
-
-
-            //     bf.Close();  // throws null reference exception!!!!
-
-            //    //   read.Dispose();
-            //    //    wcs.Close();
-            //    //   wcs.Dispose();
-
-            //    // from:   http://stackoverflow.com/questions/17332853/how-to-find-the-angle-between-north-and-horizon-for-given-altaz-coords-using-pye
-            //    // this doesn't work properly.  
-
-            //    if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 >= 0))
-            //           return positionAngle = 270 + (Math.Atan(CD22 / CD21)) * (180 / pi);
-            //       if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 < 0))
-            //           return positionAngle = 90 + (Math.Atan(CD22 / CD21)) * (180 / pi);
-            //       if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 >= 0))
-            //           return positionAngle = (Math.Atan(CD21 / CD22)) * (180 / pi);
-            //       if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 < 0))
-            //           return positionAngle = 180 + (Math.Atan(CD21 / CD22)) * (180 / pi);
-
-            //        else 
-            //           return 0;
-            //  //  }
-            //   //     return positionAngle;
-
-
-            //  //  }
-
-            // end rem 3-21-17
-
-        
-            catch (Exception e)
-            {
-                
-                Log("GetOrientation Error: " + e.ToString());
-                FileLog2("GetOrientation Error: " + e.ToString());
-                return 0;
-            }
-        }
+      
         private void button19_Click(object sender, EventArgs e)
         {
            
@@ -20213,31 +20107,62 @@ namespace Pololu.Usc.ScopeFocus
             //button52.Text = "Sync";
             //Log("Sky Angle changed to " + textBox68.Text +  " Re-sync if needed");
         }
+        private void parseWCStext()
+        {
+
+            Stream stream = new FileStream((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            //  StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt"); // 10-22-16
+            StreamReader reader2 = new StreamReader(stream);
+
+            string line;
+            // while ((line = reader.ReadToEnd()) != null) {
+            line = reader2.ReadToEnd();
+            string[] items = line.Split('\n');
+            string FieldLine = null;
+            foreach (string item in items)
+            {
+                //try parsing a different line in .txt file
+
+                //   if (item.EndsWith("pix.\r"))
+                if ((item.StartsWith("orientation")) && (!item.StartsWith("orientation_center")))
+                {
+
+                    //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
+
+                    //  FieldLine = item;
+                    //    Log(item);
+                    //  orientation = item.Substring(12, item.Length-2);
+                    _orientation = Convert.ToDouble(item.Substring(12, item.Length - 12));
+                    //     int FirstComma = item.IndexOf(","); 
+                    //int SecondComma = IndexOfSecond(item, ",");
+                    //int Start = item.IndexOf("(");
+                    //int End = item.IndexOf(")");
+                    ////   int EqualsIndex = FieldLine.IndexOf(@"=");
+                    //string ParsedRA = "";
+                    //string ParsedDEC = "";
+                    //int RAend = SecondComma - Start;
+                    //int DECend = End - SecondComma;
+                    //ParsedRA = FieldLine.Substring(Start + 1, RAend);
+                    //ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
+
+                    //ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
+                    //ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
+
+                    //Log("Parsed DEC = " + ParsedDEC);
+                    //DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
+                    //RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
+                    //     Log("Orientation = " + orientation);
+
+                }
+            }
+            reader2.Close();
+        }
+
 
         private void writeWCStext(string file)
         {
-            string path;
-            // openFileDialog2.Filter = "All files (*.*)|*.*";
-            //if (openFileDialog2.ShowDialog() == DialogResult.OK)
-            // {
-
-            //     file = openFileDialog2.FileName.ToString();
-            //     path = Path.GetDirectoryName(file);
-            //     if (Path.GetDirectoryName(file) != (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp"))
-            //         File.Copy(file, (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp" + Path.GetFileName(file)), true);
-
-
-
-            //     // *****  need to change to wcsinfo
-            //     //     tablistViewer(Path.GetFileName(file));
-            //     //  cramersRule();
-            //     Log("tableWCS.txt saved to " + (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr"));
-            // }
-            // else
-            //     return;
-
-
-
+           // string path;
+          
 
             // change this for wcsinfo.......
 
@@ -20304,203 +20229,141 @@ namespace Pololu.Usc.ScopeFocus
             proc.Close();
         }
 
+        private double GetOrientation(string file)
+        {
+            try
+            {
+                writeWCStext(file);
+                delay(1);
+                parseWCStext();
+                return _orientation;
+            }
 
+            catch (Exception e)
+            {
+
+                Log("GetOrientation Error: " + e.ToString());
+                FileLog2("GetOrientation Error: " + e.ToString());
+                return 0;
+            }
+        }
         private void button62_Click(object sender, EventArgs e)
         {
 
-            writeWCStext(GlobalVariables.SolveImage);
+        
+            
+
+        }
+        //private double CalcOrientation(string file)
+        private void GetSolveData(string file)
+        {
+            // this uses the .wcs file and calculates the orientation.  does not require cygwin (mintty) 
 
 
+            try
+            {
 
-            // 3-21-17 remd all below
-         //   string file;
-         //   string path;
-         //   //if (!File.Exists((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp\" + "wcsinfo.exe")))
-         //   //{
-         //   //    MessageBox.Show("you must place wcsinfo.exe in " + @"c:\users\'username'\appdata\local\cygwin_ansvr\tmp");
-         //   //    return;
-         //   //}
+                double pi = 4 * Math.Atan(1);
+            //    double positionAngle;
 
-         //   openFileDialog2.Filter = "All files (*.*)|*.*";
-         //   //     DialogResult result = openFileDialog2.ShowDialog();
-         //   if (openFileDialog2.ShowDialog() == DialogResult.OK)
-         //   {
+                nom.tam.util.BufferedFile bf = new nom.tam.util.BufferedFile(file, FileAccess.ReadWrite, FileShare.None);
+                Header hdr = new Header();
+                hdr = Header.ReadHeader(bf);
+                if (hdr != null)
+                {
+                    RA = hdr.GetDoubleValue("CRVAL1")/15;  // these can replace the parsed text file!!!
+                    DEC = hdr.GetDoubleValue("CRVAL2");
+                    
+                    Log("Plate Solve RA = " + RA.ToString());
+                    Log("Plate Solve DEC = " + DEC.ToString());
+                    float CD11 = hdr.GetFloatValue("CD1_1");
+                    float CD12 = hdr.GetFloatValue("CD1_2");
+                    float CD21 = hdr.GetFloatValue("CD2_1");
+                    float CD22 = hdr.GetFloatValue("CD2_2");
 
-         //       file = openFileDialog2.FileName.ToString();
-         //       path = Path.GetDirectoryName(file);
-         //       if (Path.GetDirectoryName(file) != (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp"))
-         //           File.Copy(file, (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp" + Path.GetFileName(file)), true);
-
-
-
-         //       // *****  need to change to wcsinfo
-         //       //     tablistViewer(Path.GetFileName(file));
-         //       //  cramersRule();
-         //       Log("tableWCS.txt saved to " + (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr"));
-         //   }
-         //   else
-         //       return;
-
-
-
-
-         //   // change this for wcsinfo.......
-
-         //   // this is tablistviewer
-         //   //  string commandXY = "./wcsinfo " + file;
-         ////   string commandXY = "./wcsinfo  C:\\test.wcs";
-         //   string commandXY = "./wcsinfo " + Path.GetFileName(file);
-
-         //   //    string commandXY = "./wcsinfo C:\\Users\\ksipp_000\\AppData\\Local\\cygwin_ansvr\\tmp\\test.wcs"; // doesn't work w/ full path
-
-         //   //      tabList(commandXY);
+                    // try convert python from atrometry.net
+                    float prod = CD11 * CD22 - CD12 * CD21;
+                    int parity;
+                    if (prod >= 0)
+                        parity = 1;
+                    else
+                        parity = -1;
+                    double T = parity * CD11 + CD22;
+                    double A = parity * CD21 - CD12;
+                    double Orient = Math.Atan2(A, T) * -180/pi;
+                    
 
 
-         //   // this is tablist()
-         //   Process proc = new Process();
-         //   proc.StartInfo.UseShellExecute = false;
-         //   proc.StartInfo.RedirectStandardInput = true;
-         //   proc.StartInfo.RedirectStandardOutput = true;
-         //   proc.StartInfo.RedirectStandardError = true;
-         //   proc.StartInfo.CreateNoWindow = true;
-         //   //   proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe"; // remd 10-22-16
-         //   //  proc.StartInfo.FileName = @"\cygwin_ansvr\bin\mintty.exe";
-         //   // @"c:/cygwin/bin/mintty.exe";
-         //   string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
-         //   proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
-         //   proc.StartInfo.Arguments = "--log /tableWCS.txt -i /Cygwin-Terminal.ico -";
-         //   //creates text file of the cygwin terminal.  
-         //   //parse the needed info from the txt file
-         //   proc.Start();
+                    bf.Close();  // throws null reference exception!!!!
+                    _orientation = Orient;
+                    //   read.Dispose();
+                    //    wcs.Close();
+                    //   wcs.Dispose();
 
-         //   StreamWriter sw = proc.StandardInput;
-         //   StreamReader reader = proc.StandardOutput;
-         //   //  StreamReader sr = proc.StandardOutput;
-         //   StreamReader se = proc.StandardError;
-         //   //C:\cygwin\lib\astrometry\bin
-         //   sw.AutoFlush = true;
-         //   Thread.Sleep(2000);
-         //   //    string command = "./tablist " +  "solve.xyls";
-         //   //     SendKeys.Send("cd" + " " + "/home/astro"); // remd 10-22-16
-         //   SendKeys.Send("cd" + " " + "/tmp");
-         //   Thread.Sleep(200);
-         //   SendKeys.Send("~");
-         //   Thread.Sleep(200);
-         //   // SendKeys.Send("solve-field" + " " + "--sigma" + " " + "100" + " " + "-L" + " " + "0.5" + " " + "-H" + " " + "2" + " " + Path.GetFileName(solveImage));
-         //   SendKeys.Send(commandXY);
-         //   Thread.Sleep(200);
-         //   SendKeys.SendWait("~");
-         //   SendKeys.Send("exit");
-         //   SendKeys.Send("~");
-         //   sw.Close();
-         //   se.Close();
-         //   reader.Dispose();
-         //   reader.Close();
-         //   proc.WaitForExit();
-         //   proc.Close();
+                    // from:   http://stackoverflow.com/questions/17332853/how-to-find-the-angle-between-north-and-horizon-for-given-altaz-coords-using-pye
+                    // this doesn't work properly but corrections below do work.  use above instead from astrometry.... 
+
+                    //if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 >= 0))
+                    //    return positionAngle = (Math.Atan(CD22 / CD21) * (180 / pi)) - 90;
+                    ////   return positionAngle = (270 + Math.Atan(CD22 / CD21)) * (180 / pi);
+                    //if ((Math.Abs(CD21) > Math.Abs(CD22)) && (CD21 < 0))
+                    //    //  return positionAngle = (Math.Atan(CD22 / CD21) * (180 / pi));
+                    //    return positionAngle = 90 + (Math.Atan(CD22 / CD21)) * (180 / pi);
+                    //if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 >= 0))
+                    //    return positionAngle = (Math.Atan(CD21 / CD22)) * (180 / pi) * -1;
+                    //if ((Math.Abs(CD21) < Math.Abs(CD22)) && (CD22 < 0))
+                    //    return positionAngle = 180 - (Math.Atan(CD21 / CD22)) * (180 / pi);
+
+                    //else
+                    //{
+                    //    Log("Orientation Calculation error");
+                    //    FileLog2("Orientation Calculation error");
+                    //    return 0;
+                    //}
+
+                }
+
+                else
+                {
+                    Log("Could not find .wcs file");
+                    FileLog2("Could not find .wcs file " + file);
+                  //  return 0;
+                }
+            }
 
 
-         //   // read the txt file
+            catch (Exception e)
+            {
 
-         //   //StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt"); // 10-22-16
-
-
-         //   //string line;
-         //   //// while ((line = reader.ReadToEnd()) != null) {
-         //   //line = reader2.ReadToEnd();
-         //   //string[] items = line.Split('\n');
-         //   //string FieldLine = null;
-         //   //foreach (string item in items)
-         //   //{
-         //   //    //try parsing a different line in .txt file
-
-         //   //    //   if (item.EndsWith("pix.\r"))
-         //   //    if ((item.StartsWith("orientation")) && (!item.StartsWith("orientation_center")))
-         //   //    {
-
-         //   //        //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
-
-         //   //        //  FieldLine = item;
-         //   //        Log(item);
-         //   //        //  orientation = item.Substring(12, item.Length-2);
-         //   //        orientation = Convert.ToDouble(item.Substring(12, item.Length - 12));
-         //   //        //     int FirstComma = item.IndexOf(","); 
-         //   //        //int SecondComma = IndexOfSecond(item, ",");
-         //   //        //int Start = item.IndexOf("(");
-         //   //        //int End = item.IndexOf(")");
-         //   //        ////   int EqualsIndex = FieldLine.IndexOf(@"=");
-         //   //        //string ParsedRA = "";
-         //   //        //string ParsedDEC = "";
-         //   //        //int RAend = SecondComma - Start;
-         //   //        //int DECend = End - SecondComma;
-         //   //        //ParsedRA = FieldLine.Substring(Start + 1, RAend);
-         //   //        //ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
-
-         //   //        //ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
-         //   //        //ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
-
-         //   //        //Log("Parsed DEC = " + ParsedDEC);
-         //   //        //DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
-         //   //        //RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
-         //   //        Log("Orientation = " + orientation);
-
-         //   //    }
-         //   //}
-         //   //reader.Close();
+                Log("GetSolveData Error: " + e.ToString());
+                FileLog2("GetSolveData Error: " + e.ToString());
+                //return 0;
+            }
+         
         }
 
-       
 
 
         private void button63_Click(object sender, EventArgs e)
         {
-            Stream stream = new FileStream((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            //   StreamReader reader2 = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\tableWCS.txt"); // 10-22-16
-            StreamReader reader2 = new StreamReader(stream);
+        //    //test calculated orientation on selected .wcs file.  
 
-            string line;
-            // while ((line = reader.ReadToEnd()) != null) {
-            line = reader2.ReadToEnd();
-            string[] items = line.Split('\n');
-            string FieldLine = null;
-            foreach (string item in items)
-            {
-                //try parsing a different line in .txt file
+        //    string file;
+        //    string path;
+        //    openFileDialog2.Filter = "All files (*.*)|*.*";
+        //    if (openFileDialog2.ShowDialog() == DialogResult.OK)
+        //    {
 
-                //   if (item.EndsWith("pix.\r"))
-                if ((item.StartsWith("orientation")) && (!item.StartsWith("orientation_center")))
-                {
-
-                    //e.g.    RA,Dec = (205.003,49.9932), pixel scale 1.23661 arcsec/pix. 
-
-                    //  FieldLine = item;
-                    Log(item);
-                    //  orientation = item.Substring(12, item.Length-2);
-                    orientation = Convert.ToDouble(item.Substring(12, item.Length - 12));
-                    //     int FirstComma = item.IndexOf(","); 
-                    //int SecondComma = IndexOfSecond(item, ",");
-                    //int Start = item.IndexOf("(");
-                    //int End = item.IndexOf(")");
-                    ////   int EqualsIndex = FieldLine.IndexOf(@"=");
-                    //string ParsedRA = "";
-                    //string ParsedDEC = "";
-                    //int RAend = SecondComma - Start;
-                    //int DECend = End - SecondComma;
-                    //ParsedRA = FieldLine.Substring(Start + 1, RAend);
-                    //ParsedRA = Regex.Replace(ParsedRA, "[,]", "");
-
-                    //ParsedDEC = FieldLine.Substring(SecondComma + 1, DECend);
-                    //ParsedDEC = Regex.Replace(ParsedDEC, "[(),d]", "");
-
-                    //Log("Parsed DEC = " + ParsedDEC);
-                    //DEC = Convert.ToDouble(ParsedDEC);//coords from plate solve
-                    //RA = Convert.ToDouble(ParsedRA) / 15; //convert to hours
-                    Log("Orientation = " + orientation);
-
-                }
+        //        file = openFileDialog2.FileName.ToString();
+        //        Log((CalcOrientation(file).ToString()));
+        //        //path = Path.GetDirectoryName(file);
+        //        //if (Path.GetDirectoryName(file) != (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp"))
+        //        //    File.Copy(file, (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\cygwin_ansvr\tmp" + Path.GetFileName(file)), true);
+        //    }
+        //    else
+        //        return;  
+          
             }
-            reader2.Close();
-        }
 
 
        
