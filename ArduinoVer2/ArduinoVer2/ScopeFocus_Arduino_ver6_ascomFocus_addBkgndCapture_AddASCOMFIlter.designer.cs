@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend10 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series37 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series38 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series39 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series40 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title10 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea16 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend16 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series61 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series62 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series63 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series64 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title16 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -448,6 +448,8 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fileSystemWatcher7 = new System.IO.FileSystemWatcher();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.button62 = new System.Windows.Forms.Button();
+            this.button63 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown21)).BeginInit();
@@ -969,58 +971,58 @@
             // 
             // chart1
             // 
-            chartArea10.AxisX.Title = "Position";
-            chartArea10.AxisY.Crossing = -1.7976931348623157E+308D;
-            chartArea10.AxisY.IsStartedFromZero = false;
-            chartArea10.AxisY.Title = "HFR";
-            chartArea10.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea10);
-            legend10.Name = "Legend1";
-            this.chart1.Legends.Add(legend10);
+            chartArea16.AxisX.Title = "Position";
+            chartArea16.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea16.AxisY.IsStartedFromZero = false;
+            chartArea16.AxisY.Title = "HFR";
+            chartArea16.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea16);
+            legend16.Name = "Legend1";
+            this.chart1.Legends.Add(legend16);
             this.chart1.Location = new System.Drawing.Point(26, 350);
             this.chart1.Name = "chart1";
             this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series37.ChartArea = "ChartArea1";
-            series37.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series37.Legend = "Legend1";
-            series37.MarkerBorderWidth = 2;
-            series37.Name = "Rough V";
-            series37.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series37.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series38.ChartArea = "ChartArea1";
-            series38.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series38.Legend = "Legend1";
-            series38.MarkerBorderColor = System.Drawing.Color.Blue;
-            series38.MarkerColor = System.Drawing.Color.White;
-            series38.MarkerSize = 8;
-            series38.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series38.Name = "Fine V- Data Used";
-            series38.YValuesPerPoint = 2;
-            series39.ChartArea = "ChartArea1";
-            series39.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series39.Legend = "Legend1";
-            series39.MarkerBorderColor = System.Drawing.Color.Red;
-            series39.MarkerColor = System.Drawing.Color.White;
-            series39.MarkerSize = 8;
-            series39.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series39.Name = "Fine V";
-            series40.ChartArea = "ChartArea1";
-            series40.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series40.Legend = "Legend1";
-            series40.MarkerBorderColor = System.Drawing.Color.Purple;
-            series40.MarkerColor = System.Drawing.Color.Purple;
-            series40.MarkerSize = 8;
-            series40.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
-            series40.Name = "Temp Cal";
-            this.chart1.Series.Add(series37);
-            this.chart1.Series.Add(series38);
-            this.chart1.Series.Add(series39);
-            this.chart1.Series.Add(series40);
+            series61.ChartArea = "ChartArea1";
+            series61.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series61.Legend = "Legend1";
+            series61.MarkerBorderWidth = 2;
+            series61.Name = "Rough V";
+            series61.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series61.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series62.ChartArea = "ChartArea1";
+            series62.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series62.Legend = "Legend1";
+            series62.MarkerBorderColor = System.Drawing.Color.Blue;
+            series62.MarkerColor = System.Drawing.Color.White;
+            series62.MarkerSize = 8;
+            series62.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series62.Name = "Fine V- Data Used";
+            series62.YValuesPerPoint = 2;
+            series63.ChartArea = "ChartArea1";
+            series63.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series63.Legend = "Legend1";
+            series63.MarkerBorderColor = System.Drawing.Color.Red;
+            series63.MarkerColor = System.Drawing.Color.White;
+            series63.MarkerSize = 8;
+            series63.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series63.Name = "Fine V";
+            series64.ChartArea = "ChartArea1";
+            series64.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series64.Legend = "Legend1";
+            series64.MarkerBorderColor = System.Drawing.Color.Purple;
+            series64.MarkerColor = System.Drawing.Color.Purple;
+            series64.MarkerSize = 8;
+            series64.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series64.Name = "Temp Cal";
+            this.chart1.Series.Add(series61);
+            this.chart1.Series.Add(series62);
+            this.chart1.Series.Add(series63);
+            this.chart1.Series.Add(series64);
             this.chart1.Size = new System.Drawing.Size(688, 157);
             this.chart1.TabIndex = 51;
             this.chart1.Text = "chart1";
-            title10.Name = "Title 1";
-            this.chart1.Titles.Add(title10);
+            title16.Name = "Title 1";
+            this.chart1.Titles.Add(title16);
             // 
             // menuStrip1
             // 
@@ -1127,9 +1129,9 @@
             // Column1
             // 
             this.Column1.DataPropertyName = "Date";
-            dataGridViewCellStyle10.Format = "G";
-            dataGridViewCellStyle10.NullValue = null;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle16.Format = "G";
+            dataGridViewCellStyle16.NullValue = null;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle16;
             this.Column1.HeaderText = "Date";
             this.Column1.Name = "Column1";
             this.Column1.Width = 150;
@@ -4483,6 +4485,8 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage3.Controls.Add(this.button63);
+            this.tabPage3.Controls.Add(this.button62);
             this.tabPage3.Controls.Add(this.groupBox25);
             this.tabPage3.Controls.Add(this.disableCloseWarning);
             this.tabPage3.Controls.Add(this.textBox64);
@@ -4925,6 +4929,26 @@
             this.fileSystemWatcher1.NotifyFilter = System.IO.NotifyFilters.LastWrite;
             this.fileSystemWatcher1.SynchronizingObject = this;
             this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
+            // 
+            // button62
+            // 
+            this.button62.Location = new System.Drawing.Point(52, 190);
+            this.button62.Name = "button62";
+            this.button62.Size = new System.Drawing.Size(75, 23);
+            this.button62.TabIndex = 17;
+            this.button62.Text = "test";
+            this.button62.UseVisualStyleBackColor = true;
+            this.button62.Click += new System.EventHandler(this.button62_Click);
+            // 
+            // button63
+            // 
+            this.button63.Location = new System.Drawing.Point(133, 190);
+            this.button63.Name = "button63";
+            this.button63.Size = new System.Drawing.Size(75, 23);
+            this.button63.TabIndex = 18;
+            this.button63.Text = "button63";
+            this.button63.UseVisualStyleBackColor = true;
+            this.button63.Click += new System.EventHandler(this.button63_Click);
             // 
             // MainWindow
             // 
@@ -5480,6 +5504,8 @@
         private System.Windows.Forms.Button button54;
         private System.Windows.Forms.TextBox textBox70;
         private System.Windows.Forms.Button button56;
+        private System.Windows.Forms.Button button62;
+        private System.Windows.Forms.Button button63;
     }
 }
 
