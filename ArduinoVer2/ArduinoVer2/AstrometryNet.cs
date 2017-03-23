@@ -33,7 +33,7 @@ namespace Pololu.Usc.ScopeFocus
             InitializeComponent();
 
         }
-
+        
         //private static AstrometryNet inst;
         //public static AstrometryNet GetForm
         //{
@@ -494,7 +494,9 @@ namespace Pololu.Usc.ScopeFocus
                         MainWindow.RA = raCenter / 15;
                         decCenter = double.Parse(decdecimal);
                         MainWindow.DEC = decCenter;
-
+                        MainWindow.Orientation = Convert.ToSingle(orientation);
+                        
+                    
                         if ((raCenter != 0) || (decCenter != 0))
                         {
                            Log("Calibration data success:  RAcenter: " + raCenter/15 + "    DECcenter: " + decCenter + "    Orientation: " + orientation);
@@ -824,7 +826,7 @@ namespace Pololu.Usc.ScopeFocus
                 sr.Dispose();
             }
             Log("Corr2text file complete in " + GlobalVariables.Path2);
-           
+        
         }
 
         private void button1_Click(object sender, EventArgs e)

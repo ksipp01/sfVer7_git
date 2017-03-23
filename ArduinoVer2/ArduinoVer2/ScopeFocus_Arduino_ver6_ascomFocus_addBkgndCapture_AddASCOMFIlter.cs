@@ -439,7 +439,8 @@ namespace Pololu.Usc.ScopeFocus
         private static bool solveRequested = false;
 
 
-      //  private bool ClipboardListen { get; set; }
+        
+        //  private bool ClipboardListen { get; set; }
         //  int EnteredPID;
         //   double EnteredSlopeUP;
         //   double EnteredSlopeDWN;
@@ -15659,7 +15660,7 @@ namespace Pololu.Usc.ScopeFocus
 //3-22-17 begin rem since replaced with GetSolveData
 
 
-                    StreamReader reader = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\text.txt"); // 10-22-16
+               //     StreamReader reader = new StreamReader((Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)) + @"\cygwin_ansvr\text.txt"); // 10-22-16
 
 
                     //string line;
@@ -16004,10 +16005,19 @@ namespace Pololu.Usc.ScopeFocus
 
                 if ((!SettingFocusSolve) && (!SettingTargetSolve) && (usingASCOM))
                 {
-                    string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString();
-                    DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew/Set", "Snyc", "Ignore");
+                    string text1 = "Location: \n\r" + "RA: " + RA.ToString() + "\n\r" + "DEC: " + DEC.ToString() + " \n\r\n\r" + "Orientation: \n\r " + Orientation.ToString();
+                    //    DialogResult result = CustomMsgBox.Show(text1, "Plate Solve Success", "Slew/Set", "Snyc", "Close", "Go To", "Sync");
+                    //   CustomMsgBox Msg = new CustomMsgBox(text1, "Plate Solve Success", "Slew/Set", "Snyc", "Close", "Go To", "Sync");
+                    using (CustomMsgBox Msg = new CustomMsgBox(text1))
+                    {
+                        Msg.ShowDialog(this);
+                    }
+
+                   
+
                     //   if ((result == DialogResult.Yes) & (checkBox25.Checked == false)) //slew
-                    if (result == DialogResult.Yes)  //slew
+                    //  if (result == DialogResult.Yes)  //  MOUNT slew
+                    if (CustomMsgBox.MountSlew)
                     {
                         // scope = new ASCOM.DriverAccess.Telescope(devId);
                         toolStripStatusLabel1.Text = "Slewing to Target";
@@ -16019,7 +16029,7 @@ namespace Pololu.Usc.ScopeFocus
                         Log("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
                         FileLog2("Slewed to RA = " + RA.ToString() + "   Dec = " + DEC.ToString());
 
-
+                        CustomMsgBox.MountSlew = false;
 
 
                         //remd 11-9-16
@@ -16097,34 +16107,109 @@ namespace Pololu.Usc.ScopeFocus
                         }
 
                     }
-
-
-
-
-                    if (result == DialogResult.No) // sync
+                    if (CustomMsgBox.MountSync)
                     {
-                        DialogResult result2 = MessageBox.Show("Are you sure you want to sync to this position?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                        DialogResult result2 = MessageBox.Show("Are you sure you want to sync the mount to this position?", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                         if (result2 == DialogResult.OK)
                         {
                             Mount.scope.SyncToCoordinates(RA, DEC);
                             Log("synced to:  RA = " + Mount.scope.RightAscension.ToString() + "     Dec = " + Mount.scope.Declination.ToString());
                             fileSystemWatcher7.EnableRaisingEvents = false;
+                            CustomMsgBox.MountSync = false;
                         }
                         else
+                        {
+                            CustomMsgBox.MountSync = false;
                             return;
+                        }
+                          
                     }
-                    if (result == DialogResult.Ignore) // ignore
+                    // if (result == DialogResult.OK) // Rotator Move
+                    if (CustomMsgBox.RotatorMove)
                     {
+                        DialogResult result2 = MessageBox.Show("Rotator Moving", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                        if (result2 == DialogResult.OK)
+                        {
+                          //  float targetPos = Convert.ToSingle(textBox70.Text);
+                            float targetPos = (float)Orientation;
+                            float degreesToMove = targetPos - (float)skyAngle;
+                            float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
+                            if (absTarget < 0)
+                                absTarget = absTarget + 360;
+                            if (absTarget > 360)
+                                absTarget = absTarget - 360;
+                            Rot.Rotate.MoveAbsolute(absTarget);
+
+                            fileSystemWatcher7.EnableRaisingEvents = false;
+
+
+                            //   Rot.Rotate.MoveAbsolute((float)Orientation);
+                            Log("Rotator Moving to " + Orientation.ToString());
+                            CustomMsgBox.RotatorMove = false;
+                         //   fileSystemWatcher7.EnableRaisingEvents = false;
+                        }
+                        else
+                        {
+                            CustomMsgBox.RotatorMove = false;
+                            return;
+                        }
+                            
+                    }
+                    if (CustomMsgBox.RotatorSync)
+                    {
+                        DialogResult result1;
+                        result1 = MessageBox.Show("Set Current Rotator/CCD orientation to " + Orientation.ToString() + "?", "scopefocus",
+                             MessageBoxButtons.OKCancel);
+                        if (result1 == DialogResult.OK)
+                        {
+                            skyAngle = Convert.ToDouble(Orientation);
+                            Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+                            textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
+                            button52.BackColor = System.Drawing.Color.Lime;
+                            button52.Text = "Synced";
+                         //   timer2.Enabled = true;
+                            CustomMsgBox.RotatorSync = false;
+                        }
+                        else
+                        {
+                            CustomMsgBox.RotatorSync = false;
+                            // timer2.Enabled = true;
+                            return;
+                          
+                        }
+
+
+
+
+                        //DialogResult result2 = MessageBox.Show("Sync Rotator to current Orientation", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                        //if (result2 == DialogResult.OK)
+                        //{
+                        //    Rot.Rotate.s((float)Orientation);
+                        //    Log("Rotator Moving to ");
+                        //    fileSystemWatcher7.EnableRaisingEvents = false;
+                        //}
+                        //else
+                        //    return;
+                    }
+                    if (CustomMsgBox.Close)
+                    {
+
                         fileSystemWatcher7.EnableRaisingEvents = false;
                         button55.BackColor = Color.WhiteSmoke;
                         toolStripStatusLabel1.Text = "Ready";
                         toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
                         ast.Close();  // this may not need to be here
-                        return;
+                                      // return;
+                        CustomMsgBox.Close = false;
+                        
                     }
+                    //  if (result == DialogResult.No) // MOUNT sync 
+
+                    //  if (result == DialogResult.Ignore) // ignore
+
 
                 }
-
+                
                 button55.BackColor = Color.WhiteSmoke;
                 toolStripStatusLabel1.Text = "Ready";
                 toolStripStatusLabel1.BackColor = Color.WhiteSmoke;
@@ -16246,7 +16331,7 @@ namespace Pololu.Usc.ScopeFocus
         }
 
 
-        private async void button55_Click(object sender, EventArgs e)
+        private async void button55_Click(object sender, EventArgs e) // plate solve go
         {
             //if (GlobalVariables.LocalPlateSolve)
             //{
@@ -16667,6 +16752,7 @@ namespace Pololu.Usc.ScopeFocus
                     {
                         // Log("Plate Solve Complete");
                         ast.Dispose();
+                       
                         // ast.Close();
 
                         AstrometryRunning = false;
@@ -18613,7 +18699,7 @@ namespace Pololu.Usc.ScopeFocus
 
             }
         }
-        private bool RotatorIsConnected
+        public static bool RotatorIsConnected
         {
             get
             {
@@ -20365,10 +20451,49 @@ namespace Pololu.Usc.ScopeFocus
           
             }
 
+        private void button62_Click_1(object sender, EventArgs e)
+        {
+            // **** this does not work. 
+            //trying to run bash or mitty without having to send keystroke emulation
 
-       
 
-      
+            //  string  command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + Path.GetFileName(GlobalVariables.SolveImage);  // write .new file
+            string command = "/usr/bin/solve-field --sigma " + sigma.ToString() + " -z  " + DwnSz + " -O --objs 100 --no-plots -L " + Low.ToString() + " -H " + High.ToString() + " " + " C:\\Users\\ksipp_000\\AppData\\Local\\cygwin_ansvr\\tmp\\test3.ft"; // write .new file
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.CreateNoWindow = true; // 10-22-16 was true
+                                                  //   proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal; // new 10-22-16
+
+
+            //string filename = @"\cygwin_ansvr\bin\mintty.exe";     //--login -c ""/usr/bin/solve-field -p -O -U none -R none -M none -N none -C cancel--crpix -center -z 2--objs 100 -L .5 -H 2.3 /tmp/stars.fit"" > text.txt";
+            //proc.StartInfo.FileName = @"C:\cygwin\bin\mintty.exe";  //****** orig working *******
+
+            // 3-22-17 remd to try below
+            string filename = @"\cygwin_ansvr\bin\bash.exe"; 
+            proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
+            proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
+            proc.StartInfo.Arguments = "-c \" " + command + " \"";
+
+
+            // 3-22-17 try....
+            //string filename = @"\cygwin_ansvr\bin\bash.exe"; 
+            // proc.StartInfo.FileName = (Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + filename);  //orig working
+            // proc.StartInfo.Arguments = "--log /text.txt -i /Cygwin-Terminal.ico -"; // orig working
+
+
+
+
+            proc.Start();
+            Thread.Sleep(1000);
+
+        }
+
+
+
+
+
 
 
         //private void button10_Click(object sender, EventArgs e)  // this was just to set tome text in status bar to gauge min neb window size   

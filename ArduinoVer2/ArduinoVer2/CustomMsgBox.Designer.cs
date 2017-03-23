@@ -33,6 +33,10 @@
             this.TesBtn = new System.Windows.Forms.Button();
             this.NoBtn = new System.Windows.Forms.Button();
             this.IgnorBtn = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,7 +47,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(288, 64);
+            this.panel1.Size = new System.Drawing.Size(275, 104);
             this.panel1.TabIndex = 0;
             // 
             // label1
@@ -57,34 +61,74 @@
             // 
             // TesBtn
             // 
-            this.TesBtn.Location = new System.Drawing.Point(12, 70);
+            this.TesBtn.Location = new System.Drawing.Point(89, 110);
             this.TesBtn.Name = "TesBtn";
             this.TesBtn.Size = new System.Drawing.Size(75, 23);
             this.TesBtn.TabIndex = 1;
-            this.TesBtn.Text = "button1";
+            this.TesBtn.Text = "Slew/Set";
             this.TesBtn.UseVisualStyleBackColor = true;
             this.TesBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // NoBtn
             // 
-            this.NoBtn.Location = new System.Drawing.Point(109, 70);
+            this.NoBtn.Location = new System.Drawing.Point(175, 110);
             this.NoBtn.Name = "NoBtn";
             this.NoBtn.Size = new System.Drawing.Size(75, 23);
             this.NoBtn.TabIndex = 2;
-            this.NoBtn.Text = "button2";
+            this.NoBtn.Text = "Sync";
             this.NoBtn.UseVisualStyleBackColor = true;
             this.NoBtn.Click += new System.EventHandler(this.button2_Click);
             // 
             // IgnorBtn
             // 
             this.IgnorBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.IgnorBtn.Location = new System.Drawing.Point(201, 70);
+            this.IgnorBtn.Location = new System.Drawing.Point(89, 175);
             this.IgnorBtn.Name = "IgnorBtn";
             this.IgnorBtn.Size = new System.Drawing.Size(75, 23);
             this.IgnorBtn.TabIndex = 3;
-            this.IgnorBtn.Text = "button3";
+            this.IgnorBtn.Text = "Close";
             this.IgnorBtn.UseVisualStyleBackColor = true;
             this.IgnorBtn.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(89, 139);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 4;
+            this.button4.Text = "Move To";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(175, 139);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 5;
+            this.button5.Text = "Snyc";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(24, 113);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(51, 17);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Mount:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(16, 142);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(59, 17);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Rotator:";
             // 
             // CustomMsgBox
             // 
@@ -92,7 +136,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.IgnorBtn;
-            this.ClientSize = new System.Drawing.Size(288, 101);
+            this.ClientSize = new System.Drawing.Size(275, 210);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.IgnorBtn);
             this.Controls.Add(this.NoBtn);
             this.Controls.Add(this.TesBtn);
@@ -103,10 +151,12 @@
             this.Name = "CustomMsgBox";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "CustomMsgBox";
+            this.Text = "Plate Solve Results";
+            this.Load += new System.EventHandler(this.CustomMsgBox_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -117,5 +167,9 @@
         private System.Windows.Forms.Button TesBtn;
         private System.Windows.Forms.Button NoBtn;
         private System.Windows.Forms.Button IgnorBtn;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button4;
     }
 }
