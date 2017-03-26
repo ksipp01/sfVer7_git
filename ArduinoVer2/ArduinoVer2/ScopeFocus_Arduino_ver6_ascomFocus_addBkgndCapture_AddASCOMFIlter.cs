@@ -16672,10 +16672,15 @@ namespace Pololu.Usc.ScopeFocus
                 }
 
 
-                if (RotatorIsConnected)
+                if (RotatorIsConnected) 
                     textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
-                if (Rot.SkyAngleCorrection != 0)
-                    textBox68.Text = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2).ToString();
+
+                //   if (Rot.SkyAngleCorrection != 0)
+                skyAngle = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2);
+                if (skyAngle > 180)
+                    skyAngle = skyAngle - 360;
+                
+                textBox68.Text = skyAngle.ToString();
                 //if (RotatorIsConnected)
                 //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
                 //may need 'if scope.connected'
@@ -20144,7 +20149,11 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button54_Click(object sender, EventArgs e)
         {
-            float targetPos = Convert.ToSingle(textBox70.Text) + 180;// astrometry orientation is -180 to 180
+            float targetPos = Convert.ToSingle(textBox70.Text); //- Rot.SkyAngleCorrection;
+            if (targetPos > 180)
+                targetPos = targetPos - 360;
+               
+            // astrometry orientation is -180 to 180
             float degreesToMove = targetPos - (float)skyAngle;
             float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
             if (absTarget < 0)
