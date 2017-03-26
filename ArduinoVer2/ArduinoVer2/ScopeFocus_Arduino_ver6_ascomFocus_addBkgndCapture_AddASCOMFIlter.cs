@@ -20144,7 +20144,7 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button54_Click(object sender, EventArgs e)
         {
-            float targetPos = Convert.ToSingle(textBox70.Text);
+            float targetPos = Convert.ToSingle(textBox70.Text) + 180;// astrometry orientation is -180 to 180
             float degreesToMove = targetPos - (float)skyAngle;
             float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
             if (absTarget < 0)
