@@ -18708,7 +18708,16 @@ namespace Pololu.Usc.ScopeFocus
         {
             get
             {
-                return ((Pololu.Usc.ScopeFocus.Rot.Rotate != null) && (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true));
+                if ((Pololu.Usc.ScopeFocus.Rot.DevId5 == "") || (Pololu.Usc.ScopeFocus.Rot.DevId5 == null))
+                {
+                    return false;
+                }
+               else if (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true)
+                    return true;
+               else
+                    return false;
+
+               // return ((Pololu.Usc.ScopeFocus.Rot.Rotate != null) && (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true));
             }
 
         }
@@ -20079,28 +20088,39 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button10_Click_3(object sender, EventArgs e)
         {
-            if (RotatorIsConnected)
+            try
             {
-                Pololu.Usc.ScopeFocus.Rot.Rotate.Connected = false;
-                Log(Pololu.Usc.ScopeFocus.Rot.DevId5 + " disconnected");
-                button10.BackColor = System.Drawing.Color.WhiteSmoke;
-                Pololu.Usc.ScopeFocus.Rot.DevId5 = "";
-                groupBox25.Enabled = false;
-                return;
-            }
-
-          
-            else
-            {
-                Rot.Chooser();
                 if (RotatorIsConnected)
-                    button10.BackColor = System.Drawing.Color.Lime;
-                Log("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
-                FileLog2("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
-                groupBox25.Enabled = true;
-            }
+                {
+                    Pololu.Usc.ScopeFocus.Rot.Rotate.Connected = false;
+                    Pololu.Usc.ScopeFocus.Rot.Rotate.Dispose();
+                  
+                    Log(Pololu.Usc.ScopeFocus.Rot.DevId5 + " disconnected");
+                    button10.BackColor = System.Drawing.Color.WhiteSmoke;
+                    
+                    Pololu.Usc.ScopeFocus.Rot.DevId5 = "";
+                    groupBox25.Enabled = false;
+                    return;
+                }
 
-        }
+
+                else
+                {
+                    Rot.Chooser();
+                    if (RotatorIsConnected)
+                        button10.BackColor = System.Drawing.Color.Lime;
+                    Log("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
+                    FileLog2("connected to " + Pololu.Usc.ScopeFocus.Rot.DevId5);
+                    groupBox25.Enabled = true;
+                }
+
+            }
+            catch
+            {
+                Log("Rotator connection error");
+            }
+            }
+        
 
         private void button25_Click(object sender, EventArgs e)
         {
@@ -20137,6 +20157,7 @@ namespace Pololu.Usc.ScopeFocus
                 textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
                 button52.BackColor = System.Drawing.Color.Lime;
                 button52.Text = "Synced";
+                Log("Rotator Synced to: " + textBox69.Text);
                 timer2.Enabled = true;
             }
             else
