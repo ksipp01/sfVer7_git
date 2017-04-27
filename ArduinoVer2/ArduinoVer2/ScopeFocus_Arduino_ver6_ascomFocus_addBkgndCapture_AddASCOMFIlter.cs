@@ -3693,6 +3693,16 @@ namespace Pololu.Usc.ScopeFocus
                     Mount.scope.Dispose();
                 }
             }
+            if (!string.IsNullOrEmpty(Rot.DevId5))
+            {
+                if (Rot.Rotate.Connected == true)
+                {
+                    Rot.Rotate.Connected = false;
+                    Thread.Sleep(100);
+                    Rot.Rotate.Dispose();
+                }
+            }
+
             if (!string.IsNullOrEmpty(Filter.DevId3))
             {
                 if (Filter.filterWheel.Connected == true)
@@ -16671,7 +16681,7 @@ namespace Pololu.Usc.ScopeFocus
                     }
                 }
 
-
+                if (button10.BackColor == Color.Lime)  // don't even check if not connected or used 
                 if (RotatorIsConnected) 
                     textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
 
@@ -18704,6 +18714,7 @@ namespace Pololu.Usc.ScopeFocus
 
             }
         }
+        // 4-27-17 orig working
         public static bool RotatorIsConnected
         {
             get
@@ -18712,15 +18723,17 @@ namespace Pololu.Usc.ScopeFocus
                 {
                     return false;
                 }
-               else if (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true)
+                else if (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true)
                     return true;
-               else
+                else
                     return false;
 
-               // return ((Pololu.Usc.ScopeFocus.Rot.Rotate != null) && (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true));
+                // return ((Pololu.Usc.ScopeFocus.Rot.Rotate != null) && (Pololu.Usc.ScopeFocus.Rot.Rotate.Connected == true));
             }
 
         }
+
+      
 
         private bool SwitchIsConnected
             {
@@ -20085,7 +20098,7 @@ namespace Pololu.Usc.ScopeFocus
         {
 
         }
-
+        
         private void button10_Click_3(object sender, EventArgs e)
         {
             try
@@ -20093,6 +20106,7 @@ namespace Pololu.Usc.ScopeFocus
                 if (RotatorIsConnected)
                 {
                     Pololu.Usc.ScopeFocus.Rot.Rotate.Connected = false;
+                    
                     Pololu.Usc.ScopeFocus.Rot.Rotate.Dispose();
                   
                     Log(Pololu.Usc.ScopeFocus.Rot.DevId5 + " disconnected");
@@ -20115,10 +20129,21 @@ namespace Pololu.Usc.ScopeFocus
                 }
 
             }
-            catch
+
+            catch (Exception ex)
             {
-                Log("Rotator connection error");
+
+                Log("Rotator Connection Error: " + ex.ToString());
+                FileLog2("GetOrientation Error: " + ex.ToString());
+               
             }
+
+
+
+            //catch
+            //{
+            //    Log("Rotator connection error");
+            //}
             }
         
 
