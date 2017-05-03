@@ -1244,8 +1244,8 @@ namespace Pololu.Usc.ScopeFocus
                 count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                 textBox1.Text = count.ToString();
                 //   textBox1.Text = focuser.Position.ToString();
-                if (!ContinuousHoldOn)
-                    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+            //    if (!ContinuousHoldOn) // remd 5-2-17
+             //       Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                 toolStripStatusLabel1.BackColor = System.Drawing.Color.WhiteSmoke;
                 toolStripStatusLabel1.Text = "Ready";
                 this.Refresh();
@@ -2457,16 +2457,16 @@ namespace Pololu.Usc.ScopeFocus
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                   //  Log("Taking up backlash");
                     FileLog2("Move to " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
-                    if (!ContinuousHoldOn)
-                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+                 //   if (!ContinuousHoldOn)  // remd 5-2-17
+                 //       Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(1000);//was 3000
                     gotopos(posMin + (int)numericUpDown39.Value);
                     //   focuser.Move(posMin + (int)numericUpDown39.Value);//goto measure position
                     Thread.Sleep(100);
                     count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
-                    if (!ContinuousHoldOn)
-                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+              //      if (!ContinuousHoldOn)  // remd 5-2-17
+               //         Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(2000);
                     FileLog2("Move to: " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
                 }
@@ -2483,8 +2483,8 @@ namespace Pololu.Usc.ScopeFocus
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
                   //  Log("Taking up backlash");
                     FileLog2("Move to: " + Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
-                    if (!ContinuousHoldOn)
-                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+              //      if (!ContinuousHoldOn) // remd 5-2-17
+                //        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(1000);
                     gotopos(posMin - (int)numericUpDown39.Value);
                     // focuser.Move(posMin - (int)numericUpDown39.Value);
@@ -2492,8 +2492,8 @@ namespace Pololu.Usc.ScopeFocus
 
                     count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                     textBox1.Text = Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString();
-                    if (!ContinuousHoldOn)
-                        Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
+                  //  if (!ContinuousHoldOn) // remd 5-2-17
+                    //    Pololu.Usc.ScopeFocus.Focus.focuser.Halt();
                     Thread.Sleep(2000);
                     FileLog2("Move to: " +Pololu.Usc.ScopeFocus.Focus.focuser.Position.ToString());
 
@@ -16682,20 +16682,21 @@ namespace Pololu.Usc.ScopeFocus
                 }
 
                 if (button10.BackColor == Color.Lime)  // don't even check if not connected or used 
-                if (RotatorIsConnected) 
-                    textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
+                {
+                    if (RotatorIsConnected)
+                        textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
 
-                //   if (Rot.SkyAngleCorrection != 0)
-                skyAngle = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2);
-                if (skyAngle > 180)
-                    skyAngle = skyAngle - 360;
-                
-                textBox68.Text = skyAngle.ToString();
-                //if (RotatorIsConnected)
-                //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
-                //may need 'if scope.connected'
-                //    scope = new ASCOM.DriverAccess.Telescope(devId);
+                    //   if (Rot.SkyAngleCorrection != 0)
+                    skyAngle = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2);
+                    if (skyAngle > 180)
+                        skyAngle = skyAngle - 360;
 
+                    textBox68.Text = skyAngle.ToString();
+                    //if (RotatorIsConnected)
+                    //    textBox71.Text = Rot.Rotate.TargetPosition.ToString();  
+                    //may need 'if scope.connected'
+                    //    scope = new ASCOM.DriverAccess.Telescope(devId);
+                }
                 if (usingASCOM) // added 3-12-17  used this as seems less intensive than calling mount.connected.  and this is set true upon connect
                 {
 
