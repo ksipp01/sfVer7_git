@@ -1240,7 +1240,7 @@ namespace Pololu.Usc.ScopeFocus
             }
             else
             {
-                delay(1);
+                msdelay(100);
                 count = Pololu.Usc.ScopeFocus.Focus.focuser.Position;
                 textBox1.Text = count.ToString();
                 //   textBox1.Text = focuser.Position.ToString();
@@ -16140,8 +16140,11 @@ namespace Pololu.Usc.ScopeFocus
                         DialogResult result2 = MessageBox.Show("Rotator Moving", "scopefocus", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                         if (result2 == DialogResult.OK)
                         {
-                          //  float targetPos = Convert.ToSingle(textBox70.Text);
                             float targetPos = (float)Orientation;
+                            if (targetPos < 0)
+                                targetPos = targetPos + 360; // Convert to 0-360               
+                            if (skyAngle < 0)
+                                skyAngle = skyAngle + 360;
                             float degreesToMove = targetPos - (float)skyAngle;
                             float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
                             if (absTarget < 0)
@@ -16149,6 +16152,19 @@ namespace Pololu.Usc.ScopeFocus
                             if (absTarget > 360)
                                 absTarget = absTarget - 360;
                             Rot.Rotate.MoveAbsolute(absTarget);
+
+                            //  float targetPos = Convert.ToSingle(textBox70.Text); 
+
+                            // 5-5-17 remd below
+                            //float targetPos = (float)Orientation;
+                            ////  float degreesToMove = targetPos - (float)skyAngle;
+                            //float degreesToMove = (float)skyAngle - targetPos;
+                            //float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
+                            //if (absTarget < 0)
+                            //    absTarget = absTarget + 360;
+                            //if (absTarget > 360)
+                            //    absTarget = absTarget - 360;
+                            //Rot.Rotate.MoveAbsolute(absTarget);
 
                             fileSystemWatcher7.EnableRaisingEvents = false;
 
@@ -16173,11 +16189,29 @@ namespace Pololu.Usc.ScopeFocus
                         if (result1 == DialogResult.OK)
                         {
                             skyAngle = Convert.ToDouble(Orientation);
-                            Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+
+                            if (skyAngle < 0)
+                                skyAngle = skyAngle + 360;
+
+
+                            //   Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+                            Rot.SkyAngleCorrection = (float)skyAngle - Rot.Rotate.Position;
                             textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
                             button52.BackColor = System.Drawing.Color.Lime;
                             button52.Text = "Synced";
+                            Log("Rotator Synced to: " + textBox69.Text);
                          //   timer2.Enabled = true;
+
+                            // 5-5-17 remd below
+                            // since orientation is -180 to 180 convert to 0-360
+                            //if (skyAngle < 0)
+                            //    skyAngle = skyAngle + 360;
+
+                            //Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+                            //textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
+                            //button52.BackColor = System.Drawing.Color.Lime;
+                            //button52.Text = "Synced";
+                        
                             CustomMsgBox.RotatorSync = false;
                         }
                         else
@@ -16687,7 +16721,8 @@ namespace Pololu.Usc.ScopeFocus
                         textBox66.Text = Math.Round(Rot.Rotate.Position, 2).ToString();
 
                     //   if (Rot.SkyAngleCorrection != 0)
-                    skyAngle = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2);
+                 //   skyAngle = Math.Round((Rot.Rotate.Position - Rot.SkyAngleCorrection), 2);
+                    skyAngle = Math.Round((Rot.Rotate.Position + Rot.SkyAngleCorrection), 2); // 5-5-17
                     if (skyAngle > 180)
                         skyAngle = skyAngle - 360;
 
@@ -20171,7 +20206,7 @@ namespace Pololu.Usc.ScopeFocus
 
 
         
-        private void button52_Click(object sender, EventArgs e)
+        private void button52_Click(object sender, EventArgs e) // rotator sync
         {
             DialogResult result1;
             result1 = MessageBox.Show("Set Current Rotator/CCD orientation to " + textBox68.Text + "?", "scopefocus",
@@ -20179,7 +20214,19 @@ namespace Pololu.Usc.ScopeFocus
             if (result1 == DialogResult.OK)
             {
                 skyAngle = Convert.ToDouble(textBox68.Text);
-                Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+                if (skyAngle < -180 || skyAngle > 180)
+                {
+                    MessageBox.Show("Sky angle should be between -180 and 180 degrees", "scopefocus");
+                    textBox68.Clear();
+                    return;
+                }
+                //convert to 0 to 360
+                if (skyAngle < 0)
+                    skyAngle = skyAngle + 360;
+
+
+                //   Rot.SkyAngleCorrection = Rot.Rotate.Position - (float)skyAngle;
+                Rot.SkyAngleCorrection = (float)skyAngle - Rot.Rotate.Position ;
                 textBox69.Text = Math.Round(Rot.SkyAngleCorrection, 2).ToString();
                 button52.BackColor = System.Drawing.Color.Lime;
                 button52.Text = "Synced";
@@ -20194,13 +20241,20 @@ namespace Pololu.Usc.ScopeFocus
 
         }
 
-        private void button54_Click(object sender, EventArgs e)
+        private void button54_Click(object sender, EventArgs e) // rotator GO button
         {
             float targetPos = Convert.ToSingle(textBox70.Text); //- Rot.SkyAngleCorrection;
-            if (targetPos > 180)
-                targetPos = targetPos - 360;
-               
-            // astrometry orientation is -180 to 180
+                                                                
+            if (targetPos < -180 || targetPos > 180)  // must be in for form of -180 to 180
+            {
+                MessageBox.Show("Sky angle should be between -180 and 180 degrees", "scopefocus");
+                textBox68.Clear();
+                return;
+            }
+            if (targetPos < 0)
+                targetPos = targetPos + 360; // Convert to 0-360               
+           if (skyAngle < 0)
+                skyAngle = skyAngle + 360;
             float degreesToMove = targetPos - (float)skyAngle;
             float absTarget = (Rot.Rotate.Position + degreesToMove) % 360;
             if (absTarget < 0)
