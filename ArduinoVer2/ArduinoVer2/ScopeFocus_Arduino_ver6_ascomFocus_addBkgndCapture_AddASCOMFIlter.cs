@@ -115,7 +115,7 @@
 // 1-10-17 removed backlash determiniation and tempcal.  they don't work and arent used/  backlash can be foun by diff between upslope and dwnslope foucs points. 
 // 1-13-17 and 1-14-17 consolidated filesystemwatcher to 2.  2,3,4,5 into #1 and #7 stayed separate.   
 // 1-15-17 worked on internal filterwheel,other fixes.
-
+// 8-23-17 lines 10966 to 984  fixed click on star for neb fine focus wasn't working....
 
 ///  to do:
 /// ver21 see above 
@@ -10964,20 +10964,24 @@ namespace Pololu.Usc.ScopeFocus
                 //******************* added 3_13
                 int panel2Vis = IsWindowVisible(panelhwnd2);
                 if (Handles.NebVNumber == 4)
-                    Handles.Panelhwnd = panelhwnd1;
-                else
-                {
-                    if (panel2Vis == 1)
-                    {
-                        Handles.Panelhwnd = panelhwnd2;
-                        //  Log("panel2vis " + panel2Vis.ToString() + " # " + panelhwnd.ToString());
-                    }
-                    else
-                    {
-                        Handles.Panelhwnd = panelhwnd3;
-                    }
-                }
-                int panel3Vis = IsWindowVisible(panelhwnd3);//WORKS  visable =1
+                    Handles.Panelhwnd = panelhwnd2;   // 8-23-17  looks like needs to be panel 2 WAS NEXT LINE BELOW
+                  //  Handles.Panelhwnd = panelhwnd1;
+
+
+                // remd 8-23-17  
+                //else
+                //{
+                //    if (panel2Vis == 1)
+                //    {
+                //        Handles.Panelhwnd = panelhwnd2;
+                //        //  Log("panel2vis " + panel2Vis.ToString() + " # " + panelhwnd.ToString());
+                //    }
+                //    else
+                //    {
+                //        Handles.Panelhwnd = panelhwnd3;
+                //    }
+                //}
+             //   int panel3Vis = IsWindowVisible(panelhwnd3);//WORKS  visable =1
                 // Log("panel3vis " + panel3Vis.ToString() + " # " + panelhwnd.ToString());
                 Log("Focus star click pos = " + starpos.ToString() + "  X = " + xxx.X.ToString() + "  Y = " + xxx.Y.ToString());
 
