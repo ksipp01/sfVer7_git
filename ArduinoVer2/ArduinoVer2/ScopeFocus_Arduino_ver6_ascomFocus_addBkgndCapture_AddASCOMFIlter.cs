@@ -116,6 +116,9 @@
 // 1-13-17 and 1-14-17 consolidated filesystemwatcher to 2.  2,3,4,5 into #1 and #7 stayed separate.   
 // 1-15-17 worked on internal filterwheel,other fixes.
 // 8-23-17 lines 10966 to 984  fixed click on star for neb fine focus wasn't working....
+// 8-29-17 moved waiting for dither while loop to line 10176 so nebfienefovus cant start until dither is done.  
+
+
 
 ///  to do:
 /// ver21 see above 
@@ -2531,6 +2534,23 @@ namespace Pololu.Usc.ScopeFocus
                 if (checkBox22.Checked == true)
                 {
 
+                    // 2-3-17 add
+                    // Capturing = true;
+
+
+
+                    //remd 8-29-17
+
+                    //while (Capturing)
+                    //{//added 2-3-17
+                    // // wait for sequence done in Neb status bar before proceeding....
+                    //    MonitorNebStatus();
+                    //    toolStripStatusLabel1.Text = "Waiting for Dither";
+                    //    delay(1);
+                    //}
+
+
+
                     fileSystemWatcher1.Filter = "*.fit"; // 1-13-17 was 3
                     FileLog2("FSW1 *.fit enabled fsnumber=3");
                     fileSystemWatcher1.EnableRaisingEvents = true;
@@ -2543,15 +2563,7 @@ namespace Pololu.Usc.ScopeFocus
                         FineFocusAbort = false;
 
 
-                    // 2-3-17 add
-                   // Capturing = true;
-                    while (Capturing)
-                    {//added 2-3-17
-                     // wait for sequence done in Neb status bar before proceeding....
-                     //MonitorNebStatus();
-                        toolStripStatusLabel1.Text = "Waiting for Dither";
-                        delay(1);
-                    }
+             
 
                     //wait here for dither to complete ???? 2-3-17
                     //while (gotoFocusDitherWait)
@@ -2566,14 +2578,14 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
-
-                    while (Capturing)
-                    {//added 2-3-17
-                     // wait for sequence done in Neb status bar before proceeding....
-                     //MonitorNebStatus();
-                        toolStripStatusLabel1.Text = "Waiting for Dither";
-                        delay(1);
-                    }
+                    //remd 8-29-17
+                    //while (Capturing)
+                    //{//added 2-3-17
+                    // // wait for sequence done in Neb status bar before proceeding....
+                    // MonitorNebStatus();
+                    //    toolStripStatusLabel1.Text = "Waiting for Dither";
+                    //    delay(1);
+                    //}
 
                     fileSystemWatcher1.Filter = "*.bmp"; // 1-13-17 was 3
                     FileLog2("FSW1 *.bmp enabled");
@@ -10166,8 +10178,26 @@ namespace Pololu.Usc.ScopeFocus
                     if (radioButton12.Checked == true)
                         FocusTime = FocusTime * 1000;
                  */
+
+
+
+                // add 8-29-17  // wait here before anything
+                while (Capturing)
+                {//added 2-3-17
+                 // wait for sequence done in Neb status bar before proceeding....
+                    MonitorNebStatus();
+                    toolStripStatusLabel1.Text = "Waiting for Dither";
+                    delay(1);
+                }
+
+
+
+
+
                 if (checkBox10.Checked == true)//focus star within target frame (no slew needed) 
                 {
+
+
 
 
                     if (checkBox22.Checked == true)//******* try adding 6-29 for metric focus
@@ -14844,16 +14874,17 @@ namespace Pololu.Usc.ScopeFocus
                 if (Mount.scope.SideOfPier == Mount.scope.DestinationSideOfPier(Mount.scope.RightAscension, Mount.scope.Declination))
                     FlipNeeded = false;
                 else
+                {
                     FlipNeeded = true;
-
-                //   Log("Flip Needed = " + FlipNeeded.ToString() + "    Time to flip " + TimeSpan.FromHours((double)TimeToFlip).ToString());
-                if (FlipNeeded == true && FlipDone == false)
+                 FileLog2("Flip Needed = " + FlipNeeded.ToString() + "    Time to flip " + TimeSpan.FromHours((double)TimeToFlip).ToString());
+                }
+                    if (FlipNeeded == true && FlipDone == false)
                 {
                     // 12-7-16 
                     ph.StopCapture();
                    // PHDcommand(PHD_PAUSE);
 
-                    //     Log("guiding paused for flip");
+                     FileLog2("guiding paused for flip");
                     GotoTargetLocation();
                     while (Mount.scope.Slewing)
                         Thread.Sleep(100);
@@ -14935,7 +14966,7 @@ namespace Pololu.Usc.ScopeFocus
                 while (Capturing == true)
                 {
                     //2-4-17
-                    FileLog2("NebStatus: " + MonitorNebStatus());
+                //    FileLog2("NebStatus: " + MonitorNebStatus()); // remd 8-29-17
                     msdelay(750);
 
                 }
