@@ -18,7 +18,7 @@ namespace Pololu.Usc.ScopeFocus
             get { return devId4; }
             set { devId4 = value; }
         }
-
+        // changed to coverCal 5/30/2021
         public static void FlapChooser()
         {
             ASCOM.Utilities.Chooser chooser = new ASCOM.Utilities.Chooser();
