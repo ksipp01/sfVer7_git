@@ -67,10 +67,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>474B8E280453FD88F2E00065CFE9FEDBB7721777</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>2913CB0FDE2C0EF4942FA179A13506F0B87C821A</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>ScopefocusTempKey2.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Scopefocus_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>

@@ -211,4 +211,4 @@ C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Vers
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.application
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.exe
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\scopefocus_Version6_beta.pdb
-C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csprojResolveAssemblyReference.cache
+C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\obj\x86\Debug\Scopefocus.csproj.CoreCompileInputs.cache

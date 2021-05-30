@@ -13122,6 +13122,7 @@ namespace Pololu.Usc.ScopeFocus
                     FlatsOn = true;
                     button21.Text = "Flat On";
                     button21.BackColor = System.Drawing.Color.Lime;
+                    return;
                 }
                 if (Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Closed)
                 {
@@ -13129,6 +13130,7 @@ namespace Pololu.Usc.ScopeFocus
                     FlatsOn = false;
                     button21.Text = "Flat Off";
                     button21.BackColor = System.Drawing.Color.Red;
+                    return;
                 }
                 if ((Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Moving) || (Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Error))
                 {
@@ -18774,6 +18776,7 @@ namespace Pololu.Usc.ScopeFocus
                     button12.BackColor = System.Drawing.Color.WhiteSmoke;
                     Pololu.Usc.ScopeFocus.Flap.DevId4 = "";
                     groupBox14.Enabled = false;
+                    trackBar1.Maximum = Flap.FlatFlap.MaxBrightness;
                     return;
                 }
 
@@ -19139,7 +19142,7 @@ namespace Pololu.Usc.ScopeFocus
                 }
                 else
                 {
-                    MessageBox.Show("Not connected to ASCOM switch", "scopefocus");
+                    MessageBox.Show("Not connected to ASCOM CoverCalibrator", "scopefocus");
                     return;
                 }
             }
