@@ -171,7 +171,6 @@ C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\scopefocus_Version6
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\ASCOM.DeviceInterfaces.dll
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\ASCOM.DriverAccess.dll
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\ASCOM.Utilities.dll
-C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\CSharpFITS_v1.1.dll
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\ErikEJ.SqlCe40.dll
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Public\sfVer7_git\ArduinoVer2\ArduinoVer2\bin\Debug\Salient.Data.dll

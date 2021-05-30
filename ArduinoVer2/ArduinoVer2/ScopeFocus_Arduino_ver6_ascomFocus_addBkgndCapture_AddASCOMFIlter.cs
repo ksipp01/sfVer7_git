@@ -116,8 +116,8 @@
 // 1-13-17 and 1-14-17 consolidated filesystemwatcher to 2.  2,3,4,5 into #1 and #7 stayed separate.   
 // 1-15-17 worked on internal filterwheel,other fixes.
 // 8-23-17 lines 10966 to 984  fixed click on star for neb fine focus wasn't working....
-// 8-29-17 moved waiting for dither while loop to line 10176 so nebfienefovus cant start until dither is done.  
-
+// 8-29-17 moved waiting for dither while loop to line 10176 so nebfinefocus cant start until dither is done.  
+//8-30-17, added datetime.now to logging.   added idle alert for toolstripstatus unchnaged for 10 min. remd line 10189 since not always using dither
 
 
 ///  to do:
@@ -10186,7 +10186,7 @@ namespace Pololu.Usc.ScopeFocus
                 {//added 2-3-17
                  // wait for sequence done in Neb status bar before proceeding....
                     MonitorNebStatus();
-                    toolStripStatusLabel1.Text = "Waiting for Dither";
+                 //   toolStripStatusLabel1.Text = "Waiting for Dither"; // remd 8-30-17
                     delay(1);
                 }
 
@@ -13033,7 +13033,7 @@ namespace Pololu.Usc.ScopeFocus
 
                 //  log.WriteLine(DateTime.Now);
                 //  log.WriteLine("scopefocus - Error");
-                log.WriteLine(textlog);
+                log.WriteLine(DateTime.Now.ToString("HH:mm:ss " + textlog));
                 log.Close();
             }
             return;
@@ -13056,8 +13056,8 @@ namespace Pololu.Usc.ScopeFocus
                 log = File.AppendText(fullpath);
             }
 
-            log.WriteLine(DateTime.Now);
-            log.WriteLine("scopefocus - Error");
+            log.WriteLine(DateTime.Now.ToString("HH:mm:ss " + "scopefocus - Error"));
+          //  log.WriteLine("scopefocus - Error");
             log.WriteLine(textlog);
             log.Close();
         }
@@ -13116,21 +13116,26 @@ namespace Pololu.Usc.ScopeFocus
         {
             if (Pololu.Usc.ScopeFocus.Flap.DevId4 != null)
             {
-                if (!Pololu.Usc.ScopeFocus.Flap.FlatFlap.GetSwitch(0))
+                if (Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Open)
                 {
-                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitch(0, true);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.CloseCover();
                     FlatsOn = true;
                     button21.Text = "Flat On";
                     button21.BackColor = System.Drawing.Color.Lime;
                 }
-
-                else
+                if (Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Closed)
                 {
-                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitch(0, false);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.OpenCover();
                     FlatsOn = false;
                     button21.Text = "Flat Off";
                     button21.BackColor = System.Drawing.Color.Red;
                 }
+                if ((Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Moving) || (Pololu.Usc.ScopeFocus.Flap.FlatFlap.CoverState == ASCOM.DeviceInterface.CoverStatus.Error))
+                {
+                    MessageBox.Show("FlatFlap Error - Rety");
+                }
+
+
             }
             else
             {
@@ -16706,33 +16711,51 @@ namespace Pololu.Usc.ScopeFocus
         double CurrentDEC;
         bool FlipNeeded = false;
         int idleCount = 0;
+        string prevToolStripStatus = "";
         private void timer2_Tick(object sender, EventArgs e)
         {
             // inteval set at 1 second
             try
             {
-
+                
                 if (focusMoveRequested)
                     FocusPoll();
                 //  Log("Idle Count " + idleCount.ToString());
                 //11-20-16  try to add idle monitor
-                if (checkBox34.Checked)
+                if ((checkBox34.Checked)&& (sequenceRunning))
                 {
-                    if (toolStripStatusLabel1.Text.Length > 9)
+                    //if (toolStripStatusLabel1.Text.Length > 9)
+                    //{
+                    //    if ((toolStripStatusLabel1.Text.Substring(0, 10) == "Capturing ") && (sequenceRunning)) // once neb starts an exposure the numbers show up after capturing
+                    if (toolStripStatusLabel1.Text.StartsWith("Capturing "))  // once neb starts an exposure the numbers show up after capturing
                     {
-                        if ((toolStripStatusLabel1.Text.Substring(0, 10) == "Capturing ") && (sequenceRunning)) // once neb starts an exposure the numbers show up after capturing
-                        { //need to wait a bit before cunting since starting sequence takes a few seconds.  
-                            idleCount++;
+                        idleCount++;
 
-                            if (idleCount == CaptureTime3 * 1.2 + 10)  //give it about 1.5 time capttime if nothing happening send message
-                            {
-                                Log("Idle Timnout");
-                                FileLog("Idle Timeout");
-                                Send("****Idle Timeout***");
-                            }
+                        if (idleCount == CaptureTime3 * 1.2 + 10)  //give it about 1.5 times capttime if nothing happening send message
+                        {
+                            Log("Idle Timnout");
+                            FileLog("Idle Timeout");
+                            Send("****Idle Timeout***");
                         }
                     }
+                    //  }
+
+                    // see if toolstripstatuslabel is unchanged for 10 min (except above when capturing) 
+                    else
+                    {
+                        if (toolStripStatusLabel1.Text == prevToolStripStatus) 
+                            idleCount++;
+                        if (idleCount == 600)
+                        {
+                            Log("Idle Timnout");
+                            FileLog("Idle Timeout");
+                            Send("****Idle Timeout***");
+                        }
+
+                    }
                 }
+               
+                prevToolStripStatus = toolStripStatusLabel1.Text;
                 if (PHD2comm.PHD2Connected)
                 {
                     LostStarMonitor();
@@ -19111,7 +19134,7 @@ namespace Pololu.Usc.ScopeFocus
                
                 if (Pololu.Usc.ScopeFocus.Flap.DevId4 != null)
                 {
-                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.SetSwitchValue(0, (double)trackBar1.Value);
+                    Pololu.Usc.ScopeFocus.Flap.FlatFlap.CalibratorOn((int)trackBar1.Value);
                     textBox44.Text = trackBar1.Value.ToString();
                 }
                 else
@@ -20235,7 +20258,8 @@ namespace Pololu.Usc.ScopeFocus
 
         private void button53_Click(object sender, EventArgs e)
         {
-            Rot.Rotate.Action("Home", "");
+            //    Rot.Rotate.Action("Home", ""); // wont work for most rotoators....10-26-18 changed to below 
+            Rot.Rotate.Move(0);
             // add turn button green if home found 
         }
 
